@@ -1,0 +1,283 @@
+{% extends "base.html" %}
+
+{% block title %}{{ model.model_id }} - SBOM Report | HuggingHugh{% endblock %}
+
+{% block description %}Software Bill of Materials and vulnerability report for {{ model.model_id }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Breadcrumb -->
+    <nav style="margin-bottom: var(--space-lg); font-size: 0.875rem;">
+        <a href="{{ base_url }}/" style="color: var(--text-muted);">Dashboard</a>
+        <span style="color: var(--text-muted);"> / </span>
+        <span>{{ model.model_id }}</span>
+    </nav>
+
+    <div class="report-header">
+        <!-- Main Info -->
+        <div class="report-main">
+            <h1 style="font-size: 1.75rem; margin-bottom: var(--space-sm);">{{ model.model_name }}</h1>
+            <p style="color: var(--text-muted); margin-bottom: var(--space-md);">
+                by <strong>{{ model.author }}</strong>
+                {% if model.is_verified_org %}
+                <span style="color: var(--score-excellent);">✓ Verified</span>
+                {% endif %}
+            </p>
+
+            <div class="report-meta">
+                <div class="meta-item">
+                    <span class="meta-label">Downloads</span>
+                    <span class="meta-value">{{ model.downloads_formatted }}</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Likes</span>
+                    <span class="meta-value">{{ model.likes_formatted }}</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Size</span>
+                    <span class="meta-value">{{ model.size_formatted }}</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Files</span>
+                    <span class="meta-value">{{ model.file_count }}</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Format</span>
+                    <span class="meta-value">
+                        {% if model.has_safetensors %}
+                        <span style="color: var(--score-excellent);">SafeTensors ✓</span>
+                        {% else %}
+                        <span style="color: var(--score-moderate);">PyTorch/Other</span>
+                        {% endif %}
+                    </span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Last Updated</span>
+                    <span class="meta-value">{{ model.last_modified_formatted }}</span>
+                </div>
+            </div>
+
+            <div style="margin-top: var(--space-lg);">
+                {% if model.pipeline_tag %}
+                <span class="tag tag-primary">{{ model.pipeline_tag }}</span>
+                {% endif %}
+                {% if model.library_name %}
+                <span class="tag">{{ model.library_name }}</span>
+                {% endif %}
+                {% for tag in model.tags[:5] %}
+                <span class="tag">{{ tag }}</span>
+                {% endfor %}
+            </div>
+
+            <div style="margin-top: var(--space-lg);">
+                <a href="https://huggingface.co/{{ model.model_id }}" target="_blank" class="btn btn-primary">
+                    View on HuggingFace →
+                </a>
+                <a href="sbom.cdx.json" download class="btn" style="background: var(--background); color: var(--text);">
+                    Download SBOM (JSON)
+                </a>
+            </div>
+        </div>
+
+        <!-- Nutrition Label Sidebar -->
+        <div class="report-sidebar">
+            <div class="nutrition-label">
+                <div class="nutrition-header">
+                    <h2>Trust Score</h2>
+                    <div class="model-name">{{ model.model_id }}</div>
+                </div>
+
+                <div class="nutrition-score">
+                    <div class="score-circle" style="background: {{ trust_score.color }};">
+                        <span class="score-value">{{ trust_score.total_score }}</span>
+                        <span class="score-grade">{{ trust_score.grade }}</span>
+                    </div>
+                    <p style="font-size: 0.875rem; color: var(--text-muted);">
+                        {{ trust_score.summary }}
+                    </p>
+                </div>
+
+                <div class="nutrition-facts">
+                    <div class="nutrition-row header">
+                        <span>Factor</span>
+                        <span>Status</span>
+                    </div>
+                    {% for factor in trust_score.factors %}
+                    <div class="nutrition-row">
+                        <span class="label">{{ factor.name }}</span>
+                        <span class="value status-{{ factor.status }}">
+                            {% if factor.status == 'pass' %}✓{% elif factor.status == 'warn' %}⚠{% else %}✗{% endif %}
+                            {{ factor.points|round(1) }}/{{ factor.weight }}
+                        </span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Vulnerability Summary -->
+    <div class="section">
+        <h2 class="section-title">Vulnerability Summary</h2>
+
+        <div class="summary-grid" style="grid-template-columns: repeat(5, 1fr);">
+            <div class="summary-card">
+                <div class="value" style="color: var(--severity-critical);">{{ vulnerabilities.summary.critical }}</div>
+                <div class="label">Critical</div>
+            </div>
+            <div class="summary-card">
+                <div class="value" style="color: var(--severity-high);">{{ vulnerabilities.summary.high }}</div>
+                <div class="label">High</div>
+            </div>
+            <div class="summary-card">
+                <div class="value" style="color: var(--severity-medium);">{{ vulnerabilities.summary.medium }}</div>
+                <div class="label">Medium</div>
+            </div>
+            <div class="summary-card">
+                <div class="value" style="color: var(--severity-low);">{{ vulnerabilities.summary.low }}</div>
+                <div class="label">Low</div>
+            </div>
+            <div class="summary-card">
+                <div class="value">{{ vulnerabilities.summary.total }}</div>
+                <div class="label">Total</div>
+            </div>
+        </div>
+
+        {% if vulnerabilities.all_vulnerabilities %}
+        <div class="card">
+            <div class="card-body" style="overflow-x: auto;">
+                <table class="vuln-table">
+                    <thead>
+                        <tr>
+                            <th>CVE ID</th>
+                            <th>Severity</th>
+                            <th>Package</th>
+                            <th>Installed</th>
+                            <th>Fixed In</th>
+                            <th>CVSS</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for vuln in vulnerabilities.all_vulnerabilities[:20] %}
+                        <tr>
+                            <td>
+                                <a href="https://nvd.nist.gov/vuln/detail/{{ vuln.id }}" target="_blank" style="color: var(--primary);">
+                                    {{ vuln.id }}
+                                </a>
+                            </td>
+                            <td>
+                                <span class="severity-badge severity-{{ vuln.severity }}">
+                                    {{ vuln.severity }}
+                                </span>
+                            </td>
+                            <td><code>{{ vuln.package }}</code></td>
+                            <td>{{ vuln.installed_version }}</td>
+                            <td>{{ vuln.fixed_version or 'N/A' }}</td>
+                            <td>{{ vuln.cvss.score or 'N/A' }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% if vulnerabilities.all_vulnerabilities|length > 20 %}
+                <p style="padding: var(--space-md); color: var(--text-muted); text-align: center;">
+                    Showing 20 of {{ vulnerabilities.all_vulnerabilities|length }} vulnerabilities.
+                    <a href="vulnerabilities.json" download>Download full list (JSON)</a>
+                </p>
+                {% endif %}
+            </div>
+        </div>
+        {% else %}
+        <div class="card">
+            <div class="card-body" style="text-align: center; padding: var(--space-2xl);">
+                <div style="font-size: 3rem; margin-bottom: var(--space-md);">✅</div>
+                <h3>No Known Vulnerabilities</h3>
+                <p style="color: var(--text-muted);">
+                    No vulnerabilities were found in the inferred dependencies.
+                </p>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- License Information -->
+    <div class="section">
+        <h2 class="section-title">License Information</h2>
+
+        <div class="license-info">
+            <div class="license-header">
+                <span class="license-name">{{ license_analysis.model.name }}</span>
+                <span class="license-badge license-{{ license_analysis.model.category }}">
+                    {{ license_analysis.model.category }}
+                </span>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--space-md); margin-top: var(--space-md);">
+                <div>
+                    <div class="meta-label">Commercial Use</div>
+                    <div class="meta-value">
+                        {% if license_analysis.model.commercial_use %}
+                        <span style="color: var(--score-excellent);">✓ Allowed</span>
+                        {% else %}
+                        <span style="color: var(--score-poor);">✗ Not Allowed</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div>
+                    <div class="meta-label">Copyleft Risk</div>
+                    <div class="meta-value">{{ license_analysis.model.copyleft_risk }}</div>
+                </div>
+                <div>
+                    <div class="meta-label">Dependency Licenses</div>
+                    <div class="meta-value">{{ license_analysis.dependencies.unique_licenses }} unique</div>
+                </div>
+            </div>
+
+            {% if license_analysis.model.restrictions %}
+            <div style="margin-top: var(--space-md);">
+                <div class="meta-label">Restrictions</div>
+                <ul style="margin-top: var(--space-sm); padding-left: var(--space-lg);">
+                    {% for restriction in license_analysis.model.restrictions %}
+                    <li style="color: var(--text-muted);">{{ restriction }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- SBOM Components -->
+    <div class="section">
+        <h2 class="section-title">SBOM Components ({{ sbom.components|length }})</h2>
+
+        <div class="card">
+            <div class="card-body component-list">
+                {% for component in sbom.components[:50] %}
+                <div class="component-item">
+                    <span class="component-name">{{ component.name }}</span>
+                    <span class="component-version">{{ component.version or 'unknown' }}</span>
+                </div>
+                {% endfor %}
+                {% if sbom.components|length > 50 %}
+                <div style="padding: var(--space-md); text-align: center; color: var(--text-muted);">
+                    Showing 50 of {{ sbom.components|length }} components.
+                    <a href="sbom.cdx.json" download>Download full SBOM</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Support Banner -->
+    <div class="card" style="background: linear-gradient(135deg, #fef3c7 0%, #fff7ed 100%); margin-top: var(--space-2xl);">
+        <div class="card-body" style="text-align: center; padding: var(--space-2xl);">
+            <h3 style="margin-bottom: var(--space-md);">Found this helpful?</h3>
+            <p style="color: var(--text-muted); margin-bottom: var(--space-lg); max-width: 500px; margin-left: auto; margin-right: auto;">
+                HuggingHugh is a free community resource. If you find it useful, consider supporting the project!
+            </p>
+            <a href="https://buymeacoffee.com/hugginghugh" target="_blank" class="btn btn-coffee" style="font-size: 1.125rem; padding: var(--space-md) var(--space-xl);">
+                ☕ Buy me a coffee
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

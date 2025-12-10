@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}HuggingHugh{% endblock %}</title>
+    <meta name="description" content="{% block description %}Nutrition Labels for AI Models - SBOM Dashboard for HuggingFace Models{% endblock %}">
+    <link rel="stylesheet" href="{{ base_url }}/static/css/style.css">
+    {% block head %}{% endblock %}
+</head>
+<body>
+    <header class="site-header">
+        <div class="container">
+            <div class="header-content">
+                <a href="{{ base_url }}/" class="logo">
+                    <span class="logo-icon">🤗</span>
+                    <span class="logo-text">HuggingHugh</span>
+                </a>
+                <nav class="main-nav">
+                    <a href="{{ base_url }}/">Dashboard</a>
+                    <a href="{{ base_url }}/about.html">About</a>
+                    <a href="https://buymeacoffee.com/hugginghugh" target="_blank" class="btn btn-coffee">
+                        ☕ Buy me a coffee
+                    </a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>HuggingHugh</h4>
+                    <p>Nutrition Labels for AI Models</p>
+                    <p class="footer-tagline">Know what you're consuming before you use it.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Resources</h4>
+                    <ul>
+                        <li><a href="https://huggingface.co" target="_blank">HuggingFace Hub</a></li>
+                        <li><a href="https://cyclonedx.org" target="_blank">CycloneDX</a></li>
+                        <li><a href="https://github.com/anchore/grype" target="_blank">Grype</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Support</h4>
+                    <p>This is a free community resource.</p>
+                    <a href="https://buymeacoffee.com/hugginghugh" target="_blank" class="btn btn-coffee-small">
+                        ☕ Support the project
+                    </a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>Last updated: {{ last_updated }}</p>
+                <p>Data refreshed daily at 02:00 UTC</p>
+            </div>
+        </div>
+    </footer>
+
+    {% block scripts %}{% endblock %}
+</body>
+</html>

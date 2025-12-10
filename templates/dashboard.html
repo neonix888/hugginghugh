@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block title %}HuggingHugh - Nutrition Labels for AI Models{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <h1>🤗 HuggingHugh</h1>
+        <p class="subtitle">Nutrition Labels for AI Models — Know what you're consuming</p>
+    </div>
+
+    <!-- Summary Stats -->
+    <div class="summary-grid">
+        <div class="summary-card">
+            <div class="value">{{ total_models }}</div>
+            <div class="label">Models Scanned</div>
+        </div>
+        <div class="summary-card">
+            <div class="value">{{ total_vulnerabilities }}</div>
+            <div class="label">Vulnerabilities Found</div>
+        </div>
+        <div class="summary-card">
+            <div class="value">{{ avg_trust_score }}</div>
+            <div class="label">Average Trust Score</div>
+        </div>
+        <div class="summary-card">
+            <div class="value">{{ models_with_issues }}</div>
+            <div class="label">Models with Issues</div>
+        </div>
+    </div>
+
+    <!-- Info Banner -->
+    <div class="card" style="margin-bottom: var(--space-xl); background: linear-gradient(135deg, #fff7ed 0%, #fef3c7 100%);">
+        <div class="card-body" style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <h3 style="margin-bottom: var(--space-sm);">What is this?</h3>
+                <p style="color: var(--text-muted); max-width: 600px;">
+                    HuggingHugh provides SBOM (Software Bill of Materials) reports for the top {{ total_models }} most downloaded
+                    models on HuggingFace. Think of it as nutrition facts for AI models — know what dependencies
+                    and vulnerabilities exist before you use them.
+                </p>
+            </div>
+            <a href="https://buymeacoffee.com/hugginghugh" target="_blank" class="btn btn-coffee">
+                ☕ Support this project
+            </a>
+        </div>
+    </div>
+
+    <!-- Model Grid -->
+    <h2 style="margin-bottom: var(--space-lg);">Top {{ total_models }} Models by Downloads</h2>
+
+    <div class="model-grid">
+        {% for model in models %}
+        <a href="reports/{{ model.safe_id }}/index.html" class="model-card">
+            <div class="model-card-header">
+                <div class="model-card-title">{{ model.model_name }}</div>
+                <div class="model-card-author">by {{ model.author }}</div>
+            </div>
+            <div class="model-card-body">
+                <div class="model-card-stats">
+                    <div class="stat">
+                        <span class="stat-value">{{ model.downloads_formatted }}</span>
+                        <span class="stat-label">Downloads</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-value">{{ model.likes_formatted }}</span>
+                        <span class="stat-label">Likes</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-value">{{ model.vuln_count }}</span>
+                        <span class="stat-label">CVEs</span>
+                    </div>
+                </div>
+                <div>
+                    {% if model.pipeline_tag %}
+                    <span class="tag tag-primary">{{ model.pipeline_tag }}</span>
+                    {% endif %}
+                    {% if model.has_safetensors %}
+                    <span class="tag" style="background: #dcfce7; color: #166534;">✓ SafeTensors</span>
+                    {% endif %}
+                    {% if model.library_name %}
+                    <span class="tag">{{ model.library_name }}</span>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="model-card-footer">
+                <span class="trust-score trust-score-{{ model.trust_grade_class }}">
+                    Trust: {{ model.trust_score }}/100 ({{ model.trust_grade }})
+                </span>
+                <span style="color: var(--text-muted); font-size: 0.875rem;">
+                    View Report →
+                </span>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
