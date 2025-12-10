@@ -84,7 +84,8 @@ class LicenseAnalyzer:
         Returns:
             LicenseInfo object
         """
-        license_id = model_metadata.get("license", "").lower().strip()
+        license_raw = model_metadata.get("license")
+        license_id = license_raw.lower().strip() if license_raw else ""
 
         if not license_id:
             # Try to extract from model card
@@ -106,7 +107,8 @@ class LicenseAnalyzer:
         """Try to extract license from card data."""
         card_data = model_metadata.get("card_data", {})
         if isinstance(card_data, dict):
-            return card_data.get("license", "").lower().strip()
+            license_val = card_data.get("license")
+            return license_val.lower().strip() if license_val else ""
         return ""
 
     def _classify_license(self, license_id: str) -> LicenseInfo:

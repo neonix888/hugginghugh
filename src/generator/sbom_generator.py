@@ -298,12 +298,27 @@ class SBOMGenerator:
             sbom["metadata"] = {}
 
         sbom["metadata"]["timestamp"] = datetime.utcnow().isoformat() + "Z"
-        sbom["metadata"]["tools"] = sbom["metadata"].get("tools", [])
-        sbom["metadata"]["tools"].append({
+
+        # Handle tools - can be list (old format) or dict with "components" (new format)
+        tools = sbom["metadata"].get("tools")
+        hugginghugh_tool = {
             "vendor": "HuggingHugh",
             "name": "hugginghugh-sbom-generator",
             "version": "0.1.0",
-        })
+        }
+
+        if tools is None:
+            sbom["metadata"]["tools"] = [hugginghugh_tool]
+        elif isinstance(tools, list):
+            tools.append(hugginghugh_tool)
+        elif isinstance(tools, dict):
+            # CycloneDX 1.5+ format: tools: {components: [...]}
+            if "components" in tools and isinstance(tools["components"], list):
+                tools["components"].append(hugginghugh_tool)
+            else:
+                tools["components"] = [hugginghugh_tool]
+        else:
+            sbom["metadata"]["tools"] = [hugginghugh_tool]
 
         return sbom
 
