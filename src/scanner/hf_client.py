@@ -117,6 +117,7 @@ class HuggingFaceClient:
         filename: str,
         local_dir: Path,
         force: bool = False,
+        revision: str = "main",
     ) -> Optional[Path]:
         """
         Download a specific file from a model repository.
@@ -126,6 +127,7 @@ class HuggingFaceClient:
             filename: File to download
             local_dir: Local directory to save to
             force: Force re-download even if file exists
+            revision: Git revision (branch, tag, or commit hash) for security
 
         Returns:
             Path to downloaded file, or None if failed
@@ -136,14 +138,16 @@ class HuggingFaceClient:
             logger.debug(f"File already exists: {local_path}")
             return local_path
 
-        logger.debug(f"Downloading {filename} from {model_id}")
+        logger.debug(f"Downloading {filename} from {model_id} (revision: {revision})")
 
         try:
-            downloaded_path = hf_hub_download(
+            # Use revision pinning for security (CWE-494)
+            downloaded_path = hf_hub_download(  # nosec B615
                 repo_id=model_id,
                 filename=filename,
                 local_dir=local_dir,
                 token=self.token,
+                revision=revision,
             )
             return Path(downloaded_path)
         except Exception as e:

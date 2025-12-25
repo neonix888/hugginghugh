@@ -2,6 +2,7 @@
 Trust Score Calculator
 
 Calculates a trust score (0-100) for ML models based on various factors.
+Weights are calibrated based on real-world security incidents and best practices.
 """
 import logging
 from datetime import datetime, timedelta, timezone
@@ -11,16 +12,42 @@ from typing import Optional
 logger = logging.getLogger(__name__)
 
 # Trust score weights (must sum to 100)
+# Calibrated for security-first assessment:
+# - Security factors: 50 points (format safety, CVEs, pickle)
+# - Provenance factors: 25 points (verified org, license)
+# - Quality factors: 25 points (docs, recency, community)
 WEIGHTS = {
-    "verified_org": 15,
-    "safetensors_format": 15,
-    "no_critical_cves": 20,
-    "clear_license": 15,
-    "model_card_quality": 10,
-    "recent_updates": 10,
-    "community_engagement": 5,
-    "no_pickle_files": 10,
+    "verified_org": 12,          # Provenance: known publisher
+    "safetensors_format": 18,    # Security: safe serialization (high weight due to CVE-2025-32434)
+    "no_critical_cves": 15,      # Security: vulnerability-free dependencies
+    "clear_license": 13,         # Provenance: usage rights
+    "model_card_quality": 10,    # Quality: documentation
+    "recent_updates": 8,         # Quality: maintenance status
+    "community_engagement": 6,   # Quality: adoption signals
+    "no_pickle_files": 18,       # Security: no arbitrary code execution risk
 }
+
+# Known well-maintained organizations (partial credit if not officially verified)
+KNOWN_TRUSTWORTHY_ORGS = [
+    # Major AI labs
+    "meta-llama", "meta", "facebook", "openai", "google", "deepmind",
+    "microsoft", "nvidia", "amazon", "alibaba", "baidu", "tencent",
+    # HuggingFace ecosystem
+    "huggingface", "bigscience", "bigcode", "sentence-transformers",
+    # AI research orgs
+    "stabilityai", "stability-ai", "runwayml", "compvis", "laion",
+    "eleutherai", "togethercomputer", "together", "mistralai", "mistral-ai",
+    # Model-specific well-known publishers
+    "qwen", "deepseek-ai", "thudm", "internlm", "baichuan-inc",
+    "01-ai", "cohere", "anthropic", "allenai", "berkeley-nest",
+    "lmsys", "teknium", "openchat", "nousresearch", "cognitivecomputations",
+    # Vision/Multimodal specialists
+    "timm", "openclip", "salesforce", "clip-benchmark",
+    # Audio specialists
+    "openai-whisper", "pyannote", "speechbrain", "coqui",
+    # RL/Robotics
+    "cleanrl", "stable-baselines", "huggingface-rl",
+]
 
 
 @dataclass
@@ -33,6 +60,7 @@ class TrustFactor:
     points: float  # score * weight
     reason: str
     status: str  # "pass", "warn", "fail"
+    tooltip: str = ""  # Explanation of how this factor is calculated
 
 
 @dataclass
@@ -137,73 +165,122 @@ class TrustScorer:
         )
 
     def _score_verified_org(self, metadata: dict) -> TrustFactor:
-        """Score based on organization verification."""
+        """Score based on organization verification and reputation."""
         weight = self.weights["verified_org"]
         is_verified = metadata.get("is_verified_org", False)
+        author = metadata.get("author", "")
+        author_lower = author.lower()
 
+        tooltip = (
+            f"Max {weight} points. Verified orgs on HuggingFace have been vetted "
+            "and display a verification badge. Full points for verified orgs, "
+            "85% for well-known AI labs/publishers, 40% for unknown publishers."
+        )
+
+        # Check if verified by HuggingFace
         if is_verified:
             return TrustFactor(
                 name="Verified Organization",
                 weight=weight,
                 score=1.0,
                 points=weight,
-                reason=f"Published by verified org: {metadata.get('author', 'Unknown')}",
+                reason=f"Published by verified org: {author}",
                 status="pass",
+                tooltip=tooltip,
             )
-        else:
-            # Partial credit for well-known authors
-            author = metadata.get("author", "").lower()
-            known_authors = ["stabilityai", "runwayml", "CompVis", "THUDM"]
-            if author in [a.lower() for a in known_authors]:
-                return TrustFactor(
-                    name="Verified Organization",
-                    weight=weight,
-                    score=0.7,
-                    points=weight * 0.7,
-                    reason=f"Well-known publisher: {metadata.get('author', 'Unknown')}",
-                    status="warn",
-                )
+
+        # Check against our expanded list of known trustworthy orgs
+        is_known = any(
+            known_org in author_lower or author_lower in known_org
+            for known_org in KNOWN_TRUSTWORTHY_ORGS
+        )
+
+        if is_known:
             return TrustFactor(
                 name="Verified Organization",
                 weight=weight,
-                score=0.3,
-                points=weight * 0.3,
-                reason=f"Publisher not verified: {metadata.get('author', 'Unknown')}",
-                status="warn",
+                score=0.85,
+                points=weight * 0.85,
+                reason=f"Well-known AI publisher: {author}",
+                status="pass",
+                tooltip=tooltip,
             )
 
+        # Check downloads as a proxy for reputation (>1M suggests established publisher)
+        downloads = metadata.get("downloads", 0)
+        if downloads >= 1_000_000:
+            return TrustFactor(
+                name="Verified Organization",
+                weight=weight,
+                score=0.6,
+                points=weight * 0.6,
+                reason=f"Publisher {author} has high-download models",
+                status="warn",
+                tooltip=tooltip,
+            )
+
+        # Unknown publisher
+        return TrustFactor(
+            name="Verified Organization",
+            weight=weight,
+            score=0.4,
+            points=weight * 0.4,
+            reason=f"Publisher not verified: {author}",
+            status="warn",
+            tooltip=tooltip,
+        )
+
     def _score_safetensors(self, metadata: dict) -> TrustFactor:
-        """Score based on safetensors format usage."""
+        """Score based on safe serialization format usage."""
         weight = self.weights["safetensors_format"]
         has_safetensors = metadata.get("has_safetensors", False)
         has_pickle = metadata.get("has_pickle", False)
 
-        if has_safetensors and not has_pickle:
+        # Check for other safe formats from file list
+        siblings = metadata.get("siblings", [])
+        file_names = [s.get("rfilename", "") for s in siblings if isinstance(s, dict)]
+        has_gguf = any(f.endswith(".gguf") for f in file_names)
+        has_onnx = any(f.endswith(".onnx") for f in file_names)
+
+        # GGUF and ONNX are also safe formats (no arbitrary code execution)
+        has_safe_format = has_safetensors or has_gguf or has_onnx
+
+        tooltip = (
+            f"Max {weight} points. Safe formats (safetensors, GGUF, ONNX) prevent "
+            "arbitrary code execution. Full points for safe formats only, "
+            "70% if both safe and unsafe formats exist, 0% if only pickle/bin files."
+        )
+
+        if has_safe_format and not has_pickle:
+            format_name = "safetensors" if has_safetensors else ("GGUF" if has_gguf else "ONNX")
             return TrustFactor(
-                name="SafeTensors Format",
+                name="Safe Serialization",
                 weight=weight,
                 score=1.0,
                 points=weight,
-                reason="Uses secure safetensors format exclusively",
+                reason=f"Uses secure {format_name} format exclusively",
                 status="pass",
+                tooltip=tooltip,
             )
-        elif has_safetensors and has_pickle:
+        elif has_safe_format and has_pickle:
             return TrustFactor(
-                name="SafeTensors Format",
+                name="Safe Serialization",
                 weight=weight,
                 score=0.7,
                 points=weight * 0.7,
-                reason="Has safetensors but also contains pickle files",
+                reason="Has safe format but also contains pickle files",
                 status="warn",
+                tooltip=tooltip,
             )
         else:
             return TrustFactor(
-                name="SafeTensors Format",
+                name="Safe Serialization",
                 weight=weight,
                 score=0.0,
                 points=0,
-                reason="Does not use safetensors format (security risk)",
+                reason="Uses pickle-based format only (code execution risk)",
                 status="fail",
+                tooltip=tooltip,
             )
 
     def _score_vulnerabilities(self, vuln_results: dict) -> TrustFactor:
@@ -214,6 +291,11 @@ class TrustScorer:
         critical = summary.get("critical", 0)
         high = summary.get("high", 0)
         medium = summary.get("medium", 0)
+        tooltip = (
+            f"Max {weight} points. Based on CVE vulnerabilities in dependencies. "
+            "Full points if no critical/high CVEs, 70% if 1-2 high, "
+            "40% if 1-2 critical, 0% if 3+ critical vulnerabilities."
+        )
 
         if critical == 0 and high == 0:
             return TrustFactor(
@@ -223,6 +305,7 @@ class TrustScorer:
                 points=weight,
                 reason="No critical or high severity vulnerabilities",
                 status="pass",
+                tooltip=tooltip,
             )
         elif critical == 0 and high <= 2:
             return TrustFactor(
@@ -232,6 +315,7 @@ class TrustScorer:
                 points=weight * 0.7,
                 reason=f"{high} high severity vulnerabilities found",
                 status="warn",
+                tooltip=tooltip,
             )
         elif critical <= 2:
             return TrustFactor(
@@ -241,6 +325,7 @@ class TrustScorer:
                 points=weight * 0.4,
                 reason=f"{critical} critical, {high} high severity vulnerabilities",
                 status="warn",
+                tooltip=tooltip,
             )
         else:
             return TrustFactor(
@@ -250,6 +335,7 @@ class TrustScorer:
                 points=0,
                 reason=f"{critical} critical vulnerabilities found!",
                 status="fail",
+                tooltip=tooltip,
             )
 
     def _score_license(self, license_analysis: dict) -> TrustFactor:
@@ -259,6 +345,11 @@ class TrustScorer:
 
         category = model_license.get("category", "unknown")
         commercial = model_license.get("commercial_use", False)
+        tooltip = (
+            f"Max {weight} points. Evaluates license clarity and usage rights. "
+            "Full points for permissive licenses (MIT, Apache), 80% for commercial-friendly, "
+            "40% for restrictive, 0% if no license specified."
+        )
 
         if category == "unknown":
             return TrustFactor(
@@ -268,6 +359,7 @@ class TrustScorer:
                 points=0,
                 reason="License not specified",
                 status="fail",
+                tooltip=tooltip,
             )
         elif category == "permissive":
             return TrustFactor(
@@ -277,6 +369,7 @@ class TrustScorer:
                 points=weight,
                 reason=f"Permissive license: {model_license.get('name', 'Unknown')}",
                 status="pass",
+                tooltip=tooltip,
             )
         elif commercial:
             return TrustFactor(
@@ -286,6 +379,7 @@ class TrustScorer:
                 points=weight * 0.8,
                 reason=f"Commercial use allowed: {model_license.get('name', 'Unknown')}",
                 status="pass",
+                tooltip=tooltip,
             )
         else:
             return TrustFactor(
@@ -295,6 +389,7 @@ class TrustScorer:
                 points=weight * 0.4,
                 reason=f"Restrictive license: {model_license.get('name', 'Unknown')}",
                 status="warn",
+                tooltip=tooltip,
             )
 
     def _score_model_card(self, metadata: dict) -> TrustFactor:
@@ -316,6 +411,11 @@ class TrustScorer:
             0.3 if has_description else 0,
             0.2 if has_tags else 0,
         ])
+        tooltip = (
+            f"Max {weight} points. Checks for README (30%), config.json (20%), "
+            "description (30%), and tags (20%). Full points if score >= 80%, "
+            "60% if >= 50%, otherwise 20%."
+        )
 
         if quality_score >= 0.8:
             return TrustFactor(
@@ -325,6 +425,7 @@ class TrustScorer:
                 points=weight,
                 reason="Comprehensive documentation",
                 status="pass",
+                tooltip=tooltip,
             )
         elif quality_score >= 0.5:
             return TrustFactor(
@@ -334,6 +435,7 @@ class TrustScorer:
                 points=weight * 0.6,
                 reason="Basic documentation present",
                 status="warn",
+                tooltip=tooltip,
             )
         else:
             return TrustFactor(
@@ -343,12 +445,18 @@ class TrustScorer:
                 points=weight * 0.2,
                 reason="Missing or minimal documentation",
                 status="fail",
+                tooltip=tooltip,
             )
 
     def _score_recency(self, metadata: dict) -> TrustFactor:
         """Score based on last update time."""
         weight = self.weights["recent_updates"]
         last_modified = metadata.get("last_modified")
+        tooltip = (
+            f"Max {weight} points. Based on last update date. "
+            "Full points if updated within 30 days, 70% within 90 days, "
+            "50% within 180 days, 20% if older."
+        )
 
         if not last_modified:
             return TrustFactor(
@@ -358,6 +466,7 @@ class TrustScorer:
                 points=weight * 0.5,
                 reason="Update date unknown",
                 status="warn",
+                tooltip=tooltip,
             )
 
         # Parse date
@@ -372,6 +481,7 @@ class TrustScorer:
                     points=weight * 0.5,
                     reason="Update date format unknown",
                     status="warn",
+                    tooltip=tooltip,
                 )
 
         now = datetime.now(timezone.utc)
@@ -385,6 +495,7 @@ class TrustScorer:
                 points=weight,
                 reason=f"Updated {age_days} days ago",
                 status="pass",
+                tooltip=tooltip,
             )
         elif age_days <= 90:
             return TrustFactor(
@@ -394,6 +505,7 @@ class TrustScorer:
                 points=weight * 0.7,
                 reason=f"Updated {age_days} days ago",
                 status="pass",
+                tooltip=tooltip,
             )
         elif age_days <= 180:
             return TrustFactor(
@@ -403,6 +515,7 @@ class TrustScorer:
                 points=weight * 0.5,
                 reason=f"Updated {age_days} days ago",
                 status="warn",
+                tooltip=tooltip,
             )
         else:
             return TrustFactor(
@@ -412,6 +525,7 @@ class TrustScorer:
                 points=weight * 0.2,
                 reason=f"Not updated in {age_days} days",
                 status="warn",
+                tooltip=tooltip,
             )
 
     def _score_community(self, metadata: dict) -> TrustFactor:
@@ -426,6 +540,11 @@ class TrustScorer:
         like_score = min(1.0, likes / 1000)  # 1000 likes = 1.0
 
         combined = (download_score * 0.7) + (like_score * 0.3)
+        tooltip = (
+            f"Max {weight} points. Combined score: 70% downloads (log scale, 10M=100%) "
+            "+ 30% likes (1000=100%). Full points if combined >= 80%, "
+            "70% if >= 50%, otherwise proportional."
+        )
 
         if combined >= 0.8:
             return TrustFactor(
@@ -435,6 +554,7 @@ class TrustScorer:
                 points=weight,
                 reason=f"{downloads:,} downloads, {likes:,} likes",
                 status="pass",
+                tooltip=tooltip,
             )
         elif combined >= 0.5:
             return TrustFactor(
@@ -444,6 +564,7 @@ class TrustScorer:
                 points=weight * 0.7,
                 reason=f"{downloads:,} downloads, {likes:,} likes",
                 status="pass",
+                tooltip=tooltip,
             )
         else:
             return TrustFactor(
@@ -453,13 +574,27 @@ class TrustScorer:
                 points=weight * combined,
                 reason=f"{downloads:,} downloads, {likes:,} likes",
                 status="warn",
+                tooltip=tooltip,
             )
 
     def _score_no_pickle(self, metadata: dict) -> TrustFactor:
-        """Score based on absence of pickle files."""
+        """Score based on absence of pickle/unsafe serialization files."""
         weight = self.weights["no_pickle_files"]
         has_pickle = metadata.get("has_pickle", False)
         has_safetensors = metadata.get("has_safetensors", False)
+
+        # Check for safe alternatives
+        siblings = metadata.get("siblings", [])
+        file_names = [s.get("rfilename", "") for s in siblings if isinstance(s, dict)]
+        has_gguf = any(f.endswith(".gguf") for f in file_names)
+        has_onnx = any(f.endswith(".onnx") for f in file_names)
+        has_safe_alternative = has_safetensors or has_gguf or has_onnx
+
+        tooltip = (
+            f"Max {weight} points. Pickle files (.bin, .pt, .pkl) can contain "
+            "arbitrary code. Full points if no pickle files, 50% if a safe "
+            "alternative (safetensors/GGUF/ONNX) exists, 0% if only pickle."
+        )
 
         if not has_pickle:
             return TrustFactor(
@@ -469,15 +604,17 @@ class TrustScorer:
                 points=weight,
                 reason="No pickle-based files detected",
                 status="pass",
+                tooltip=tooltip,
             )
-        elif has_safetensors:
+        elif has_safe_alternative:
             return TrustFactor(
                 name="No Pickle Files",
                 weight=weight,
                 score=0.5,
                 points=weight * 0.5,
-                reason="Pickle files present (safetensors also available)",
+                reason="Pickle files present (safe alternative available)",
                 status="warn",
+                tooltip=tooltip,
             )
         else:
             return TrustFactor(
@@ -485,8 +622,9 @@ class TrustScorer:
                 weight=weight,
                 score=0.0,
                 points=0,
-                reason="Contains pickle files (arbitrary code execution risk)",
+                reason="Contains only pickle files (code execution risk)",
                 status="fail",
+                tooltip=tooltip,
             )
 
     def _get_grade(self, score: int) -> str:
@@ -506,6 +644,7 @@ class TrustScorer:
         """Generate a human-readable summary."""
         failed = [f for f in factors if f.status == "fail"]
         warnings = [f for f in factors if f.status == "warn"]
+        passed = [f for f in factors if f.status == "pass"]
 
         if score >= 80:
             base = "This model has a high trust score."
@@ -516,13 +655,7 @@ class TrustScorer:
         else:
             base = "This model has significant trust concerns."
 
-        issues = []
-        if failed:
-            issues.append(f"{len(failed)} critical issue(s)")
-        if warnings:
-            issues.append(f"{len(warnings)} warning(s)")
-
-        if issues:
-            base += f" Found: {', '.join(issues)}."
+        # Show factor breakdown instead of confusing "critical/warning" language
+        base += f" {len(passed)} of {len(factors)} factors passed."
 
         return base

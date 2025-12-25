@@ -4,9 +4,18 @@
 
 {% block content %}
 <div class="container">
-    <div class="page-header">
-        <h1>🤗 HuggingHugh</h1>
-        <p class="subtitle">Nutrition Labels for AI Models — Know what you're consuming</p>
+    <!-- Hero Section -->
+    <div class="hero-section">
+        <h1 class="hero-headline">The free security dashboard for AI models.</h1>
+        <p class="hero-subtext">
+            We scan the top HuggingFace models daily. Trust scores that penalize pickle files.
+            SBOM reports that enterprise tools charge thousands for. Open methodology. Zero paywall.
+        </p>
+        <div class="hero-badges">
+            <span class="hero-badge">🔒 Security-First Scoring</span>
+            <span class="hero-badge">📋 Free SBOM Reports</span>
+            <span class="hero-badge">🔄 Updated Daily</span>
+        </div>
     </div>
 
     <!-- Summary Stats -->
@@ -29,19 +38,64 @@
         </div>
     </div>
 
-    <!-- Info Banner -->
-    <div class="card" style="margin-bottom: var(--space-xl); background: linear-gradient(135deg, #fff7ed 0%, #fef3c7 100%);">
-        <div class="card-body" style="display: flex; justify-content: space-between; align-items: center;">
-            <div>
-                <h3 style="margin-bottom: var(--space-sm);">What is this?</h3>
-                <p style="color: var(--text-muted); max-width: 600px;">
-                    HuggingHugh provides SBOM (Software Bill of Materials) reports for the top {{ total_models }} most downloaded
-                    models on HuggingFace. Think of it as nutrition facts for AI models — know what dependencies
-                    and vulnerabilities exist before you use them.
-                </p>
-            </div>
-            <a href="https://buymeacoffee.com/hugginghugh" target="_blank" class="btn btn-coffee">
-                ☕ Support this project
+    <!-- Leaderboard -->
+    {% if leaderboard %}
+    <div class="leaderboard-section">
+        <div class="leaderboard-header">
+            <h3 class="leaderboard-title">🏆 Leaderboard</h3>
+            <a href="{{ base_url }}/leaderboard.html" class="view-all-link">View Full Leaderboard →</a>
+        </div>
+        <div class="leaderboard-podium">
+            {% for entry in leaderboard %}
+            <a href="{{ base_url }}/reports/{{ entry.safe_id }}/index.html" class="podium-entry podium-{{ entry.rank }}">
+                <div class="podium-medal">
+                    {% if entry.rank == 1 %}🥇{% elif entry.rank == 2 %}🥈{% else %}🥉{% endif %}
+                </div>
+                <div class="podium-rank">#{{ entry.rank }}</div>
+                <div class="podium-model">{{ entry.model_name }}</div>
+                <div class="podium-author">by {{ entry.author }}</div>
+                <div class="podium-score">{{ entry.trust_score }}/100</div>
+                <div class="podium-meta">
+                    <span class="podium-downloads">{{ entry.downloads_formatted }} downloads</span>
+                    {% if entry.streak_days > 1 %}
+                    <span class="podium-streak">🔥 {{ entry.streak_days }} day streak</span>
+                    {% endif %}
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+        <p class="leaderboard-note">Rankings based on Trust Score. Only models with 1M+ downloads are eligible.</p>
+    </div>
+    {% endif %}
+
+    <!-- Grade Distribution -->
+    <div class="grade-distribution-section">
+        <h3 class="grade-distribution-title">Grade Distribution</h3>
+        <div class="grade-distribution-grid">
+            <a href="{{ base_url }}/grade/a.html" class="grade-card grade-a">
+                <div class="grade-letter">A</div>
+                <div class="grade-count">{{ grade_distribution.A }}</div>
+                <div class="grade-label">Excellent</div>
+            </a>
+            <a href="{{ base_url }}/grade/b.html" class="grade-card grade-b">
+                <div class="grade-letter">B</div>
+                <div class="grade-count">{{ grade_distribution.B }}</div>
+                <div class="grade-label">Good</div>
+            </a>
+            <a href="{{ base_url }}/grade/c.html" class="grade-card grade-c">
+                <div class="grade-letter">C</div>
+                <div class="grade-count">{{ grade_distribution.C }}</div>
+                <div class="grade-label">Moderate</div>
+            </a>
+            <a href="{{ base_url }}/grade/d.html" class="grade-card grade-d">
+                <div class="grade-letter">D</div>
+                <div class="grade-count">{{ grade_distribution.D }}</div>
+                <div class="grade-label">Low</div>
+            </a>
+            <a href="{{ base_url }}/grade/f.html" class="grade-card grade-f">
+                <div class="grade-letter">F</div>
+                <div class="grade-count">{{ grade_distribution.F }}</div>
+                <div class="grade-label">Poor</div>
             </a>
         </div>
     </div>
@@ -49,9 +103,9 @@
     <!-- Model Grid -->
     <h2 style="margin-bottom: var(--space-lg);">Top {{ total_models }} Models by Downloads</h2>
 
-    <div class="model-grid">
+    <div class="model-grid" id="model-grid">
         {% for model in models %}
-        <a href="reports/{{ model.safe_id }}/index.html" class="model-card">
+        <a href="reports/{{ model.safe_id }}/index.html" class="model-card" data-index="{{ loop.index }}">
             <div class="model-card-header">
                 <div class="model-card-title">{{ model.model_name }}</div>
                 <div class="model-card-author">by {{ model.author }}</div>
@@ -94,5 +148,58 @@
         </a>
         {% endfor %}
     </div>
+
+    <!-- Load More Button -->
+    {% if total_models > 20 %}
+    <div class="load-more-container">
+        <button id="load-more-btn" class="btn btn-load-more" data-page-size="20" data-total="{{ total_models }}">
+            Load More Models
+        </button>
+        <p class="load-more-status" id="load-more-status">Showing <span id="shown-count">20</span> of {{ total_models }} models</p>
+    </div>
+    {% endif %}
 </div>
+
+<script>
+(function() {
+    const PAGE_SIZE = 20;
+    const grid = document.getElementById('model-grid');
+    const btn = document.getElementById('load-more-btn');
+    const status = document.getElementById('load-more-status');
+    const shownCount = document.getElementById('shown-count');
+
+    if (!grid || !btn) return;
+
+    const cards = grid.querySelectorAll('.model-card');
+    const total = cards.length;
+    let shown = PAGE_SIZE;
+
+    // Initially hide cards beyond PAGE_SIZE
+    cards.forEach((card, i) => {
+        if (i >= PAGE_SIZE) {
+            card.style.display = 'none';
+        }
+    });
+
+    // Update button visibility
+    function updateUI() {
+        if (shownCount) shownCount.textContent = Math.min(shown, total);
+        if (shown >= total) {
+            btn.style.display = 'none';
+            if (status) status.innerHTML = 'Showing all ' + total + ' models';
+        }
+    }
+
+    updateUI();
+
+    btn.addEventListener('click', function() {
+        const nextBatch = Math.min(shown + PAGE_SIZE, total);
+        for (let i = shown; i < nextBatch; i++) {
+            cards[i].style.display = '';
+        }
+        shown = nextBatch;
+        updateUI();
+    });
+})();
+</script>
 {% endblock %}

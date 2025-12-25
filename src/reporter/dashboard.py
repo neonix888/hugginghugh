@@ -70,12 +70,14 @@ class DashboardGenerator:
     def generate_dashboard(
         self,
         models_data: list[dict[str, Any]],
+        leaderboard: list[dict[str, Any]] = None,
     ) -> Path:
         """
         Generate the main dashboard page.
 
         Args:
             models_data: List of model data dictionaries with scan results
+            leaderboard: Optional top 3 leaderboard data
 
         Returns:
             Path to generated index.html
@@ -96,6 +98,15 @@ class DashboardGenerator:
             if m.get("vulnerabilities", {}).get("summary", {}).get("critical", 0) > 0
             or m.get("vulnerabilities", {}).get("summary", {}).get("high", 0) > 0
         )
+
+        # Calculate grade distribution
+        grade_distribution = {"A": 0, "B": 0, "C": 0, "D": 0, "F": 0}
+        for m in models_data:
+            grade = m.get("trust_grade", "F")
+            if grade in grade_distribution:
+                grade_distribution[grade] += 1
+            else:
+                grade_distribution["F"] += 1  # Unknown grades count as F
 
         # Prepare model cards data
         model_cards = []
@@ -121,6 +132,29 @@ class DashboardGenerator:
         # Sort by downloads (should already be sorted, but ensure)
         model_cards.sort(key=lambda x: x["downloads"], reverse=True)
 
+        # Prepare leaderboard display data
+        leaderboard_display = []
+        if leaderboard:
+            for r in leaderboard:
+                model_id = r.get("model_id", "")
+                # Extract model name from model_id (e.g., "meta-llama/Llama-2" -> "Llama-2")
+                model_name = model_id.split("/")[-1] if "/" in model_id else model_id
+                author = model_id.split("/")[0] if "/" in model_id else "unknown"
+
+                leaderboard_display.append({
+                    "rank": r.get("rank"),
+                    "model_id": model_id,
+                    "model_name": model_name,
+                    "author": author,
+                    "safe_id": model_id.replace("/", "_"),
+                    "trust_score": r.get("trust_score"),
+                    "trust_grade": r.get("trust_grade"),
+                    "downloads": r.get("downloads", 0),
+                    "downloads_formatted": format_number(r.get("downloads", 0)),
+                    "streak_days": r.get("streak_days", 1),
+                    "rank_change": r.get("rank_change", 0),
+                })
+
         # Prepare template context
         context = {
             "base_url": self.base_url,
@@ -129,6 +163,8 @@ class DashboardGenerator:
             "total_vulnerabilities": total_vulns,
             "avg_trust_score": avg_trust,
             "models_with_issues": models_with_issues,
+            "grade_distribution": grade_distribution,
+            "leaderboard": leaderboard_display,
             "models": model_cards,
         }
 
@@ -142,6 +178,105 @@ class DashboardGenerator:
         html_file.write_text(html_content)
 
         logger.info(f"Dashboard generated: {html_file}")
+
+        # Generate grade pages
+        self._generate_grade_pages(model_cards, grade_distribution)
+
+        return html_file
+
+    def _generate_grade_pages(
+        self,
+        model_cards: list[dict[str, Any]],
+        grade_distribution: dict[str, int],
+    ) -> None:
+        """Generate individual pages for each grade."""
+        grade_dir = self.output_dir / "grade"
+        grade_dir.mkdir(parents=True, exist_ok=True)
+
+        grade_descriptions = {
+            "A": "Excellent trust score (80-100)",
+            "B": "Good trust score (70-79)",
+            "C": "Moderate trust score (60-69)",
+            "D": "Low trust score (40-59)",
+            "F": "Poor trust score (0-39)",
+        }
+
+        template = self.env.get_template("grade_page.html")
+
+        for grade in ["A", "B", "C", "D", "F"]:
+            # Filter models by grade
+            grade_models = [m for m in model_cards if m.get("trust_grade") == grade]
+
+            # Sort by downloads
+            grade_models.sort(key=lambda x: x["downloads"], reverse=True)
+
+            context = {
+                "base_url": self.base_url,
+                "grade": grade,
+                "grade_description": grade_descriptions.get(grade, ""),
+                "models": grade_models,
+                "last_updated": datetime.utcnow().strftime("%Y-%m-%d %H:%M UTC"),
+            }
+
+            html_content = template.render(**context)
+            html_file = grade_dir / f"{grade.lower()}.html"
+            html_file.write_text(html_content)
+
+            logger.info(f"Grade {grade} page generated: {html_file} ({len(grade_models)} models)")
+
+    def generate_leaderboard_page(
+        self,
+        rankings: list[dict[str, Any]],
+    ) -> Path:
+        """
+        Generate the full leaderboard page.
+
+        Args:
+            rankings: List of ranked models from the database
+
+        Returns:
+            Path to generated leaderboard.html
+        """
+        logger.info(f"Generating leaderboard page with {len(rankings)} models")
+
+        # Prepare rankings display data
+        rankings_display = []
+        for r in rankings:
+            model_id = r.get("model_id", "")
+            model_name = model_id.split("/")[-1] if "/" in model_id else model_id
+            author = model_id.split("/")[0] if "/" in model_id else "unknown"
+
+            rankings_display.append({
+                "rank": r.get("rank"),
+                "model_id": model_id,
+                "model_name": model_name,
+                "author": author,
+                "safe_id": model_id.replace("/", "_"),
+                "trust_score": r.get("trust_score"),
+                "trust_grade": r.get("trust_grade", "?"),
+                "downloads": r.get("downloads", 0),
+                "downloads_formatted": format_number(r.get("downloads", 0)),
+                "streak_days": r.get("streak_days", 1),
+                "rank_change": r.get("rank_change", 0),
+            })
+
+        # Get eligible count
+        eligible_count = len(rankings_display)
+
+        context = {
+            "base_url": self.base_url,
+            "last_updated": datetime.utcnow().strftime("%Y-%m-%d %H:%M UTC"),
+            "rankings": rankings_display,
+            "eligible_count": eligible_count,
+        }
+
+        template = self.env.get_template("leaderboard.html")
+        html_content = template.render(**context)
+
+        html_file = self.output_dir / "leaderboard.html"
+        html_file.write_text(html_content)
+
+        logger.info(f"Leaderboard page generated: {html_file}")
         return html_file
 
     def generate_api_json(

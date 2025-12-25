@@ -1,0 +1,393 @@
+{
+  "$schema": "http://cyclonedx.org/schema/bom-1.6.schema.json",
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.6",
+  "serialNumber": "urn:uuid:ce944f64-d177-4bb7-913f-52e0c1154779",
+  "version": 1,
+  "metadata": {
+    "timestamp": "2025-12-25T08:26:48.253743Z",
+    "tools": {
+      "components": [
+        {
+          "type": "application",
+          "author": "anchore",
+          "name": "syft",
+          "version": "1.36.0"
+        },
+        {
+          "vendor": "HuggingHugh",
+          "name": "hugginghugh-sbom-generator",
+          "version": "0.1.0"
+        }
+      ]
+    },
+    "component": {
+      "bom-ref": "800f7f8e641a6873",
+      "type": "file",
+      "name": "/tmp/tmp34a4d5sx"
+    }
+  },
+  "components": [
+    {
+      "type": "machine-learning-model",
+      "name": "dropbox-dash/faster-whisper-large-v3-turbo",
+      "version": "0a363e91",
+      "description": "HuggingFace model: dropbox-dash/faster-whisper-large-v3-turbo",
+      "properties": [
+        {
+          "name": "hf:model_id",
+          "value": "dropbox-dash/faster-whisper-large-v3-turbo"
+        },
+        {
+          "name": "hf:author",
+          "value": "dropbox-dash"
+        },
+        {
+          "name": "hf:downloads",
+          "value": "1494012"
+        },
+        {
+          "name": "hf:likes",
+          "value": "50"
+        },
+        {
+          "name": "hf:library",
+          "value": null
+        },
+        {
+          "name": "hf:pipeline_tag",
+          "value": null
+        },
+        {
+          "name": "hf:has_safetensors",
+          "value": "False"
+        },
+        {
+          "name": "hf:has_pickle",
+          "value": "True"
+        },
+        {
+          "name": "hf:total_size_gb",
+          "value": "0.0"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:pypi/huggingface-hub@1.2.3?package-id=078f968c698f9769",
+      "type": "library",
+      "name": "huggingface-hub",
+      "version": "1.2.3",
+      "cpe": "cpe:2.3:a:python-huggingface-hub:python-huggingface-hub:1.2.3:*:*:*:*:*:*:*",
+      "purl": "pkg:pypi/huggingface-hub@1.2.3",
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "python-package-cataloger"
+        },
+        {
+          "name": "syft:package:language",
+          "value": "python"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "python"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "python-pip-requirements-entry"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:python-huggingface-hub:python_huggingface_hub:1.2.3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:python_huggingface_hub:python-huggingface-hub:1.2.3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:python_huggingface_hub:python_huggingface_hub:1.2.3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:python-huggingface:python-huggingface-hub:1.2.3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:python-huggingface:python_huggingface_hub:1.2.3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:python_huggingface:python-huggingface-hub:1.2.3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:python_huggingface:python_huggingface_hub:1.2.3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:huggingface-hub:python-huggingface-hub:1.2.3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:huggingface-hub:python_huggingface_hub:1.2.3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:huggingface_hub:python-huggingface-hub:1.2.3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:huggingface_hub:python_huggingface_hub:1.2.3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:python-huggingface-hub:huggingface-hub:1.2.3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:python-huggingface-hub:huggingface_hub:1.2.3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:python_huggingface_hub:huggingface-hub:1.2.3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:python_huggingface_hub:huggingface_hub:1.2.3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:huggingface:python-huggingface-hub:1.2.3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:huggingface:python_huggingface_hub:1.2.3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:python-huggingface:huggingface-hub:1.2.3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:python-huggingface:huggingface_hub:1.2.3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:python_huggingface:huggingface-hub:1.2.3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:python_huggingface:huggingface_hub:1.2.3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:huggingface-hub:huggingface-hub:1.2.3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:huggingface-hub:huggingface_hub:1.2.3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:huggingface_hub:huggingface-hub:1.2.3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:huggingface_hub:huggingface_hub:1.2.3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:python:python-huggingface-hub:1.2.3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:python:python_huggingface_hub:1.2.3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:huggingface:huggingface-hub:1.2.3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:huggingface:huggingface_hub:1.2.3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:python:huggingface-hub:1.2.3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:python:huggingface_hub:1.2.3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/requirements.txt"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:pypi/torch@2.9.1?package-id=4f63ed079f5ea51f",
+      "type": "library",
+      "name": "torch",
+      "version": "2.9.1",
+      "cpe": "cpe:2.3:a:python-torch:python-torch:2.9.1:*:*:*:*:*:*:*",
+      "purl": "pkg:pypi/torch@2.9.1",
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "python-package-cataloger"
+        },
+        {
+          "name": "syft:package:language",
+          "value": "python"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "python"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "python-pip-requirements-entry"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:python-torch:python_torch:2.9.1:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:python_torch:python-torch:2.9.1:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:python_torch:python_torch:2.9.1:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:python:python-torch:2.9.1:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:python:python_torch:2.9.1:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:python-torch:torch:2.9.1:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:python_torch:torch:2.9.1:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:torch:python-torch:2.9.1:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:torch:python_torch:2.9.1:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:python:torch:2.9.1:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:torch:torch:2.9.1:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/requirements.txt"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:pypi/transformers@4.57.3?package-id=1b39e37033b6e6a3",
+      "type": "library",
+      "name": "transformers",
+      "version": "4.57.3",
+      "cpe": "cpe:2.3:a:python-transformers:python-transformers:4.57.3:*:*:*:*:*:*:*",
+      "purl": "pkg:pypi/transformers@4.57.3",
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "python-package-cataloger"
+        },
+        {
+          "name": "syft:package:language",
+          "value": "python"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "python"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "python-pip-requirements-entry"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:python-transformers:python_transformers:4.57.3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:python_transformers:python-transformers:4.57.3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:python_transformers:python_transformers:4.57.3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:python-transformers:transformers:4.57.3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:python_transformers:transformers:4.57.3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:transformers:python-transformers:4.57.3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:transformers:python_transformers:4.57.3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:python:python-transformers:4.57.3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:python:python_transformers:4.57.3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:transformers:transformers:4.57.3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:python:transformers:4.57.3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/requirements.txt"
+        }
+      ]
+    },
+    {
+      "bom-ref": "26ca2b7dc025d550",
+      "type": "file",
+      "name": "/tmp/tmp34a4d5sx/requirements.txt",
+      "hashes": [
+        {
+          "alg": "SHA-1",
+          "content": "0aa8a534468f7465910fbd8fe8e6a9f2737bc307"
+        },
+        {
+          "alg": "SHA-256",
+          "content": "4bced9ec3110e19eed1f8f6127d2a4f5b2dc4d5bdb061ba154fb85c123817355"
+        }
+      ]
+    }
+  ]
+}

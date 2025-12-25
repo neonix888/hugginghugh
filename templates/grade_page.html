@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+
+{% block title %}Grade {{ grade }} Models - HuggingHugh{% endblock %}
+
+{% block content %}
+<div class="container">
+    <a href="{{ base_url }}/" class="back-link">← Back to Dashboard</a>
+
+    <div class="grade-page-header">
+        <div class="grade-page-badge grade-{{ grade|lower }}">{{ grade }}</div>
+        <div class="grade-page-info">
+            <h1>Grade {{ grade }} Models</h1>
+            <p>{{ grade_description }} — {{ models|length }} model{% if models|length != 1 %}s{% endif %}</p>
+        </div>
+    </div>
+
+    {% if models|length == 0 %}
+    <div class="card" style="text-align: center; padding: var(--space-2xl);">
+        <p style="color: var(--text-muted); font-size: 1.125rem;">No models with grade {{ grade }} yet.</p>
+        <p style="color: var(--text-muted);">This is actually good news for grade F!</p>
+    </div>
+    {% else %}
+    <div class="model-grid" id="model-grid">
+        {% for model in models %}
+        <a href="{{ base_url }}/reports/{{ model.safe_id }}/index.html" class="model-card" data-index="{{ loop.index }}">
+            <div class="model-card-header">
+                <div class="model-card-title">{{ model.model_name }}</div>
+                <div class="model-card-author">by {{ model.author }}</div>
+            </div>
+            <div class="model-card-body">
+                <div class="model-card-stats">
+                    <div class="stat">
+                        <span class="stat-value">{{ model.downloads_formatted }}</span>
+                        <span class="stat-label">Downloads</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-value">{{ model.likes_formatted }}</span>
+                        <span class="stat-label">Likes</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-value">{{ model.vuln_count }}</span>
+                        <span class="stat-label">CVEs</span>
+                    </div>
+                </div>
+                <div>
+                    {% if model.pipeline_tag %}
+                    <span class="tag tag-primary">{{ model.pipeline_tag }}</span>
+                    {% endif %}
+                    {% if model.has_safetensors %}
+                    <span class="tag" style="background: #dcfce7; color: #166534;">✓ SafeTensors</span>
+                    {% endif %}
+                    {% if model.library_name %}
+                    <span class="tag">{{ model.library_name }}</span>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="model-card-footer">
+                <span class="trust-score trust-score-{{ model.trust_grade_class }}">
+                    Trust: {{ model.trust_score }}/100 ({{ model.trust_grade }})
+                </span>
+                <span style="color: var(--text-muted); font-size: 0.875rem;">
+                    View Report →
+                </span>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+
+    <!-- Load More Button -->
+    {% if models|length > 20 %}
+    <div class="load-more-container">
+        <button id="load-more-btn" class="btn btn-load-more">
+            Load More Models
+        </button>
+        <p class="load-more-status" id="load-more-status">Showing <span id="shown-count">20</span> of {{ models|length }} models</p>
+    </div>
+    {% endif %}
+    {% endif %}
+</div>
+
+<script>
+(function() {
+    const PAGE_SIZE = 20;
+    const grid = document.getElementById('model-grid');
+    const btn = document.getElementById('load-more-btn');
+    const status = document.getElementById('load-more-status');
+    const shownCount = document.getElementById('shown-count');
+
+    if (!grid || !btn) return;
+
+    const cards = grid.querySelectorAll('.model-card');
+    const total = cards.length;
+    let shown = PAGE_SIZE;
+
+    // Initially hide cards beyond PAGE_SIZE
+    cards.forEach((card, i) => {
+        if (i >= PAGE_SIZE) {
+            card.style.display = 'none';
+        }
+    });
+
+    // Update button visibility
+    function updateUI() {
+        if (shownCount) shownCount.textContent = Math.min(shown, total);
+        if (shown >= total) {
+            btn.style.display = 'none';
+            if (status) status.innerHTML = 'Showing all ' + total + ' models';
+        }
+    }
+
+    updateUI();
+
+    btn.addEventListener('click', function() {
+        const nextBatch = Math.min(shown + PAGE_SIZE, total);
+        for (let i = shown; i < nextBatch; i++) {
+            cards[i].style.display = '';
+        }
+        shown = nextBatch;
+        updateUI();
+    });
+})();
+</script>
+{% endblock %}

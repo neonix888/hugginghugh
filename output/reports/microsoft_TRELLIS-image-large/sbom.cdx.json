@@ -1,0 +1,319 @@
+{
+  "$schema": "http://cyclonedx.org/schema/bom-1.6.schema.json",
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.6",
+  "serialNumber": "urn:uuid:73d7be9b-57bd-4883-8011-9576c891ae58",
+  "version": 1,
+  "metadata": {
+    "timestamp": "2025-12-25T09:08:50.392150Z",
+    "tools": {
+      "components": [
+        {
+          "type": "application",
+          "author": "anchore",
+          "name": "syft",
+          "version": "1.36.0"
+        },
+        {
+          "vendor": "HuggingHugh",
+          "name": "hugginghugh-sbom-generator",
+          "version": "0.1.0"
+        }
+      ]
+    },
+    "component": {
+      "bom-ref": "acfb4eb28002122d",
+      "type": "file",
+      "name": "/tmp/tmp73w77pg8"
+    }
+  },
+  "components": [
+    {
+      "type": "machine-learning-model",
+      "name": "microsoft/TRELLIS-image-large",
+      "version": "25e0d31f",
+      "description": "HuggingFace model: microsoft/TRELLIS-image-large",
+      "properties": [
+        {
+          "name": "hf:model_id",
+          "value": "microsoft/TRELLIS-image-large"
+        },
+        {
+          "name": "hf:author",
+          "value": "microsoft"
+        },
+        {
+          "name": "hf:downloads",
+          "value": "2503291"
+        },
+        {
+          "name": "hf:likes",
+          "value": "605"
+        },
+        {
+          "name": "hf:library",
+          "value": "trellis"
+        },
+        {
+          "name": "hf:pipeline_tag",
+          "value": "image-to-3d"
+        },
+        {
+          "name": "hf:has_safetensors",
+          "value": "True"
+        },
+        {
+          "name": "hf:has_pickle",
+          "value": "False"
+        },
+        {
+          "name": "hf:total_size_gb",
+          "value": "0.0"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:pypi/huggingface-hub@1.2.3?package-id=078f968c698f9769",
+      "type": "library",
+      "name": "huggingface-hub",
+      "version": "1.2.3",
+      "cpe": "cpe:2.3:a:python-huggingface-hub:python-huggingface-hub:1.2.3:*:*:*:*:*:*:*",
+      "purl": "pkg:pypi/huggingface-hub@1.2.3",
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "python-package-cataloger"
+        },
+        {
+          "name": "syft:package:language",
+          "value": "python"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "python"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "python-pip-requirements-entry"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:python-huggingface-hub:python_huggingface_hub:1.2.3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:python_huggingface_hub:python-huggingface-hub:1.2.3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:python_huggingface_hub:python_huggingface_hub:1.2.3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:python-huggingface:python-huggingface-hub:1.2.3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:python-huggingface:python_huggingface_hub:1.2.3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:python_huggingface:python-huggingface-hub:1.2.3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:python_huggingface:python_huggingface_hub:1.2.3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:huggingface-hub:python-huggingface-hub:1.2.3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:huggingface-hub:python_huggingface_hub:1.2.3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:huggingface_hub:python-huggingface-hub:1.2.3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:huggingface_hub:python_huggingface_hub:1.2.3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:python-huggingface-hub:huggingface-hub:1.2.3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:python-huggingface-hub:huggingface_hub:1.2.3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:python_huggingface_hub:huggingface-hub:1.2.3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:python_huggingface_hub:huggingface_hub:1.2.3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:huggingface:python-huggingface-hub:1.2.3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:huggingface:python_huggingface_hub:1.2.3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:python-huggingface:huggingface-hub:1.2.3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:python-huggingface:huggingface_hub:1.2.3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:python_huggingface:huggingface-hub:1.2.3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:python_huggingface:huggingface_hub:1.2.3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:huggingface-hub:huggingface-hub:1.2.3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:huggingface-hub:huggingface_hub:1.2.3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:huggingface_hub:huggingface-hub:1.2.3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:huggingface_hub:huggingface_hub:1.2.3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:python:python-huggingface-hub:1.2.3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:python:python_huggingface_hub:1.2.3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:huggingface:huggingface-hub:1.2.3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:huggingface:huggingface_hub:1.2.3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:python:huggingface-hub:1.2.3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:python:huggingface_hub:1.2.3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/requirements.txt"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:pypi/trellis@0.7a2?package-id=d0ba66942cc1b897",
+      "type": "library",
+      "name": "trellis",
+      "version": "0.7a2",
+      "cpe": "cpe:2.3:a:python-trellis:python-trellis:0.7a2:*:*:*:*:*:*:*",
+      "purl": "pkg:pypi/trellis@0.7a2",
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "python-package-cataloger"
+        },
+        {
+          "name": "syft:package:language",
+          "value": "python"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "python"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "python-pip-requirements-entry"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:python-trellis:python_trellis:0.7a2:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:python_trellis:python-trellis:0.7a2:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:python_trellis:python_trellis:0.7a2:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:python-trellis:trellis:0.7a2:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:python_trellis:trellis:0.7a2:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:trellis:python-trellis:0.7a2:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:trellis:python_trellis:0.7a2:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:python:python-trellis:0.7a2:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:python:python_trellis:0.7a2:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:trellis:trellis:0.7a2:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:python:trellis:0.7a2:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/requirements.txt"
+        }
+      ]
+    },
+    {
+      "bom-ref": "26ca2b7dc025d550",
+      "type": "file",
+      "name": "/tmp/tmp73w77pg8/requirements.txt",
+      "hashes": [
+        {
+          "alg": "SHA-1",
+          "content": "b9dd48ba928ab6e146516ac4fb4412af4b2a561d"
+        },
+        {
+          "alg": "SHA-256",
+          "content": "d4e8e655d75374e56d113d7176b1c0d58d932feb005e92850d51329a3ea7066e"
+        }
+      ]
+    }
+  ]
+}

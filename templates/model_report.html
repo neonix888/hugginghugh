@@ -104,7 +104,13 @@
                     </div>
                     {% for factor in trust_score.factors %}
                     <div class="nutrition-row">
-                        <span class="label">{{ factor.name }}</span>
+                        <span class="label">
+                            {{ factor.name }}
+                            <span class="tooltip-trigger" data-tooltip="{{ factor.tooltip }}">
+                                <span class="tooltip-icon">?</span>
+                                <span class="tooltip-content">{{ factor.tooltip }}</span>
+                            </span>
+                        </span>
                         <span class="value status-{{ factor.status }}">
                             {% if factor.status == 'pass' %}✓{% elif factor.status == 'warn' %}⚠{% else %}✗{% endif %}
                             {{ factor.points|round(1) }}/{{ factor.weight }}
@@ -197,6 +203,41 @@
             </div>
         </div>
         {% endif %}
+
+        <!-- Environment Checklist - Recommended Versions -->
+        {% if vulnerabilities.minimum_safe_versions %}
+        <div class="card" style="margin-top: var(--space-lg); border-left: 4px solid var(--primary); background: linear-gradient(135deg, #f0f9ff 0%, #ffffff 100%);">
+            <div class="card-header">
+                <h3 style="display: flex; align-items: center; gap: var(--space-sm);">
+                    <span style="font-size: 1.25rem;">📋</span> Environment Checklist
+                </h3>
+                <p style="color: var(--text-muted); margin-top: var(--space-xs);">
+                    The model's dependencies use current versions. For your own environment,
+                    ensure these packages meet the recommended minimums.
+                </p>
+            </div>
+            <div class="card-body">
+                <div style="display: grid; gap: var(--space-sm);">
+                    {% for pkg, info in vulnerabilities.minimum_safe_versions.items() %}
+                    <div style="display: flex; align-items: center; padding: var(--space-sm) var(--space-md); background: white; border-radius: var(--radius-md); border: 1px solid var(--border);">
+                        <code style="font-weight: 600; min-width: 120px;">{{ pkg }}</code>
+                        <span style="color: var(--text-muted); margin: 0 var(--space-sm);">≥</span>
+                        <span style="font-weight: 500; color: var(--primary);">{{ info.min_version }}</span>
+                        <span style="margin-left: auto; font-size: 0.8rem; color: var(--text-muted);">
+                            <a href="https://nvd.nist.gov/vuln/detail/{{ info.cve_id }}" target="_blank" style="color: var(--text-muted); text-decoration: none;">
+                                {{ info.cve_id }} ↗
+                            </a>
+                        </span>
+                    </div>
+                    {% endfor %}
+                </div>
+                <p style="margin-top: var(--space-md); padding: var(--space-md); background: white; border-radius: var(--radius-md); color: var(--text-muted); font-size: 0.875rem;">
+                    <strong>Quick check:</strong>
+                    <code style="background: var(--background); padding: 2px 6px; border-radius: 4px; font-size: 0.8rem;">pip list | grep -E "torch|transformers|pillow|numpy|requests|scipy"</code>
+                </p>
+            </div>
+        </div>
+        {% endif %}
     </div>
 
     <!-- License Information -->
@@ -267,17 +308,5 @@
         </div>
     </div>
 
-    <!-- Support Banner -->
-    <div class="card" style="background: linear-gradient(135deg, #fef3c7 0%, #fff7ed 100%); margin-top: var(--space-2xl);">
-        <div class="card-body" style="text-align: center; padding: var(--space-2xl);">
-            <h3 style="margin-bottom: var(--space-md);">Found this helpful?</h3>
-            <p style="color: var(--text-muted); margin-bottom: var(--space-lg); max-width: 500px; margin-left: auto; margin-right: auto;">
-                HuggingHugh is a free community resource. If you find it useful, consider supporting the project!
-            </p>
-            <a href="https://buymeacoffee.com/hugginghugh" target="_blank" class="btn btn-coffee" style="font-size: 1.125rem; padding: var(--space-md) var(--space-xl);">
-                ☕ Buy me a coffee
-            </a>
-        </div>
-    </div>
 </div>
 {% endblock %}

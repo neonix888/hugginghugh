@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}HuggingHugh{% endblock %}</title>
     <meta name="description" content="{% block description %}Nutrition Labels for AI Models - SBOM Dashboard for HuggingFace Models{% endblock %}">
-    <link rel="stylesheet" href="{{ base_url }}/static/css/style.css">
+    <link rel="stylesheet" href="{{ base_url }}/static/css/style.css?v=8">
     {% block head %}{% endblock %}
 </head>
 <body>
@@ -18,6 +18,7 @@
                 </a>
                 <nav class="main-nav">
                     <a href="{{ base_url }}/">Dashboard</a>
+                    <a href="{{ base_url }}/leaderboard.html">Leaderboard</a>
                     <a href="{{ base_url }}/about.html">About</a>
                     <a href="https://buymeacoffee.com/hugginghugh" target="_blank" class="btn btn-coffee">
                         ☕ Buy me a coffee
@@ -30,6 +31,23 @@
     <main class="main-content">
         {% block content %}{% endblock %}
     </main>
+
+    <!-- Support Card - appears on every page -->
+    <section class="support-section">
+        <div class="container">
+            <div class="support-card">
+                <div class="support-content">
+                    <h3 class="support-title">Real talk: I built this alone.</h3>
+                    <p class="support-text">
+                        Enterprise security audits cost thousands. HuggingHugh is free because AI security should be accessible. No VC funding. No sponsors. Just one developer and cà phê sữa đá. $5 keeps the daily scans running.
+                    </p>
+                </div>
+                <a href="https://buymeacoffee.com/hugginghugh" target="_blank" class="btn btn-support">
+                    ☕ Keep it running
+                </a>
+            </div>
+        </div>
+    </section>
 
     <footer class="site-footer">
         <div class="container">

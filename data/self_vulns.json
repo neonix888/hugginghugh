@@ -1,0 +1,2547 @@
+{
+  "matches": [
+    {
+      "vulnerability": {
+        "id": "GHSA-53q9-r3pm-6pq6",
+        "dataSource": "https://github.com/advisories/GHSA-53q9-r3pm-6pq6",
+        "namespace": "github:language:python",
+        "severity": "Critical",
+        "urls": [],
+        "description": "PyTorch: `torch.load` with `weights_only=True` leads to remote code execution",
+        "cvss": [],
+        "epss": [
+          {
+            "cve": "CVE-2025-32434",
+            "epss": 0.00345,
+            "percentile": 0.56554,
+            "date": "2025-12-24"
+          }
+        ],
+        "cwes": [
+          {
+            "cve": "CVE-2025-32434",
+            "cwe": "CWE-502",
+            "source": "security-advisories@github.com",
+            "type": "Secondary"
+          }
+        ],
+        "fix": {
+          "versions": [
+            "2.6.0"
+          ],
+          "state": "fixed",
+          "available": [
+            {
+              "version": "2.6.0",
+              "date": "2025-04-19",
+              "kind": "first-observed"
+            }
+          ]
+        },
+        "advisories": [],
+        "risk": 0.3105
+      },
+      "relatedVulnerabilities": [
+        {
+          "id": "CVE-2025-32434",
+          "dataSource": "https://nvd.nist.gov/vuln/detail/CVE-2025-32434",
+          "namespace": "nvd:cpe",
+          "severity": "Critical",
+          "urls": [
+            "https://github.com/pytorch/pytorch/security/advisories/GHSA-53q9-r3pm-6pq6",
+            "https://lists.debian.org/debian-lts-announce/2025/12/msg00000.html"
+          ],
+          "description": "PyTorch is a Python package that provides tensor computation with strong GPU acceleration and deep neural networks built on a tape-based autograd system. In version 2.5.1 and prior, a Remote Command Execution (RCE) vulnerability exists in PyTorch when loading a model using torch.load with weights_only=True. This issue has been patched in version 2.6.0.",
+          "cvss": [
+            {
+              "source": "nvd@nist.gov",
+              "type": "Primary",
+              "version": "3.1",
+              "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+              "metrics": {
+                "baseScore": 9.8,
+                "exploitabilityScore": 3.9,
+                "impactScore": 5.9
+              },
+              "vendorMetadata": {}
+            },
+            {
+              "source": "security-advisories@github.com",
+              "type": "Secondary",
+              "version": "4.0",
+              "vector": "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:H/VI:H/VA:H/SC:N/SI:N/SA:N/E:X/CR:X/IR:X/AR:X/MAV:X/MAC:X/MAT:X/MPR:X/MUI:X/MVC:X/MVI:X/MVA:X/MSC:X/MSI:X/MSA:X/S:X/AU:X/R:X/V:X/RE:X/U:X",
+              "metrics": {
+                "baseScore": 9.3
+              },
+              "vendorMetadata": {}
+            }
+          ],
+          "epss": [
+            {
+              "cve": "CVE-2025-32434",
+              "epss": 0.00345,
+              "percentile": 0.56554,
+              "date": "2025-12-24"
+            }
+          ],
+          "cwes": [
+            {
+              "cve": "CVE-2025-32434",
+              "cwe": "CWE-502",
+              "source": "security-advisories@github.com",
+              "type": "Secondary"
+            }
+          ]
+        }
+      ],
+      "matchDetails": [
+        {
+          "type": "exact-direct-match",
+          "matcher": "python-matcher",
+          "searchedBy": {
+            "language": "python",
+            "namespace": "github:language:python",
+            "package": {
+              "name": "torch",
+              "version": "2.5.1"
+            }
+          },
+          "found": {
+            "vulnerabilityID": "GHSA-53q9-r3pm-6pq6",
+            "versionConstraint": "<2.6.0 (python)"
+          },
+          "fix": {
+            "suggestedVersion": "2.6.0"
+          }
+        }
+      ],
+      "artifact": {
+        "id": "pkg:pypi/torch@2.5.1?package-id=e5c113beceb31f61",
+        "name": "torch",
+        "version": "2.5.1",
+        "type": "python",
+        "locations": [
+          {
+            "path": "/data/models/ZhengPeng7_BiRefNet/requirements.txt",
+            "accessPath": ""
+          }
+        ],
+        "language": "python",
+        "licenses": [],
+        "cpes": [
+          "cpe:2.3:a:python-torch:python-torch:2.5.1:*:*:*:*:*:*:*",
+          "cpe:2.3:a:python-torch:python_torch:2.5.1:*:*:*:*:*:*:*",
+          "cpe:2.3:a:python_torch:python-torch:2.5.1:*:*:*:*:*:*:*",
+          "cpe:2.3:a:python_torch:python_torch:2.5.1:*:*:*:*:*:*:*",
+          "cpe:2.3:a:python:python-torch:2.5.1:*:*:*:*:*:*:*",
+          "cpe:2.3:a:python:python_torch:2.5.1:*:*:*:*:*:*:*",
+          "cpe:2.3:a:python-torch:torch:2.5.1:*:*:*:*:*:*:*",
+          "cpe:2.3:a:python_torch:torch:2.5.1:*:*:*:*:*:*:*",
+          "cpe:2.3:a:torch:python-torch:2.5.1:*:*:*:*:*:*:*",
+          "cpe:2.3:a:torch:python_torch:2.5.1:*:*:*:*:*:*:*",
+          "cpe:2.3:a:python:torch:2.5.1:*:*:*:*:*:*:*",
+          "cpe:2.3:a:torch:torch:2.5.1:*:*:*:*:*:*:*"
+        ],
+        "purl": "pkg:pypi/torch@2.5.1",
+        "upstreams": []
+      }
+    },
+    {
+      "vulnerability": {
+        "id": "GHSA-53q9-r3pm-6pq6",
+        "dataSource": "https://github.com/advisories/GHSA-53q9-r3pm-6pq6",
+        "namespace": "github:language:python",
+        "severity": "Critical",
+        "urls": [],
+        "description": "PyTorch: `torch.load` with `weights_only=True` leads to remote code execution",
+        "cvss": [],
+        "epss": [
+          {
+            "cve": "CVE-2025-32434",
+            "epss": 0.00345,
+            "percentile": 0.56554,
+            "date": "2025-12-24"
+          }
+        ],
+        "cwes": [
+          {
+            "cve": "CVE-2025-32434",
+            "cwe": "CWE-502",
+            "source": "security-advisories@github.com",
+            "type": "Secondary"
+          }
+        ],
+        "fix": {
+          "versions": [
+            "2.6.0"
+          ],
+          "state": "fixed",
+          "available": [
+            {
+              "version": "2.6.0",
+              "date": "2025-04-19",
+              "kind": "first-observed"
+            }
+          ]
+        },
+        "advisories": [],
+        "risk": 0.3105
+      },
+      "relatedVulnerabilities": [
+        {
+          "id": "CVE-2025-32434",
+          "dataSource": "https://nvd.nist.gov/vuln/detail/CVE-2025-32434",
+          "namespace": "nvd:cpe",
+          "severity": "Critical",
+          "urls": [
+            "https://github.com/pytorch/pytorch/security/advisories/GHSA-53q9-r3pm-6pq6",
+            "https://lists.debian.org/debian-lts-announce/2025/12/msg00000.html"
+          ],
+          "description": "PyTorch is a Python package that provides tensor computation with strong GPU acceleration and deep neural networks built on a tape-based autograd system. In version 2.5.1 and prior, a Remote Command Execution (RCE) vulnerability exists in PyTorch when loading a model using torch.load with weights_only=True. This issue has been patched in version 2.6.0.",
+          "cvss": [
+            {
+              "source": "nvd@nist.gov",
+              "type": "Primary",
+              "version": "3.1",
+              "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+              "metrics": {
+                "baseScore": 9.8,
+                "exploitabilityScore": 3.9,
+                "impactScore": 5.9
+              },
+              "vendorMetadata": {}
+            },
+            {
+              "source": "security-advisories@github.com",
+              "type": "Secondary",
+              "version": "4.0",
+              "vector": "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:H/VI:H/VA:H/SC:N/SI:N/SA:N/E:X/CR:X/IR:X/AR:X/MAV:X/MAC:X/MAT:X/MPR:X/MUI:X/MVC:X/MVI:X/MVA:X/MSC:X/MSI:X/MSA:X/S:X/AU:X/R:X/V:X/RE:X/U:X",
+              "metrics": {
+                "baseScore": 9.3
+              },
+              "vendorMetadata": {}
+            }
+          ],
+          "epss": [
+            {
+              "cve": "CVE-2025-32434",
+              "epss": 0.00345,
+              "percentile": 0.56554,
+              "date": "2025-12-24"
+            }
+          ],
+          "cwes": [
+            {
+              "cve": "CVE-2025-32434",
+              "cwe": "CWE-502",
+              "source": "security-advisories@github.com",
+              "type": "Secondary"
+            }
+          ]
+        }
+      ],
+      "matchDetails": [
+        {
+          "type": "exact-direct-match",
+          "matcher": "python-matcher",
+          "searchedBy": {
+            "language": "python",
+            "namespace": "github:language:python",
+            "package": {
+              "name": "torch",
+              "version": "2.5.1"
+            }
+          },
+          "found": {
+            "vulnerabilityID": "GHSA-53q9-r3pm-6pq6",
+            "versionConstraint": "<2.6.0 (python)"
+          },
+          "fix": {
+            "suggestedVersion": "2.6.0"
+          }
+        }
+      ],
+      "artifact": {
+        "id": "pkg:pypi/torch@2.5.1?package-id=a4826424000209ba",
+        "name": "torch",
+        "version": "2.5.1",
+        "type": "python",
+        "locations": [
+          {
+            "path": "/data/models/iitolstykh_mivolo_v2/requirements.txt",
+            "accessPath": ""
+          }
+        ],
+        "language": "python",
+        "licenses": [],
+        "cpes": [
+          "cpe:2.3:a:python-torch:python-torch:2.5.1:*:*:*:*:*:*:*",
+          "cpe:2.3:a:python-torch:python_torch:2.5.1:*:*:*:*:*:*:*",
+          "cpe:2.3:a:python_torch:python-torch:2.5.1:*:*:*:*:*:*:*",
+          "cpe:2.3:a:python_torch:python_torch:2.5.1:*:*:*:*:*:*:*",
+          "cpe:2.3:a:python:python-torch:2.5.1:*:*:*:*:*:*:*",
+          "cpe:2.3:a:python:python_torch:2.5.1:*:*:*:*:*:*:*",
+          "cpe:2.3:a:python-torch:torch:2.5.1:*:*:*:*:*:*:*",
+          "cpe:2.3:a:python_torch:torch:2.5.1:*:*:*:*:*:*:*",
+          "cpe:2.3:a:torch:python-torch:2.5.1:*:*:*:*:*:*:*",
+          "cpe:2.3:a:torch:python_torch:2.5.1:*:*:*:*:*:*:*",
+          "cpe:2.3:a:python:torch:2.5.1:*:*:*:*:*:*:*",
+          "cpe:2.3:a:torch:torch:2.5.1:*:*:*:*:*:*:*"
+        ],
+        "purl": "pkg:pypi/torch@2.5.1",
+        "upstreams": []
+      }
+    },
+    {
+      "vulnerability": {
+        "id": "GHSA-9356-575x-2w9m",
+        "dataSource": "https://github.com/advisories/GHSA-9356-575x-2w9m",
+        "namespace": "github:language:python",
+        "severity": "Medium",
+        "urls": [],
+        "description": "Hugging Face Transformers Regular Expression Denial of Service (ReDoS) vulnerability",
+        "cvss": [
+          {
+            "type": "Secondary",
+            "version": "3.0",
+            "vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:L",
+            "metrics": {
+              "baseScore": 5.3,
+              "exploitabilityScore": 3.9,
+              "impactScore": 1.5
+            },
+            "vendorMetadata": {}
+          }
+        ],
+        "epss": [
+          {
+            "cve": "CVE-2025-5197",
+            "epss": 0.00171,
+            "percentile": 0.38839,
+            "date": "2025-12-24"
+          }
+        ],
+        "cwes": [
+          {
+            "cve": "CVE-2025-5197",
+            "cwe": "CWE-1333",
+            "source": "security@huntr.dev",
+            "type": "Secondary"
+          }
+        ],
+        "fix": {
+          "versions": [
+            "4.53.0"
+          ],
+          "state": "fixed",
+          "available": [
+            {
+              "version": "4.53.0",
+              "date": "2025-08-07",
+              "kind": "first-observed"
+            }
+          ]
+        },
+        "advisories": [],
+        "risk": 0.08806499999999999
+      },
+      "relatedVulnerabilities": [
+        {
+          "id": "CVE-2025-5197",
+          "dataSource": "https://nvd.nist.gov/vuln/detail/CVE-2025-5197",
+          "namespace": "nvd:cpe",
+          "severity": "Medium",
+          "urls": [
+            "https://github.com/huggingface/transformers/commit/944b56000be5e9b61af8301aa340838770ad8a0b",
+            "https://huntr.com/bounties/3f8b3fd0-166b-46e7-b60f-60dd9d2678bf"
+          ],
+          "description": "A Regular Expression Denial of Service (ReDoS) vulnerability exists in the Hugging Face Transformers library, specifically in the `convert_tf_weight_name_to_pt_weight_name()` function. This function, responsible for converting TensorFlow weight names to PyTorch format, uses a regex pattern `/[^/]*___([^/]*)/` that can be exploited to cause excessive CPU consumption through crafted input strings due to catastrophic backtracking. The vulnerability affects versions up to 4.51.3 and is fixed in version 4.53.0. This issue can lead to service disruption, resource exhaustion, and potential API service vulnerabilities, impacting model conversion processes between TensorFlow and PyTorch formats.",
+          "cvss": [
+            {
+              "source": "security@huntr.dev",
+              "type": "Secondary",
+              "version": "3.0",
+              "vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:L",
+              "metrics": {
+                "baseScore": 5.3,
+                "exploitabilityScore": 3.9,
+                "impactScore": 1.5
+              },
+              "vendorMetadata": {}
+            }
+          ],
+          "epss": [
+            {
+              "cve": "CVE-2025-5197",
+              "epss": 0.00171,
+              "percentile": 0.38839,
+              "date": "2025-12-24"
+            }
+          ],
+          "cwes": [
+            {
+              "cve": "CVE-2025-5197",
+              "cwe": "CWE-1333",
+              "source": "security@huntr.dev",
+              "type": "Secondary"
+            }
+          ]
+        }
+      ],
+      "matchDetails": [
+        {
+          "type": "exact-direct-match",
+          "matcher": "python-matcher",
+          "searchedBy": {
+            "language": "python",
+            "namespace": "github:language:python",
+            "package": {
+              "name": "transformers",
+              "version": "4.51.0"
+            }
+          },
+          "found": {
+            "vulnerabilityID": "GHSA-9356-575x-2w9m",
+            "versionConstraint": "<4.53.0 (python)"
+          },
+          "fix": {
+            "suggestedVersion": "4.53.0"
+          }
+        }
+      ],
+      "artifact": {
+        "id": "pkg:pypi/transformers@4.51.0?package-id=eedd8f649977e6fe",
+        "name": "transformers",
+        "version": "4.51.0",
+        "type": "python",
+        "locations": [
+          {
+            "path": "/data/models/iitolstykh_mivolo_v2/requirements.txt",
+            "accessPath": ""
+          }
+        ],
+        "language": "python",
+        "licenses": [],
+        "cpes": [
+          "cpe:2.3:a:python-transformers:python-transformers:4.51.0:*:*:*:*:*:*:*",
+          "cpe:2.3:a:python-transformers:python_transformers:4.51.0:*:*:*:*:*:*:*",
+          "cpe:2.3:a:python_transformers:python-transformers:4.51.0:*:*:*:*:*:*:*",
+          "cpe:2.3:a:python_transformers:python_transformers:4.51.0:*:*:*:*:*:*:*",
+          "cpe:2.3:a:python-transformers:transformers:4.51.0:*:*:*:*:*:*:*",
+          "cpe:2.3:a:python_transformers:transformers:4.51.0:*:*:*:*:*:*:*",
+          "cpe:2.3:a:transformers:python-transformers:4.51.0:*:*:*:*:*:*:*",
+          "cpe:2.3:a:transformers:python_transformers:4.51.0:*:*:*:*:*:*:*",
+          "cpe:2.3:a:python:python-transformers:4.51.0:*:*:*:*:*:*:*",
+          "cpe:2.3:a:python:python_transformers:4.51.0:*:*:*:*:*:*:*",
+          "cpe:2.3:a:transformers:transformers:4.51.0:*:*:*:*:*:*:*",
+          "cpe:2.3:a:python:transformers:4.51.0:*:*:*:*:*:*:*"
+        ],
+        "purl": "pkg:pypi/transformers@4.51.0",
+        "upstreams": []
+      }
+    },
+    {
+      "vulnerability": {
+        "id": "GHSA-37mw-44qp-f5jm",
+        "dataSource": "https://github.com/advisories/GHSA-37mw-44qp-f5jm",
+        "namespace": "github:language:python",
+        "severity": "Medium",
+        "urls": [],
+        "description": "Transformers is vulnerable to ReDoS attack through its DonutProcessor class",
+        "cvss": [
+          {
+            "type": "Secondary",
+            "version": "3.1",
+            "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:L",
+            "metrics": {
+              "baseScore": 5.3,
+              "exploitabilityScore": 3.9,
+              "impactScore": 1.5
+            },
+            "vendorMetadata": {}
+          }
+        ],
+        "epss": [
+          {
+            "cve": "CVE-2025-3933",
+            "epss": 0.00108,
+            "percentile": 0.29777,
+            "date": "2025-12-24"
+          }
+        ],
+        "cwes": [
+          {
+            "cve": "CVE-2025-3933",
+            "cwe": "CWE-1333",
+            "source": "security@huntr.dev",
+            "type": "Primary"
+          }
+        ],
+        "fix": {
+          "versions": [
+            "4.52.1"
+          ],
+          "state": "fixed",
+          "available": [
+            {
+              "version": "4.52.1",
+              "date": "2025-07-12",
+              "kind": "first-observed"
+            }
+          ]
+        },
+        "advisories": [],
+        "risk": 0.05562000000000001
+      },
+      "relatedVulnerabilities": [
+        {
+          "id": "CVE-2025-3933",
+          "dataSource": "https://nvd.nist.gov/vuln/detail/CVE-2025-3933",
+          "namespace": "nvd:cpe",
+          "severity": "Medium",
+          "urls": [
+            "https://github.com/huggingface/transformers/commit/ebbe9b12dd75b69f92100d684c47f923ee262a93",
+            "https://huntr.com/bounties/25282953-5827-4384-bb6f-5790d275721b"
+          ],
+          "description": "A Regular Expression Denial of Service (ReDoS) vulnerability was discovered in the Hugging Face Transformers library, specifically within the DonutProcessor class's `token2json()` method. This vulnerability affects versions 4.50.3 and earlier, and is fixed in version 4.52.1. The issue arises from the regex pattern `<s_(.*?)>` which can be exploited to cause excessive CPU consumption through crafted input strings due to catastrophic backtracking. This vulnerability can lead to service disruption, resource exhaustion, and potential API service vulnerabilities, impacting document processing tasks using the Donut model.",
+          "cvss": [
+            {
+              "source": "nvd@nist.gov",
+              "type": "Primary",
+              "version": "3.1",
+              "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:L",
+              "metrics": {
+                "baseScore": 5.3,
+                "exploitabilityScore": 3.9,
+                "impactScore": 1.5
+              },
+              "vendorMetadata": {}
+            },
+            {
+              "source": "security@huntr.dev",
+              "type": "Secondary",
+              "version": "3.0",
+              "vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:L",
+              "metrics": {
+                "baseScore": 5.3,
+                "exploitabilityScore": 3.9,
+                "impactScore": 1.5
+              },
+              "vendorMetadata": {}
+            }
+          ],
+          "epss": [
+            {
+              "cve": "CVE-2025-3933",
+              "epss": 0.00108,
+              "percentile": 0.29777,
+              "date": "2025-12-24"
+            }
+          ],
+          "cwes": [
+            {
+              "cve": "CVE-2025-3933",
+              "cwe": "CWE-1333",
+              "source": "security@huntr.dev",
+              "type": "Primary"
+            }
+          ]
+        }
+      ],
+      "matchDetails": [
+        {
+          "type": "exact-direct-match",
+          "matcher": "python-matcher",
+          "searchedBy": {
+            "language": "python",
+            "namespace": "github:language:python",
+            "package": {
+              "name": "transformers",
+              "version": "4.51.0"
+            }
+          },
+          "found": {
+            "vulnerabilityID": "GHSA-37mw-44qp-f5jm",
+            "versionConstraint": "<=4.51.3 (python)"
+          },
+          "fix": {
+            "suggestedVersion": "4.52.1"
+          }
+        }
+      ],
+      "artifact": {
+        "id": "pkg:pypi/transformers@4.51.0?package-id=eedd8f649977e6fe",
+        "name": "transformers",
+        "version": "4.51.0",
+        "type": "python",
+        "locations": [
+          {
+            "path": "/data/models/iitolstykh_mivolo_v2/requirements.txt",
+            "accessPath": ""
+          }
+        ],
+        "language": "python",
+        "licenses": [],
+        "cpes": [
+          "cpe:2.3:a:python-transformers:python-transformers:4.51.0:*:*:*:*:*:*:*",
+          "cpe:2.3:a:python-transformers:python_transformers:4.51.0:*:*:*:*:*:*:*",
+          "cpe:2.3:a:python_transformers:python-transformers:4.51.0:*:*:*:*:*:*:*",
+          "cpe:2.3:a:python_transformers:python_transformers:4.51.0:*:*:*:*:*:*:*",
+          "cpe:2.3:a:python-transformers:transformers:4.51.0:*:*:*:*:*:*:*",
+          "cpe:2.3:a:python_transformers:transformers:4.51.0:*:*:*:*:*:*:*",
+          "cpe:2.3:a:transformers:python-transformers:4.51.0:*:*:*:*:*:*:*",
+          "cpe:2.3:a:transformers:python_transformers:4.51.0:*:*:*:*:*:*:*",
+          "cpe:2.3:a:python:python-transformers:4.51.0:*:*:*:*:*:*:*",
+          "cpe:2.3:a:python:python_transformers:4.51.0:*:*:*:*:*:*:*",
+          "cpe:2.3:a:transformers:transformers:4.51.0:*:*:*:*:*:*:*",
+          "cpe:2.3:a:python:transformers:4.51.0:*:*:*:*:*:*:*"
+        ],
+        "purl": "pkg:pypi/transformers@4.51.0",
+        "upstreams": []
+      }
+    },
+    {
+      "vulnerability": {
+        "id": "GHSA-4w7r-h757-3r74",
+        "dataSource": "https://github.com/advisories/GHSA-4w7r-h757-3r74",
+        "namespace": "github:language:python",
+        "severity": "Medium",
+        "urls": [],
+        "description": "Hugging Face Transformers vulnerable to Regular Expression Denial of Service (ReDoS) in the AdamWeightDecay optimizer",
+        "cvss": [
+          {
+            "type": "Secondary",
+            "version": "3.0",
+            "vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:L",
+            "metrics": {
+              "baseScore": 5.3,
+              "exploitabilityScore": 3.9,
+              "impactScore": 1.5
+            },
+            "vendorMetadata": {}
+          }
+        ],
+        "epss": [
+          {
+            "cve": "CVE-2025-6921",
+            "epss": 0.00076,
+            "percentile": 0.23184,
+            "date": "2025-12-24"
+          }
+        ],
+        "cwes": [
+          {
+            "cve": "CVE-2025-6921",
+            "cwe": "CWE-400",
+            "source": "security@huntr.dev",
+            "type": "Primary"
+          }
+        ],
+        "fix": {
+          "versions": [
+            "4.53.0"
+          ],
+          "state": "fixed",
+          "available": [
+            {
+              "version": "4.53.0",
+              "date": "2025-09-24",
+              "kind": "first-observed"
+            }
+          ]
+        },
+        "advisories": [],
+        "risk": 0.03914
+      },
+      "relatedVulnerabilities": [
+        {
+          "id": "CVE-2025-6921",
+          "dataSource": "https://nvd.nist.gov/vuln/detail/CVE-2025-6921",
+          "namespace": "nvd:cpe",
+          "severity": "High",
+          "urls": [
+            "https://github.com/huggingface/transformers/commit/47c34fba5c303576560cb29767efb452ff12b8be",
+            "https://huntr.com/bounties/287d15a7-6e7c-45d2-8c05-11e305776f1f"
+          ],
+          "description": "The huggingface/transformers library, versions prior to 4.53.0, is vulnerable to Regular Expression Denial of Service (ReDoS) in the AdamWeightDecay optimizer. The vulnerability arises from the _do_use_weight_decay method, which processes user-controlled regular expressions in the include_in_weight_decay and exclude_from_weight_decay lists. Malicious regular expressions can cause catastrophic backtracking during the re.search call, leading to 100% CPU utilization and a denial of service. This issue can be exploited by attackers who can control the patterns in these lists, potentially causing the machine learning task to hang and rendering services unresponsive.",
+          "cvss": [
+            {
+              "source": "nvd@nist.gov",
+              "type": "Primary",
+              "version": "3.1",
+              "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+              "metrics": {
+                "baseScore": 7.5,
+                "exploitabilityScore": 3.9,
+                "impactScore": 3.6
+              },
+              "vendorMetadata": {}
+            },
+            {
+              "source": "security@huntr.dev",
+              "type": "Secondary",
+              "version": "3.0",
+              "vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:L",
+              "metrics": {
+                "baseScore": 5.3,
+                "exploitabilityScore": 3.9,
+                "impactScore": 1.5
+              },
+              "vendorMetadata": {}
+            }
+          ],
+          "epss": [
+            {
+              "cve": "CVE-2025-6921",
+              "epss": 0.00076,
+              "percentile": 0.23184,
+              "date": "2025-12-24"
+            }
+          ],
+          "cwes": [
+            {
+              "cve": "CVE-2025-6921",
+              "cwe": "CWE-400",
+              "source": "security@huntr.dev",
+              "type": "Primary"
+            }
+          ]
+        }
+      ],
+      "matchDetails": [
+        {
+          "type": "exact-direct-match",
+          "matcher": "python-matcher",
+          "searchedBy": {
+            "language": "python",
+            "namespace": "github:language:python",
+            "package": {
+              "name": "transformers",
+              "version": "4.51.0"
+            }
+          },
+          "found": {
+            "vulnerabilityID": "GHSA-4w7r-h757-3r74",
+            "versionConstraint": "<4.53.0 (python)"
+          },
+          "fix": {
+            "suggestedVersion": "4.53.0"
+          }
+        }
+      ],
+      "artifact": {
+        "id": "pkg:pypi/transformers@4.51.0?package-id=eedd8f649977e6fe",
+        "name": "transformers",
+        "version": "4.51.0",
+        "type": "python",
+        "locations": [
+          {
+            "path": "/data/models/iitolstykh_mivolo_v2/requirements.txt",
+            "accessPath": ""
+          }
+        ],
+        "language": "python",
+        "licenses": [],
+        "cpes": [
+          "cpe:2.3:a:python-transformers:python-transformers:4.51.0:*:*:*:*:*:*:*",
+          "cpe:2.3:a:python-transformers:python_transformers:4.51.0:*:*:*:*:*:*:*",
+          "cpe:2.3:a:python_transformers:python-transformers:4.51.0:*:*:*:*:*:*:*",
+          "cpe:2.3:a:python_transformers:python_transformers:4.51.0:*:*:*:*:*:*:*",
+          "cpe:2.3:a:python-transformers:transformers:4.51.0:*:*:*:*:*:*:*",
+          "cpe:2.3:a:python_transformers:transformers:4.51.0:*:*:*:*:*:*:*",
+          "cpe:2.3:a:transformers:python-transformers:4.51.0:*:*:*:*:*:*:*",
+          "cpe:2.3:a:transformers:python_transformers:4.51.0:*:*:*:*:*:*:*",
+          "cpe:2.3:a:python:python-transformers:4.51.0:*:*:*:*:*:*:*",
+          "cpe:2.3:a:python:python_transformers:4.51.0:*:*:*:*:*:*:*",
+          "cpe:2.3:a:transformers:transformers:4.51.0:*:*:*:*:*:*:*",
+          "cpe:2.3:a:python:transformers:4.51.0:*:*:*:*:*:*:*"
+        ],
+        "purl": "pkg:pypi/transformers@4.51.0",
+        "upstreams": []
+      }
+    },
+    {
+      "vulnerability": {
+        "id": "GHSA-59p9-h35m-wg4g",
+        "dataSource": "https://github.com/advisories/GHSA-59p9-h35m-wg4g",
+        "namespace": "github:language:python",
+        "severity": "Medium",
+        "urls": [],
+        "description": "Hugging Face Transformers is vulnerable to ReDoS through its MarianTokenizer",
+        "cvss": [
+          {
+            "type": "Secondary",
+            "version": "3.0",
+            "vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:L",
+            "metrics": {
+              "baseScore": 5.3,
+              "exploitabilityScore": 3.9,
+              "impactScore": 1.5
+            },
+            "vendorMetadata": {}
+          }
+        ],
+        "epss": [
+          {
+            "cve": "CVE-2025-6638",
+            "epss": 0.00076,
+            "percentile": 0.23184,
+            "date": "2025-12-24"
+          }
+        ],
+        "cwes": [
+          {
+            "cve": "CVE-2025-6638",
+            "cwe": "CWE-1333",
+            "source": "security@huntr.dev",
+            "type": "Primary"
+          }
+        ],
+        "fix": {
+          "versions": [
+            "4.53.0"
+          ],
+          "state": "fixed",
+          "available": [
+            {
+              "version": "4.53.0",
+              "date": "2025-09-16",
+              "kind": "first-observed"
+            }
+          ]
+        },
+        "advisories": [],
+        "risk": 0.03914
+      },
+      "relatedVulnerabilities": [
+        {
+          "id": "CVE-2025-6638",
+          "dataSource": "https://nvd.nist.gov/vuln/detail/CVE-2025-6638",
+          "namespace": "nvd:cpe",
+          "severity": "High",
+          "urls": [
+            "https://github.com/huggingface/transformers/commit/47c34fba5c303576560cb29767efb452ff12b8be",
+            "https://huntr.com/bounties/6a6c933f-9ce8-4ded-8b3b-2c1444c61f36"
+          ],
+          "description": "A Regular Expression Denial of Service (ReDoS) vulnerability was discovered in the Hugging Face Transformers library, specifically affecting the MarianTokenizer's `remove_language_code()` method. This vulnerability is present in version 4.52.4 and has been fixed in version 4.53.0. The issue arises from inefficient regex processing, which can be exploited by crafted input strings containing malformed language code patterns, leading to excessive CPU consumption and potential denial of service.",
+          "cvss": [
+            {
+              "source": "nvd@nist.gov",
+              "type": "Primary",
+              "version": "3.1",
+              "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+              "metrics": {
+                "baseScore": 7.5,
+                "exploitabilityScore": 3.9,
+                "impactScore": 3.6
+              },
+              "vendorMetadata": {}
+            },
+            {
+              "source": "security@huntr.dev",
+              "type": "Secondary",
+              "version": "3.0",
+              "vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:L",
+              "metrics": {
+                "baseScore": 5.3,
+                "exploitabilityScore": 3.9,
+                "impactScore": 1.5
+              },
+              "vendorMetadata": {}
+            }
+          ],
+          "epss": [
+            {
+              "cve": "CVE-2025-6638",
+              "epss": 0.00076,
+              "percentile": 0.23184,
+              "date": "2025-12-24"
+            }
+          ],
+          "cwes": [
+            {
+              "cve": "CVE-2025-6638",
+              "cwe": "CWE-1333",
+              "source": "security@huntr.dev",
+              "type": "Primary"
+            }
+          ]
+        }
+      ],
+      "matchDetails": [
+        {
+          "type": "exact-direct-match",
+          "matcher": "python-matcher",
+          "searchedBy": {
+            "language": "python",
+            "namespace": "github:language:python",
+            "package": {
+              "name": "transformers",
+              "version": "4.51.0"
+            }
+          },
+          "found": {
+            "vulnerabilityID": "GHSA-59p9-h35m-wg4g",
+            "versionConstraint": "<4.53.0 (python)"
+          },
+          "fix": {
+            "suggestedVersion": "4.53.0"
+          }
+        }
+      ],
+      "artifact": {
+        "id": "pkg:pypi/transformers@4.51.0?package-id=eedd8f649977e6fe",
+        "name": "transformers",
+        "version": "4.51.0",
+        "type": "python",
+        "locations": [
+          {
+            "path": "/data/models/iitolstykh_mivolo_v2/requirements.txt",
+            "accessPath": ""
+          }
+        ],
+        "language": "python",
+        "licenses": [],
+        "cpes": [
+          "cpe:2.3:a:python-transformers:python-transformers:4.51.0:*:*:*:*:*:*:*",
+          "cpe:2.3:a:python-transformers:python_transformers:4.51.0:*:*:*:*:*:*:*",
+          "cpe:2.3:a:python_transformers:python-transformers:4.51.0:*:*:*:*:*:*:*",
+          "cpe:2.3:a:python_transformers:python_transformers:4.51.0:*:*:*:*:*:*:*",
+          "cpe:2.3:a:python-transformers:transformers:4.51.0:*:*:*:*:*:*:*",
+          "cpe:2.3:a:python_transformers:transformers:4.51.0:*:*:*:*:*:*:*",
+          "cpe:2.3:a:transformers:python-transformers:4.51.0:*:*:*:*:*:*:*",
+          "cpe:2.3:a:transformers:python_transformers:4.51.0:*:*:*:*:*:*:*",
+          "cpe:2.3:a:python:python-transformers:4.51.0:*:*:*:*:*:*:*",
+          "cpe:2.3:a:python:python_transformers:4.51.0:*:*:*:*:*:*:*",
+          "cpe:2.3:a:transformers:transformers:4.51.0:*:*:*:*:*:*:*",
+          "cpe:2.3:a:python:transformers:4.51.0:*:*:*:*:*:*:*"
+        ],
+        "purl": "pkg:pypi/transformers@4.51.0",
+        "upstreams": []
+      }
+    },
+    {
+      "vulnerability": {
+        "id": "GHSA-rcv9-qm8p-9p6j",
+        "dataSource": "https://github.com/advisories/GHSA-rcv9-qm8p-9p6j",
+        "namespace": "github:language:python",
+        "severity": "Medium",
+        "urls": [],
+        "description": "Hugging Face Transformers library has Regular Expression Denial of Service",
+        "cvss": [
+          {
+            "type": "Secondary",
+            "version": "3.0",
+            "vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:L",
+            "metrics": {
+              "baseScore": 5.3,
+              "exploitabilityScore": 3.9,
+              "impactScore": 1.5
+            },
+            "vendorMetadata": {}
+          }
+        ],
+        "epss": [
+          {
+            "cve": "CVE-2025-6051",
+            "epss": 0.00075,
+            "percentile": 0.22865,
+            "date": "2025-12-24"
+          }
+        ],
+        "cwes": [
+          {
+            "cve": "CVE-2025-6051",
+            "cwe": "CWE-1333",
+            "source": "security@huntr.dev",
+            "type": "Primary"
+          }
+        ],
+        "fix": {
+          "versions": [
+            "4.53.0"
+          ],
+          "state": "fixed",
+          "available": [
+            {
+              "version": "4.53.0",
+              "date": "2025-09-16",
+              "kind": "first-observed"
+            }
+          ]
+        },
+        "advisories": [],
+        "risk": 0.03862500000000001
+      },
+      "relatedVulnerabilities": [
+        {
+          "id": "CVE-2025-6051",
+          "dataSource": "https://nvd.nist.gov/vuln/detail/CVE-2025-6051",
+          "namespace": "nvd:cpe",
+          "severity": "Medium",
+          "urls": [
+            "https://github.com/huggingface/transformers/commit/ba8eaba9865618253f997784aa565b96206426f0",
+            "https://huntr.com/bounties/af929523-7b59-418a-bf55-301830b2ac9d"
+          ],
+          "description": "A Regular Expression Denial of Service (ReDoS) vulnerability was discovered in the Hugging Face Transformers library, specifically within the `normalize_numbers()` method of the `EnglishNormalizer` class. This vulnerability affects versions up to 4.52.4 and is fixed in version 4.53.0. The issue arises from the method's handling of numeric strings, which can be exploited using crafted input strings containing long sequences of digits, leading to excessive CPU consumption. This vulnerability impacts text-to-speech and number normalization tasks, potentially causing service disruption, resource exhaustion, and API vulnerabilities.",
+          "cvss": [
+            {
+              "source": "security@huntr.dev",
+              "type": "Secondary",
+              "version": "3.0",
+              "vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:L",
+              "metrics": {
+                "baseScore": 5.3,
+                "exploitabilityScore": 3.9,
+                "impactScore": 1.5
+              },
+              "vendorMetadata": {}
+            }
+          ],
+          "epss": [
+            {
+              "cve": "CVE-2025-6051",
+              "epss": 0.00075,
+              "percentile": 0.22865,
+              "date": "2025-12-24"
+            }
+          ],
+          "cwes": [
+            {
+              "cve": "CVE-2025-6051",
+              "cwe": "CWE-1333",
+              "source": "security@huntr.dev",
+              "type": "Primary"
+            }
+          ]
+        }
+      ],
+      "matchDetails": [
+        {
+          "type": "exact-direct-match",
+          "matcher": "python-matcher",
+          "searchedBy": {
+            "language": "python",
+            "namespace": "github:language:python",
+            "package": {
+              "name": "transformers",
+              "version": "4.51.0"
+            }
+          },
+          "found": {
+            "vulnerabilityID": "GHSA-rcv9-qm8p-9p6j",
+            "versionConstraint": "<4.53.0 (python)"
+          },
+          "fix": {
+            "suggestedVersion": "4.53.0"
+          }
+        }
+      ],
+      "artifact": {
+        "id": "pkg:pypi/transformers@4.51.0?package-id=eedd8f649977e6fe",
+        "name": "transformers",
+        "version": "4.51.0",
+        "type": "python",
+        "locations": [
+          {
+            "path": "/data/models/iitolstykh_mivolo_v2/requirements.txt",
+            "accessPath": ""
+          }
+        ],
+        "language": "python",
+        "licenses": [],
+        "cpes": [
+          "cpe:2.3:a:python-transformers:python-transformers:4.51.0:*:*:*:*:*:*:*",
+          "cpe:2.3:a:python-transformers:python_transformers:4.51.0:*:*:*:*:*:*:*",
+          "cpe:2.3:a:python_transformers:python-transformers:4.51.0:*:*:*:*:*:*:*",
+          "cpe:2.3:a:python_transformers:python_transformers:4.51.0:*:*:*:*:*:*:*",
+          "cpe:2.3:a:python-transformers:transformers:4.51.0:*:*:*:*:*:*:*",
+          "cpe:2.3:a:python_transformers:transformers:4.51.0:*:*:*:*:*:*:*",
+          "cpe:2.3:a:transformers:python-transformers:4.51.0:*:*:*:*:*:*:*",
+          "cpe:2.3:a:transformers:python_transformers:4.51.0:*:*:*:*:*:*:*",
+          "cpe:2.3:a:python:python-transformers:4.51.0:*:*:*:*:*:*:*",
+          "cpe:2.3:a:python:python_transformers:4.51.0:*:*:*:*:*:*:*",
+          "cpe:2.3:a:transformers:transformers:4.51.0:*:*:*:*:*:*:*",
+          "cpe:2.3:a:python:transformers:4.51.0:*:*:*:*:*:*:*"
+        ],
+        "purl": "pkg:pypi/transformers@4.51.0",
+        "upstreams": []
+      }
+    },
+    {
+      "vulnerability": {
+        "id": "GHSA-887c-mr87-cxwp",
+        "dataSource": "https://github.com/advisories/GHSA-887c-mr87-cxwp",
+        "namespace": "github:language:python",
+        "severity": "Medium",
+        "urls": [],
+        "description": "PyTorch Improper Resource Shutdown or Release vulnerability",
+        "cvss": [
+          {
+            "type": "Secondary",
+            "version": "3.1",
+            "vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:N/I:N/A:L",
+            "metrics": {
+              "baseScore": 3.3,
+              "exploitabilityScore": 1.9,
+              "impactScore": 1.5
+            },
+            "vendorMetadata": {}
+          }
+        ],
+        "epss": [
+          {
+            "cve": "CVE-2025-3730",
+            "epss": 0.00058,
+            "percentile": 0.18154,
+            "date": "2025-12-24"
+          }
+        ],
+        "cwes": [
+          {
+            "cve": "CVE-2025-3730",
+            "cwe": "CWE-404",
+            "source": "cna@vuldb.com",
+            "type": "Secondary"
+          }
+        ],
+        "fix": {
+          "versions": [
+            "2.8.0"
+          ],
+          "state": "fixed",
+          "available": [
+            {
+              "version": "2.8.0",
+              "date": "2025-09-03",
+              "kind": "first-observed"
+            }
+          ]
+        },
+        "advisories": [],
+        "risk": 0.02407
+      },
+      "relatedVulnerabilities": [
+        {
+          "id": "CVE-2025-3730",
+          "dataSource": "https://nvd.nist.gov/vuln/detail/CVE-2025-3730",
+          "namespace": "nvd:cpe",
+          "severity": "Medium",
+          "urls": [
+            "https://github.com/pytorch/pytorch/issues/150835",
+            "https://github.com/pytorch/pytorch/issues/150835#issue-2979082232",
+            "https://github.com/pytorch/pytorch/pull/150981",
+            "https://github.com/timocafe/tewart-pytorch/commit/46fc5d8e360127361211cb237d5f9eef0223e567",
+            "https://vuldb.com/?ctiid.305076",
+            "https://vuldb.com/?id.305076",
+            "https://vuldb.com/?submit.553645"
+          ],
+          "description": "A vulnerability, which was classified as problematic, was found in PyTorch 2.6.0. Affected is the function torch.nn.functional.ctc_loss of the file aten/src/ATen/native/LossCTC.cpp. The manipulation leads to denial of service. An attack has to be approached locally. The exploit has been disclosed to the public and may be used. The real existence of this vulnerability is still doubted at the moment. The name of the patch is 46fc5d8e360127361211cb237d5f9eef0223e567. It is recommended to apply a patch to fix this issue. The security policy of the project warns to use unknown models which might establish malicious effects.",
+          "cvss": [
+            {
+              "source": "nvd@nist.gov",
+              "type": "Primary",
+              "version": "3.1",
+              "vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:N/I:N/A:H",
+              "metrics": {
+                "baseScore": 5.5,
+                "exploitabilityScore": 1.9,
+                "impactScore": 3.6
+              },
+              "vendorMetadata": {}
+            },
+            {
+              "source": "cna@vuldb.com",
+              "type": "Secondary",
+              "version": "4.0",
+              "vector": "CVSS:4.0/AV:L/AC:L/AT:N/PR:L/UI:N/VC:N/VI:N/VA:L/SC:N/SI:N/SA:N/E:X/CR:X/IR:X/AR:X/MAV:X/MAC:X/MAT:X/MPR:X/MUI:X/MVC:X/MVI:X/MVA:X/MSC:X/MSI:X/MSA:X/S:X/AU:X/R:X/V:X/RE:X/U:X",
+              "metrics": {
+                "baseScore": 4.8
+              },
+              "vendorMetadata": {}
+            },
+            {
+              "source": "cna@vuldb.com",
+              "type": "Secondary",
+              "version": "3.1",
+              "vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:N/I:N/A:L",
+              "metrics": {
+                "baseScore": 3.3,
+                "exploitabilityScore": 1.9,
+                "impactScore": 1.5
+              },
+              "vendorMetadata": {}
+            },
+            {
+              "source": "cna@vuldb.com",
+              "type": "Secondary",
+              "version": "2.0",
+              "vector": "AV:L/AC:L/Au:S/C:N/I:N/A:P",
+              "metrics": {
+                "baseScore": 1.7,
+                "exploitabilityScore": 3.2,
+                "impactScore": 2.9
+              },
+              "vendorMetadata": {}
+            }
+          ],
+          "epss": [
+            {
+              "cve": "CVE-2025-3730",
+              "epss": 0.00058,
+              "percentile": 0.18154,
+              "date": "2025-12-24"
+            }
+          ],
+          "cwes": [
+            {
+              "cve": "CVE-2025-3730",
+              "cwe": "CWE-404",
+              "source": "cna@vuldb.com",
+              "type": "Secondary"
+            }
+          ]
+        }
+      ],
+      "matchDetails": [
+        {
+          "type": "exact-direct-match",
+          "matcher": "python-matcher",
+          "searchedBy": {
+            "language": "python",
+            "namespace": "github:language:python",
+            "package": {
+              "name": "torch",
+              "version": "2.5.1"
+            }
+          },
+          "found": {
+            "vulnerabilityID": "GHSA-887c-mr87-cxwp",
+            "versionConstraint": "<=2.7.1 (python)"
+          },
+          "fix": {
+            "suggestedVersion": "2.8.0"
+          }
+        }
+      ],
+      "artifact": {
+        "id": "pkg:pypi/torch@2.5.1?package-id=a4826424000209ba",
+        "name": "torch",
+        "version": "2.5.1",
+        "type": "python",
+        "locations": [
+          {
+            "path": "/data/models/iitolstykh_mivolo_v2/requirements.txt",
+            "accessPath": ""
+          }
+        ],
+        "language": "python",
+        "licenses": [],
+        "cpes": [
+          "cpe:2.3:a:python-torch:python-torch:2.5.1:*:*:*:*:*:*:*",
+          "cpe:2.3:a:python-torch:python_torch:2.5.1:*:*:*:*:*:*:*",
+          "cpe:2.3:a:python_torch:python-torch:2.5.1:*:*:*:*:*:*:*",
+          "cpe:2.3:a:python_torch:python_torch:2.5.1:*:*:*:*:*:*:*",
+          "cpe:2.3:a:python:python-torch:2.5.1:*:*:*:*:*:*:*",
+          "cpe:2.3:a:python:python_torch:2.5.1:*:*:*:*:*:*:*",
+          "cpe:2.3:a:python-torch:torch:2.5.1:*:*:*:*:*:*:*",
+          "cpe:2.3:a:python_torch:torch:2.5.1:*:*:*:*:*:*:*",
+          "cpe:2.3:a:torch:python-torch:2.5.1:*:*:*:*:*:*:*",
+          "cpe:2.3:a:torch:python_torch:2.5.1:*:*:*:*:*:*:*",
+          "cpe:2.3:a:python:torch:2.5.1:*:*:*:*:*:*:*",
+          "cpe:2.3:a:torch:torch:2.5.1:*:*:*:*:*:*:*"
+        ],
+        "purl": "pkg:pypi/torch@2.5.1",
+        "upstreams": []
+      }
+    },
+    {
+      "vulnerability": {
+        "id": "GHSA-887c-mr87-cxwp",
+        "dataSource": "https://github.com/advisories/GHSA-887c-mr87-cxwp",
+        "namespace": "github:language:python",
+        "severity": "Medium",
+        "urls": [],
+        "description": "PyTorch Improper Resource Shutdown or Release vulnerability",
+        "cvss": [
+          {
+            "type": "Secondary",
+            "version": "3.1",
+            "vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:N/I:N/A:L",
+            "metrics": {
+              "baseScore": 3.3,
+              "exploitabilityScore": 1.9,
+              "impactScore": 1.5
+            },
+            "vendorMetadata": {}
+          }
+        ],
+        "epss": [
+          {
+            "cve": "CVE-2025-3730",
+            "epss": 0.00058,
+            "percentile": 0.18154,
+            "date": "2025-12-24"
+          }
+        ],
+        "cwes": [
+          {
+            "cve": "CVE-2025-3730",
+            "cwe": "CWE-404",
+            "source": "cna@vuldb.com",
+            "type": "Secondary"
+          }
+        ],
+        "fix": {
+          "versions": [
+            "2.8.0"
+          ],
+          "state": "fixed",
+          "available": [
+            {
+              "version": "2.8.0",
+              "date": "2025-09-03",
+              "kind": "first-observed"
+            }
+          ]
+        },
+        "advisories": [],
+        "risk": 0.02407
+      },
+      "relatedVulnerabilities": [
+        {
+          "id": "CVE-2025-3730",
+          "dataSource": "https://nvd.nist.gov/vuln/detail/CVE-2025-3730",
+          "namespace": "nvd:cpe",
+          "severity": "Medium",
+          "urls": [
+            "https://github.com/pytorch/pytorch/issues/150835",
+            "https://github.com/pytorch/pytorch/issues/150835#issue-2979082232",
+            "https://github.com/pytorch/pytorch/pull/150981",
+            "https://github.com/timocafe/tewart-pytorch/commit/46fc5d8e360127361211cb237d5f9eef0223e567",
+            "https://vuldb.com/?ctiid.305076",
+            "https://vuldb.com/?id.305076",
+            "https://vuldb.com/?submit.553645"
+          ],
+          "description": "A vulnerability, which was classified as problematic, was found in PyTorch 2.6.0. Affected is the function torch.nn.functional.ctc_loss of the file aten/src/ATen/native/LossCTC.cpp. The manipulation leads to denial of service. An attack has to be approached locally. The exploit has been disclosed to the public and may be used. The real existence of this vulnerability is still doubted at the moment. The name of the patch is 46fc5d8e360127361211cb237d5f9eef0223e567. It is recommended to apply a patch to fix this issue. The security policy of the project warns to use unknown models which might establish malicious effects.",
+          "cvss": [
+            {
+              "source": "nvd@nist.gov",
+              "type": "Primary",
+              "version": "3.1",
+              "vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:N/I:N/A:H",
+              "metrics": {
+                "baseScore": 5.5,
+                "exploitabilityScore": 1.9,
+                "impactScore": 3.6
+              },
+              "vendorMetadata": {}
+            },
+            {
+              "source": "cna@vuldb.com",
+              "type": "Secondary",
+              "version": "4.0",
+              "vector": "CVSS:4.0/AV:L/AC:L/AT:N/PR:L/UI:N/VC:N/VI:N/VA:L/SC:N/SI:N/SA:N/E:X/CR:X/IR:X/AR:X/MAV:X/MAC:X/MAT:X/MPR:X/MUI:X/MVC:X/MVI:X/MVA:X/MSC:X/MSI:X/MSA:X/S:X/AU:X/R:X/V:X/RE:X/U:X",
+              "metrics": {
+                "baseScore": 4.8
+              },
+              "vendorMetadata": {}
+            },
+            {
+              "source": "cna@vuldb.com",
+              "type": "Secondary",
+              "version": "3.1",
+              "vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:N/I:N/A:L",
+              "metrics": {
+                "baseScore": 3.3,
+                "exploitabilityScore": 1.9,
+                "impactScore": 1.5
+              },
+              "vendorMetadata": {}
+            },
+            {
+              "source": "cna@vuldb.com",
+              "type": "Secondary",
+              "version": "2.0",
+              "vector": "AV:L/AC:L/Au:S/C:N/I:N/A:P",
+              "metrics": {
+                "baseScore": 1.7,
+                "exploitabilityScore": 3.2,
+                "impactScore": 2.9
+              },
+              "vendorMetadata": {}
+            }
+          ],
+          "epss": [
+            {
+              "cve": "CVE-2025-3730",
+              "epss": 0.00058,
+              "percentile": 0.18154,
+              "date": "2025-12-24"
+            }
+          ],
+          "cwes": [
+            {
+              "cve": "CVE-2025-3730",
+              "cwe": "CWE-404",
+              "source": "cna@vuldb.com",
+              "type": "Secondary"
+            }
+          ]
+        }
+      ],
+      "matchDetails": [
+        {
+          "type": "exact-direct-match",
+          "matcher": "python-matcher",
+          "searchedBy": {
+            "language": "python",
+            "namespace": "github:language:python",
+            "package": {
+              "name": "torch",
+              "version": "2.5.1"
+            }
+          },
+          "found": {
+            "vulnerabilityID": "GHSA-887c-mr87-cxwp",
+            "versionConstraint": "<=2.7.1 (python)"
+          },
+          "fix": {
+            "suggestedVersion": "2.8.0"
+          }
+        }
+      ],
+      "artifact": {
+        "id": "pkg:pypi/torch@2.5.1?package-id=e5c113beceb31f61",
+        "name": "torch",
+        "version": "2.5.1",
+        "type": "python",
+        "locations": [
+          {
+            "path": "/data/models/ZhengPeng7_BiRefNet/requirements.txt",
+            "accessPath": ""
+          }
+        ],
+        "language": "python",
+        "licenses": [],
+        "cpes": [
+          "cpe:2.3:a:python-torch:python-torch:2.5.1:*:*:*:*:*:*:*",
+          "cpe:2.3:a:python-torch:python_torch:2.5.1:*:*:*:*:*:*:*",
+          "cpe:2.3:a:python_torch:python-torch:2.5.1:*:*:*:*:*:*:*",
+          "cpe:2.3:a:python_torch:python_torch:2.5.1:*:*:*:*:*:*:*",
+          "cpe:2.3:a:python:python-torch:2.5.1:*:*:*:*:*:*:*",
+          "cpe:2.3:a:python:python_torch:2.5.1:*:*:*:*:*:*:*",
+          "cpe:2.3:a:python-torch:torch:2.5.1:*:*:*:*:*:*:*",
+          "cpe:2.3:a:python_torch:torch:2.5.1:*:*:*:*:*:*:*",
+          "cpe:2.3:a:torch:python-torch:2.5.1:*:*:*:*:*:*:*",
+          "cpe:2.3:a:torch:python_torch:2.5.1:*:*:*:*:*:*:*",
+          "cpe:2.3:a:python:torch:2.5.1:*:*:*:*:*:*:*",
+          "cpe:2.3:a:torch:torch:2.5.1:*:*:*:*:*:*:*"
+        ],
+        "purl": "pkg:pypi/torch@2.5.1",
+        "upstreams": []
+      }
+    },
+    {
+      "vulnerability": {
+        "id": "GHSA-428g-f7cq-pgp5",
+        "dataSource": "https://github.com/advisories/GHSA-428g-f7cq-pgp5",
+        "namespace": "github:language:python",
+        "severity": "Medium",
+        "urls": [],
+        "description": "Marshmallow has DoS in Schema.load(many)",
+        "cvss": [
+          {
+            "type": "Secondary",
+            "version": "3.1",
+            "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:L",
+            "metrics": {
+              "baseScore": 5.3,
+              "exploitabilityScore": 3.9,
+              "impactScore": 1.5
+            },
+            "vendorMetadata": {}
+          }
+        ],
+        "epss": [
+          {
+            "cve": "CVE-2025-68480",
+            "epss": 0.00039,
+            "percentile": 0.11547,
+            "date": "2025-12-24"
+          }
+        ],
+        "cwes": [
+          {
+            "cve": "CVE-2025-68480",
+            "cwe": "CWE-405",
+            "source": "security-advisories@github.com",
+            "type": "Primary"
+          }
+        ],
+        "fix": {
+          "versions": [
+            "4.1.2"
+          ],
+          "state": "fixed",
+          "available": [
+            {
+              "version": "4.1.2",
+              "date": "2025-12-23",
+              "kind": "first-observed"
+            }
+          ]
+        },
+        "advisories": [],
+        "risk": 0.020085
+      },
+      "relatedVulnerabilities": [
+        {
+          "id": "CVE-2025-68480",
+          "dataSource": "https://nvd.nist.gov/vuln/detail/CVE-2025-68480",
+          "namespace": "nvd:cpe",
+          "severity": "Medium",
+          "urls": [
+            "https://github.com/marshmallow-code/marshmallow/commit/d24a0c9df061c4daa92f71cf85aca25b83eee508",
+            "https://github.com/marshmallow-code/marshmallow/security/advisories/GHSA-428g-f7cq-pgp5"
+          ],
+          "description": "Marshmallow is a lightweight library for converting complex objects to and from simple Python datatypes. In versions from 3.0.0rc1 to before 3.26.2 and from 4.0.0 to before 4.1.2, Schema.load(data, many=True) is vulnerable to denial of service attacks. A moderately sized request can consume a disproportionate amount of CPU time. This issue has been patched in version 3.26.2 and 4.1.2.",
+          "cvss": [
+            {
+              "source": "security-advisories@github.com",
+              "type": "Secondary",
+              "version": "3.1",
+              "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:L",
+              "metrics": {
+                "baseScore": 5.3,
+                "exploitabilityScore": 3.9,
+                "impactScore": 1.5
+              },
+              "vendorMetadata": {}
+            }
+          ],
+          "epss": [
+            {
+              "cve": "CVE-2025-68480",
+              "epss": 0.00039,
+              "percentile": 0.11547,
+              "date": "2025-12-24"
+            }
+          ],
+          "cwes": [
+            {
+              "cve": "CVE-2025-68480",
+              "cwe": "CWE-405",
+              "source": "security-advisories@github.com",
+              "type": "Primary"
+            }
+          ]
+        }
+      ],
+      "matchDetails": [
+        {
+          "type": "exact-direct-match",
+          "matcher": "python-matcher",
+          "searchedBy": {
+            "language": "python",
+            "namespace": "github:language:python",
+            "package": {
+              "name": "marshmallow",
+              "version": "4.1.1"
+            }
+          },
+          "found": {
+            "vulnerabilityID": "GHSA-428g-f7cq-pgp5",
+            "versionConstraint": ">=4.0.0,<4.1.2 (python)"
+          },
+          "fix": {
+            "suggestedVersion": "4.1.2"
+          }
+        }
+      ],
+      "artifact": {
+        "id": "pkg:pypi/marshmallow@4.1.1?package-id=54b1e378d6d3a001",
+        "name": "marshmallow",
+        "version": "4.1.1",
+        "type": "python",
+        "locations": [
+          {
+            "path": "/venv/lib/python3.12/site-packages/marshmallow-4.1.1.dist-info/METADATA",
+            "accessPath": ""
+          },
+          {
+            "path": "/venv/lib/python3.12/site-packages/marshmallow-4.1.1.dist-info/RECORD",
+            "accessPath": ""
+          }
+        ],
+        "language": "python",
+        "licenses": [],
+        "cpes": [
+          "cpe:2.3:a:marshmallow_project:marshmallow:4.1.1:*:*:*:*:python:*:*"
+        ],
+        "purl": "pkg:pypi/marshmallow@4.1.1",
+        "upstreams": []
+      }
+    },
+    {
+      "vulnerability": {
+        "id": "GHSA-phhr-52qp-3mj4",
+        "dataSource": "https://github.com/advisories/GHSA-phhr-52qp-3mj4",
+        "namespace": "github:language:python",
+        "severity": "Low",
+        "urls": [],
+        "description": "Transformers's Improper Input Validation vulnerability can be exploited through username injection",
+        "cvss": [
+          {
+            "type": "Secondary",
+            "version": "3.0",
+            "vector": "CVSS:3.0/AV:N/AC:L/PR:L/UI:R/S:U/C:L/I:N/A:N",
+            "metrics": {
+              "baseScore": 3.5,
+              "exploitabilityScore": 2.1,
+              "impactScore": 1.5
+            },
+            "vendorMetadata": {}
+          }
+        ],
+        "epss": [
+          {
+            "cve": "CVE-2025-3777",
+            "epss": 0.00051,
+            "percentile": 0.16013,
+            "date": "2025-12-24"
+          }
+        ],
+        "cwes": [
+          {
+            "cve": "CVE-2025-3777",
+            "cwe": "CWE-20",
+            "source": "security@huntr.dev",
+            "type": "Primary"
+          }
+        ],
+        "fix": {
+          "versions": [
+            "4.52.1"
+          ],
+          "state": "fixed",
+          "available": [
+            {
+              "version": "4.52.1",
+              "date": "2025-07-09",
+              "kind": "first-observed"
+            }
+          ]
+        },
+        "advisories": [],
+        "risk": 0.016575
+      },
+      "relatedVulnerabilities": [
+        {
+          "id": "CVE-2025-3777",
+          "dataSource": "https://nvd.nist.gov/vuln/detail/CVE-2025-3777",
+          "namespace": "nvd:cpe",
+          "severity": "Low",
+          "urls": [
+            "https://github.com/huggingface/transformers/commit/4dda5f71b35fb70cf602187eef84bb17a50b9082",
+            "https://huntr.com/bounties/ccba0730-9248-4853-b7ff-5c20e6364f09"
+          ],
+          "description": "Hugging Face Transformers versions up to 4.49.0 are affected by an improper input validation vulnerability in the `image_utils.py` file. The vulnerability arises from insecure URL validation using the `startswith()` method, which can be bypassed through URL username injection. This allows attackers to craft URLs that appear to be from YouTube but resolve to malicious domains, potentially leading to phishing attacks, malware distribution, or data exfiltration. The issue is fixed in version 4.52.1.",
+          "cvss": [
+            {
+              "source": "security@huntr.dev",
+              "type": "Secondary",
+              "version": "3.0",
+              "vector": "CVSS:3.0/AV:N/AC:L/PR:L/UI:R/S:U/C:L/I:N/A:N",
+              "metrics": {
+                "baseScore": 3.5,
+                "exploitabilityScore": 2.1,
+                "impactScore": 1.5
+              },
+              "vendorMetadata": {}
+            }
+          ],
+          "epss": [
+            {
+              "cve": "CVE-2025-3777",
+              "epss": 0.00051,
+              "percentile": 0.16013,
+              "date": "2025-12-24"
+            }
+          ],
+          "cwes": [
+            {
+              "cve": "CVE-2025-3777",
+              "cwe": "CWE-20",
+              "source": "security@huntr.dev",
+              "type": "Primary"
+            }
+          ]
+        }
+      ],
+      "matchDetails": [
+        {
+          "type": "exact-direct-match",
+          "matcher": "python-matcher",
+          "searchedBy": {
+            "language": "python",
+            "namespace": "github:language:python",
+            "package": {
+              "name": "transformers",
+              "version": "4.51.0"
+            }
+          },
+          "found": {
+            "vulnerabilityID": "GHSA-phhr-52qp-3mj4",
+            "versionConstraint": "<4.52.1 (python)"
+          },
+          "fix": {
+            "suggestedVersion": "4.52.1"
+          }
+        }
+      ],
+      "artifact": {
+        "id": "pkg:pypi/transformers@4.51.0?package-id=eedd8f649977e6fe",
+        "name": "transformers",
+        "version": "4.51.0",
+        "type": "python",
+        "locations": [
+          {
+            "path": "/data/models/iitolstykh_mivolo_v2/requirements.txt",
+            "accessPath": ""
+          }
+        ],
+        "language": "python",
+        "licenses": [],
+        "cpes": [
+          "cpe:2.3:a:python-transformers:python-transformers:4.51.0:*:*:*:*:*:*:*",
+          "cpe:2.3:a:python-transformers:python_transformers:4.51.0:*:*:*:*:*:*:*",
+          "cpe:2.3:a:python_transformers:python-transformers:4.51.0:*:*:*:*:*:*:*",
+          "cpe:2.3:a:python_transformers:python_transformers:4.51.0:*:*:*:*:*:*:*",
+          "cpe:2.3:a:python-transformers:transformers:4.51.0:*:*:*:*:*:*:*",
+          "cpe:2.3:a:python_transformers:transformers:4.51.0:*:*:*:*:*:*:*",
+          "cpe:2.3:a:transformers:python-transformers:4.51.0:*:*:*:*:*:*:*",
+          "cpe:2.3:a:transformers:python_transformers:4.51.0:*:*:*:*:*:*:*",
+          "cpe:2.3:a:python:python-transformers:4.51.0:*:*:*:*:*:*:*",
+          "cpe:2.3:a:python:python_transformers:4.51.0:*:*:*:*:*:*:*",
+          "cpe:2.3:a:transformers:transformers:4.51.0:*:*:*:*:*:*:*",
+          "cpe:2.3:a:python:transformers:4.51.0:*:*:*:*:*:*:*"
+        ],
+        "purl": "pkg:pypi/transformers@4.51.0",
+        "upstreams": []
+      }
+    },
+    {
+      "vulnerability": {
+        "id": "GHSA-3749-ghw9-m3mg",
+        "dataSource": "https://github.com/advisories/GHSA-3749-ghw9-m3mg",
+        "namespace": "github:language:python",
+        "severity": "Low",
+        "urls": [],
+        "description": "PyTorch susceptible to local Denial of Service",
+        "cvss": [
+          {
+            "type": "Secondary",
+            "version": "3.1",
+            "vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:N/I:N/A:L",
+            "metrics": {
+              "baseScore": 3.3,
+              "exploitabilityScore": 1.9,
+              "impactScore": 1.5
+            },
+            "vendorMetadata": {}
+          }
+        ],
+        "epss": [
+          {
+            "cve": "CVE-2025-2953",
+            "epss": 0.00045,
+            "percentile": 0.13729,
+            "date": "2025-12-24"
+          }
+        ],
+        "cwes": [
+          {
+            "cve": "CVE-2025-2953",
+            "cwe": "CWE-404",
+            "source": "cna@vuldb.com",
+            "type": "Secondary"
+          }
+        ],
+        "fix": {
+          "versions": [
+            "2.7.1-rc1"
+          ],
+          "state": "fixed",
+          "available": [
+            {
+              "version": "2.7.1-rc1",
+              "date": "2025-05-31",
+              "kind": "first-observed"
+            }
+          ]
+        },
+        "advisories": [],
+        "risk": 0.014174999999999998
+      },
+      "relatedVulnerabilities": [
+        {
+          "id": "CVE-2025-2953",
+          "dataSource": "https://nvd.nist.gov/vuln/detail/CVE-2025-2953",
+          "namespace": "nvd:cpe",
+          "severity": "Medium",
+          "urls": [
+            "https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models",
+            "https://github.com/pytorch/pytorch/issues/149274",
+            "https://github.com/pytorch/pytorch/issues/149274#issue-2923122269",
+            "https://vuldb.com/?ctiid.302006",
+            "https://vuldb.com/?id.302006",
+            "https://vuldb.com/?submit.521279"
+          ],
+          "description": "A vulnerability, which was classified as problematic, has been found in PyTorch 2.6.0+cu124. Affected by this issue is the function torch.mkldnn_max_pool2d. The manipulation leads to denial of service. An attack has to be approached locally. The exploit has been disclosed to the public and may be used. The real existence of this vulnerability is still doubted at the moment. The security policy of the project warns to use unknown models which might establish malicious effects.",
+          "cvss": [
+            {
+              "source": "nvd@nist.gov",
+              "type": "Primary",
+              "version": "3.1",
+              "vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:N/I:N/A:H",
+              "metrics": {
+                "baseScore": 5.5,
+                "exploitabilityScore": 1.9,
+                "impactScore": 3.6
+              },
+              "vendorMetadata": {}
+            },
+            {
+              "source": "cna@vuldb.com",
+              "type": "Secondary",
+              "version": "4.0",
+              "vector": "CVSS:4.0/AV:L/AC:L/AT:N/PR:L/UI:N/VC:N/VI:N/VA:L/SC:N/SI:N/SA:N/E:X/CR:X/IR:X/AR:X/MAV:X/MAC:X/MAT:X/MPR:X/MUI:X/MVC:X/MVI:X/MVA:X/MSC:X/MSI:X/MSA:X/S:X/AU:X/R:X/V:X/RE:X/U:X",
+              "metrics": {
+                "baseScore": 4.8
+              },
+              "vendorMetadata": {}
+            },
+            {
+              "source": "cna@vuldb.com",
+              "type": "Secondary",
+              "version": "3.1",
+              "vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:N/I:N/A:L",
+              "metrics": {
+                "baseScore": 3.3,
+                "exploitabilityScore": 1.9,
+                "impactScore": 1.5
+              },
+              "vendorMetadata": {}
+            },
+            {
+              "source": "cna@vuldb.com",
+              "type": "Secondary",
+              "version": "2.0",
+              "vector": "AV:L/AC:L/Au:S/C:N/I:N/A:P",
+              "metrics": {
+                "baseScore": 1.7,
+                "exploitabilityScore": 3.2,
+                "impactScore": 2.9
+              },
+              "vendorMetadata": {}
+            }
+          ],
+          "epss": [
+            {
+              "cve": "CVE-2025-2953",
+              "epss": 0.00045,
+              "percentile": 0.13729,
+              "date": "2025-12-24"
+            }
+          ],
+          "cwes": [
+            {
+              "cve": "CVE-2025-2953",
+              "cwe": "CWE-404",
+              "source": "cna@vuldb.com",
+              "type": "Secondary"
+            }
+          ]
+        }
+      ],
+      "matchDetails": [
+        {
+          "type": "exact-direct-match",
+          "matcher": "python-matcher",
+          "searchedBy": {
+            "language": "python",
+            "namespace": "github:language:python",
+            "package": {
+              "name": "torch",
+              "version": "2.5.1"
+            }
+          },
+          "found": {
+            "vulnerabilityID": "GHSA-3749-ghw9-m3mg",
+            "versionConstraint": "<2.7.1-rc1 (python)"
+          },
+          "fix": {
+            "suggestedVersion": "2.7.1-rc1"
+          }
+        }
+      ],
+      "artifact": {
+        "id": "pkg:pypi/torch@2.5.1?package-id=e5c113beceb31f61",
+        "name": "torch",
+        "version": "2.5.1",
+        "type": "python",
+        "locations": [
+          {
+            "path": "/data/models/ZhengPeng7_BiRefNet/requirements.txt",
+            "accessPath": ""
+          }
+        ],
+        "language": "python",
+        "licenses": [],
+        "cpes": [
+          "cpe:2.3:a:python-torch:python-torch:2.5.1:*:*:*:*:*:*:*",
+          "cpe:2.3:a:python-torch:python_torch:2.5.1:*:*:*:*:*:*:*",
+          "cpe:2.3:a:python_torch:python-torch:2.5.1:*:*:*:*:*:*:*",
+          "cpe:2.3:a:python_torch:python_torch:2.5.1:*:*:*:*:*:*:*",
+          "cpe:2.3:a:python:python-torch:2.5.1:*:*:*:*:*:*:*",
+          "cpe:2.3:a:python:python_torch:2.5.1:*:*:*:*:*:*:*",
+          "cpe:2.3:a:python-torch:torch:2.5.1:*:*:*:*:*:*:*",
+          "cpe:2.3:a:python_torch:torch:2.5.1:*:*:*:*:*:*:*",
+          "cpe:2.3:a:torch:python-torch:2.5.1:*:*:*:*:*:*:*",
+          "cpe:2.3:a:torch:python_torch:2.5.1:*:*:*:*:*:*:*",
+          "cpe:2.3:a:python:torch:2.5.1:*:*:*:*:*:*:*",
+          "cpe:2.3:a:torch:torch:2.5.1:*:*:*:*:*:*:*"
+        ],
+        "purl": "pkg:pypi/torch@2.5.1",
+        "upstreams": []
+      }
+    },
+    {
+      "vulnerability": {
+        "id": "GHSA-3749-ghw9-m3mg",
+        "dataSource": "https://github.com/advisories/GHSA-3749-ghw9-m3mg",
+        "namespace": "github:language:python",
+        "severity": "Low",
+        "urls": [],
+        "description": "PyTorch susceptible to local Denial of Service",
+        "cvss": [
+          {
+            "type": "Secondary",
+            "version": "3.1",
+            "vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:N/I:N/A:L",
+            "metrics": {
+              "baseScore": 3.3,
+              "exploitabilityScore": 1.9,
+              "impactScore": 1.5
+            },
+            "vendorMetadata": {}
+          }
+        ],
+        "epss": [
+          {
+            "cve": "CVE-2025-2953",
+            "epss": 0.00045,
+            "percentile": 0.13729,
+            "date": "2025-12-24"
+          }
+        ],
+        "cwes": [
+          {
+            "cve": "CVE-2025-2953",
+            "cwe": "CWE-404",
+            "source": "cna@vuldb.com",
+            "type": "Secondary"
+          }
+        ],
+        "fix": {
+          "versions": [
+            "2.7.1-rc1"
+          ],
+          "state": "fixed",
+          "available": [
+            {
+              "version": "2.7.1-rc1",
+              "date": "2025-05-31",
+              "kind": "first-observed"
+            }
+          ]
+        },
+        "advisories": [],
+        "risk": 0.014174999999999998
+      },
+      "relatedVulnerabilities": [
+        {
+          "id": "CVE-2025-2953",
+          "dataSource": "https://nvd.nist.gov/vuln/detail/CVE-2025-2953",
+          "namespace": "nvd:cpe",
+          "severity": "Medium",
+          "urls": [
+            "https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models",
+            "https://github.com/pytorch/pytorch/issues/149274",
+            "https://github.com/pytorch/pytorch/issues/149274#issue-2923122269",
+            "https://vuldb.com/?ctiid.302006",
+            "https://vuldb.com/?id.302006",
+            "https://vuldb.com/?submit.521279"
+          ],
+          "description": "A vulnerability, which was classified as problematic, has been found in PyTorch 2.6.0+cu124. Affected by this issue is the function torch.mkldnn_max_pool2d. The manipulation leads to denial of service. An attack has to be approached locally. The exploit has been disclosed to the public and may be used. The real existence of this vulnerability is still doubted at the moment. The security policy of the project warns to use unknown models which might establish malicious effects.",
+          "cvss": [
+            {
+              "source": "nvd@nist.gov",
+              "type": "Primary",
+              "version": "3.1",
+              "vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:N/I:N/A:H",
+              "metrics": {
+                "baseScore": 5.5,
+                "exploitabilityScore": 1.9,
+                "impactScore": 3.6
+              },
+              "vendorMetadata": {}
+            },
+            {
+              "source": "cna@vuldb.com",
+              "type": "Secondary",
+              "version": "4.0",
+              "vector": "CVSS:4.0/AV:L/AC:L/AT:N/PR:L/UI:N/VC:N/VI:N/VA:L/SC:N/SI:N/SA:N/E:X/CR:X/IR:X/AR:X/MAV:X/MAC:X/MAT:X/MPR:X/MUI:X/MVC:X/MVI:X/MVA:X/MSC:X/MSI:X/MSA:X/S:X/AU:X/R:X/V:X/RE:X/U:X",
+              "metrics": {
+                "baseScore": 4.8
+              },
+              "vendorMetadata": {}
+            },
+            {
+              "source": "cna@vuldb.com",
+              "type": "Secondary",
+              "version": "3.1",
+              "vector": "CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:N/I:N/A:L",
+              "metrics": {
+                "baseScore": 3.3,
+                "exploitabilityScore": 1.9,
+                "impactScore": 1.5
+              },
+              "vendorMetadata": {}
+            },
+            {
+              "source": "cna@vuldb.com",
+              "type": "Secondary",
+              "version": "2.0",
+              "vector": "AV:L/AC:L/Au:S/C:N/I:N/A:P",
+              "metrics": {
+                "baseScore": 1.7,
+                "exploitabilityScore": 3.2,
+                "impactScore": 2.9
+              },
+              "vendorMetadata": {}
+            }
+          ],
+          "epss": [
+            {
+              "cve": "CVE-2025-2953",
+              "epss": 0.00045,
+              "percentile": 0.13729,
+              "date": "2025-12-24"
+            }
+          ],
+          "cwes": [
+            {
+              "cve": "CVE-2025-2953",
+              "cwe": "CWE-404",
+              "source": "cna@vuldb.com",
+              "type": "Secondary"
+            }
+          ]
+        }
+      ],
+      "matchDetails": [
+        {
+          "type": "exact-direct-match",
+          "matcher": "python-matcher",
+          "searchedBy": {
+            "language": "python",
+            "namespace": "github:language:python",
+            "package": {
+              "name": "torch",
+              "version": "2.5.1"
+            }
+          },
+          "found": {
+            "vulnerabilityID": "GHSA-3749-ghw9-m3mg",
+            "versionConstraint": "<2.7.1-rc1 (python)"
+          },
+          "fix": {
+            "suggestedVersion": "2.7.1-rc1"
+          }
+        }
+      ],
+      "artifact": {
+        "id": "pkg:pypi/torch@2.5.1?package-id=a4826424000209ba",
+        "name": "torch",
+        "version": "2.5.1",
+        "type": "python",
+        "locations": [
+          {
+            "path": "/data/models/iitolstykh_mivolo_v2/requirements.txt",
+            "accessPath": ""
+          }
+        ],
+        "language": "python",
+        "licenses": [],
+        "cpes": [
+          "cpe:2.3:a:python-torch:python-torch:2.5.1:*:*:*:*:*:*:*",
+          "cpe:2.3:a:python-torch:python_torch:2.5.1:*:*:*:*:*:*:*",
+          "cpe:2.3:a:python_torch:python-torch:2.5.1:*:*:*:*:*:*:*",
+          "cpe:2.3:a:python_torch:python_torch:2.5.1:*:*:*:*:*:*:*",
+          "cpe:2.3:a:python:python-torch:2.5.1:*:*:*:*:*:*:*",
+          "cpe:2.3:a:python:python_torch:2.5.1:*:*:*:*:*:*:*",
+          "cpe:2.3:a:python-torch:torch:2.5.1:*:*:*:*:*:*:*",
+          "cpe:2.3:a:python_torch:torch:2.5.1:*:*:*:*:*:*:*",
+          "cpe:2.3:a:torch:python-torch:2.5.1:*:*:*:*:*:*:*",
+          "cpe:2.3:a:torch:python_torch:2.5.1:*:*:*:*:*:*:*",
+          "cpe:2.3:a:python:torch:2.5.1:*:*:*:*:*:*:*",
+          "cpe:2.3:a:torch:torch:2.5.1:*:*:*:*:*:*:*"
+        ],
+        "purl": "pkg:pypi/torch@2.5.1",
+        "upstreams": []
+      }
+    },
+    {
+      "vulnerability": {
+        "id": "GHSA-w853-jp5j-5j7f",
+        "dataSource": "https://github.com/advisories/GHSA-w853-jp5j-5j7f",
+        "namespace": "github:language:python",
+        "severity": "Medium",
+        "urls": [],
+        "description": "filelock has a TOCTOU race condition which allows symlink attacks during lock file creation",
+        "cvss": [
+          {
+            "type": "Secondary",
+            "version": "3.1",
+            "vector": "CVSS:3.1/AV:L/AC:H/PR:L/UI:N/S:U/C:N/I:H/A:H",
+            "metrics": {
+              "baseScore": 6.3,
+              "exploitabilityScore": 1.1,
+              "impactScore": 5.2
+            },
+            "vendorMetadata": {}
+          }
+        ],
+        "epss": [
+          {
+            "cve": "CVE-2025-68146",
+            "epss": 0.00016,
+            "percentile": 0.02929,
+            "date": "2025-12-24"
+          }
+        ],
+        "cwes": [
+          {
+            "cve": "CVE-2025-68146",
+            "cwe": "CWE-59",
+            "source": "security-advisories@github.com",
+            "type": "Primary"
+          },
+          {
+            "cve": "CVE-2025-68146",
+            "cwe": "CWE-362",
+            "source": "security-advisories@github.com",
+            "type": "Primary"
+          },
+          {
+            "cve": "CVE-2025-68146",
+            "cwe": "CWE-367",
+            "source": "security-advisories@github.com",
+            "type": "Primary"
+          }
+        ],
+        "fix": {
+          "versions": [
+            "3.20.1"
+          ],
+          "state": "fixed",
+          "available": [
+            {
+              "version": "3.20.1",
+              "date": "2025-12-17",
+              "kind": "first-observed"
+            }
+          ]
+        },
+        "advisories": [],
+        "risk": 0.00904
+      },
+      "relatedVulnerabilities": [
+        {
+          "id": "CVE-2025-68146",
+          "dataSource": "https://nvd.nist.gov/vuln/detail/CVE-2025-68146",
+          "namespace": "nvd:cpe",
+          "severity": "Medium",
+          "urls": [
+            "https://github.com/tox-dev/filelock/commit/4724d7f8c3393ec1f048c93933e6e3e6ec321f0e",
+            "https://github.com/tox-dev/filelock/pull/461",
+            "https://github.com/tox-dev/filelock/releases/tag/3.20.1",
+            "https://github.com/tox-dev/filelock/security/advisories/GHSA-w853-jp5j-5j7f"
+          ],
+          "description": "filelock is a platform-independent file lock for Python. In versions prior to 3.20.1, a Time-of-Check-Time-of-Use (TOCTOU) race condition allows local attackers to corrupt or truncate arbitrary user files through symlink attacks. The vulnerability exists in both Unix and Windows lock file creation where filelock checks if a file exists before opening it with O_TRUNC. An attacker can create a symlink pointing to a victim file in the time gap between the check and open, causing os.open() to follow the symlink and truncate the target file. All users of filelock on Unix, Linux, macOS, and Windows systems are impacted. The vulnerability cascades to dependent libraries. The attack requires local filesystem access and ability to create symlinks (standard user permissions on Unix; Developer Mode on Windows 10+). Exploitation succeeds within 1-3 attempts when lock file paths are predictable. The issue is fixed in version 3.20.1. If immediate upgrade is not possible, use SoftFileLock instead of UnixFileLock/WindowsFileLock (note: different locking semantics, may not be suitable for all use cases); ensure lock file directories have restrictive permissions (chmod 0700) to prevent untrusted users from creating symlinks; and/or monitor lock file directories for suspicious symlinks before running trusted applications. These workarounds provide only partial mitigation. The race condition remains exploitable. Upgrading to version 3.20.1 is strongly recommended.",
+          "cvss": [
+            {
+              "source": "security-advisories@github.com",
+              "type": "Secondary",
+              "version": "3.1",
+              "vector": "CVSS:3.1/AV:L/AC:H/PR:L/UI:N/S:U/C:N/I:H/A:H",
+              "metrics": {
+                "baseScore": 6.3,
+                "exploitabilityScore": 1.1,
+                "impactScore": 5.2
+              },
+              "vendorMetadata": {}
+            }
+          ],
+          "epss": [
+            {
+              "cve": "CVE-2025-68146",
+              "epss": 0.00016,
+              "percentile": 0.02929,
+              "date": "2025-12-24"
+            }
+          ],
+          "cwes": [
+            {
+              "cve": "CVE-2025-68146",
+              "cwe": "CWE-59",
+              "source": "security-advisories@github.com",
+              "type": "Primary"
+            },
+            {
+              "cve": "CVE-2025-68146",
+              "cwe": "CWE-362",
+              "source": "security-advisories@github.com",
+              "type": "Primary"
+            },
+            {
+              "cve": "CVE-2025-68146",
+              "cwe": "CWE-367",
+              "source": "security-advisories@github.com",
+              "type": "Primary"
+            }
+          ]
+        }
+      ],
+      "matchDetails": [
+        {
+          "type": "exact-direct-match",
+          "matcher": "python-matcher",
+          "searchedBy": {
+            "language": "python",
+            "namespace": "github:language:python",
+            "package": {
+              "name": "filelock",
+              "version": "3.20.0"
+            }
+          },
+          "found": {
+            "vulnerabilityID": "GHSA-w853-jp5j-5j7f",
+            "versionConstraint": "<3.20.1 (python)"
+          },
+          "fix": {
+            "suggestedVersion": "3.20.1"
+          }
+        }
+      ],
+      "artifact": {
+        "id": "pkg:pypi/filelock@3.20.0?package-id=9149d4cd895e62d3",
+        "name": "filelock",
+        "version": "3.20.0",
+        "type": "python",
+        "locations": [
+          {
+            "path": "/venv/lib/python3.12/site-packages/filelock-3.20.0.dist-info/METADATA",
+            "accessPath": ""
+          },
+          {
+            "path": "/venv/lib/python3.12/site-packages/filelock-3.20.0.dist-info/RECORD",
+            "accessPath": ""
+          }
+        ],
+        "language": "python",
+        "licenses": [
+          "Unlicense"
+        ],
+        "cpes": [
+          "cpe:2.3:a:python-filelock:python-filelock:3.20.0:*:*:*:*:*:*:*",
+          "cpe:2.3:a:python-filelock:python_filelock:3.20.0:*:*:*:*:*:*:*",
+          "cpe:2.3:a:python_filelock:python-filelock:3.20.0:*:*:*:*:*:*:*",
+          "cpe:2.3:a:python_filelock:python_filelock:3.20.0:*:*:*:*:*:*:*",
+          "cpe:2.3:a:filelock:python-filelock:3.20.0:*:*:*:*:*:*:*",
+          "cpe:2.3:a:filelock:python_filelock:3.20.0:*:*:*:*:*:*:*",
+          "cpe:2.3:a:python-filelock:filelock:3.20.0:*:*:*:*:*:*:*",
+          "cpe:2.3:a:python_filelock:filelock:3.20.0:*:*:*:*:*:*:*",
+          "cpe:2.3:a:python:python-filelock:3.20.0:*:*:*:*:*:*:*",
+          "cpe:2.3:a:python:python_filelock:3.20.0:*:*:*:*:*:*:*",
+          "cpe:2.3:a:filelock:filelock:3.20.0:*:*:*:*:*:*:*",
+          "cpe:2.3:a:python:filelock:3.20.0:*:*:*:*:*:*:*"
+        ],
+        "purl": "pkg:pypi/filelock@3.20.0",
+        "upstreams": []
+      }
+    }
+  ],
+  "source": {
+    "type": "file",
+    "target": "/home/carloacutis/projects/huggingface"
+  },
+  "distro": {
+    "name": "",
+    "version": "",
+    "idLike": null
+  },
+  "descriptor": {
+    "name": "grype",
+    "version": "0.102.0",
+    "configuration": {
+      "output": [
+        "json"
+      ],
+      "file": "",
+      "pretty": false,
+      "distro": "",
+      "add-cpes-if-none": false,
+      "output-template-file": "",
+      "check-for-app-update": true,
+      "only-fixed": false,
+      "only-notfixed": false,
+      "ignore-wontfix": "",
+      "platform": "",
+      "search": {
+        "scope": "squashed",
+        "unindexed-archives": false,
+        "indexed-archives": true
+      },
+      "ignore": [
+        {
+          "vulnerability": "",
+          "include-aliases": false,
+          "reason": "",
+          "namespace": "",
+          "fix-state": "",
+          "package": {
+            "name": "kernel-headers",
+            "version": "",
+            "language": "",
+            "type": "rpm",
+            "location": "",
+            "upstream-name": "kernel"
+          },
+          "vex-status": "",
+          "vex-justification": "",
+          "match-type": "exact-indirect-match"
+        },
+        {
+          "vulnerability": "",
+          "include-aliases": false,
+          "reason": "",
+          "namespace": "",
+          "fix-state": "",
+          "package": {
+            "name": "linux(-.*)?-headers-.*",
+            "version": "",
+            "language": "",
+            "type": "deb",
+            "location": "",
+            "upstream-name": "linux.*"
+          },
+          "vex-status": "",
+          "vex-justification": "",
+          "match-type": "exact-indirect-match"
+        },
+        {
+          "vulnerability": "",
+          "include-aliases": false,
+          "reason": "",
+          "namespace": "",
+          "fix-state": "",
+          "package": {
+            "name": "linux-libc-dev",
+            "version": "",
+            "language": "",
+            "type": "deb",
+            "location": "",
+            "upstream-name": "linux"
+          },
+          "vex-status": "",
+          "vex-justification": "",
+          "match-type": "exact-indirect-match"
+        }
+      ],
+      "exclude": [],
+      "externalSources": {
+        "enable": false,
+        "maven": {
+          "searchUpstreamBySha1": true,
+          "baseUrl": "https://search.maven.org/solrsearch/select",
+          "rateLimit": 300000000
+        }
+      },
+      "match": {
+        "java": {
+          "using-cpes": false
+        },
+        "jvm": {
+          "using-cpes": true
+        },
+        "dotnet": {
+          "using-cpes": false
+        },
+        "golang": {
+          "using-cpes": false,
+          "always-use-cpe-for-stdlib": true,
+          "allow-main-module-pseudo-version-comparison": false
+        },
+        "javascript": {
+          "using-cpes": false
+        },
+        "python": {
+          "using-cpes": false
+        },
+        "ruby": {
+          "using-cpes": false
+        },
+        "rust": {
+          "using-cpes": false
+        },
+        "stock": {
+          "using-cpes": true
+        }
+      },
+      "fail-on-severity": "",
+      "registry": {
+        "insecure-skip-tls-verify": false,
+        "insecure-use-http": false,
+        "auth": null,
+        "ca-cert": ""
+      },
+      "show-suppressed": false,
+      "by-cve": false,
+      "SortBy": {
+        "sort-by": "risk"
+      },
+      "name": "",
+      "default-image-pull-source": "",
+      "vex-documents": [],
+      "vex-add": [],
+      "match-upstream-kernel-headers": false,
+      "fix-channel": {
+        "redhat-eus": {
+          "apply": "auto",
+          "versions": ">= 8.0"
+        }
+      },
+      "timestamp": true,
+      "db": {
+        "cache-dir": "/home/carloacutis/.cache/grype/db",
+        "update-url": "https://grype.anchore.io/databases",
+        "ca-cert": "",
+        "auto-update": true,
+        "validate-by-hash-on-start": true,
+        "validate-age": true,
+        "max-allowed-built-age": 432000000000000,
+        "require-update-check": false,
+        "update-available-timeout": 30000000000,
+        "update-download-timeout": 300000000000,
+        "max-update-check-frequency": 7200000000000
+      },
+      "exp": {},
+      "dev": {
+        "db": {
+          "debug": false
+        }
+      }
+    },
+    "db": {
+      "status": {
+        "schemaVersion": "v6.1.3",
+        "from": "https://grype.anchore.io/databases/v6/vulnerability-db_v6.1.3_2025-12-24T18:52:27Z_1766611440.tar.zst?checksum=sha256%3A9722068002d07bb68f1e03f3267ea8f695f78afb44d72f45e3518ed2ad954ef9",
+        "built": "2025-12-24T21:24:00Z",
+        "path": "/home/carloacutis/.cache/grype/db/6/vulnerability.db",
+        "valid": true
+      },
+      "providers": {
+        "alma": {
+          "captured": "2025-12-24T18:52:31Z",
+          "input": "xxh64:4eae1d77b8a0f455"
+        },
+        "alpine": {
+          "captured": "2025-12-24T18:52:36Z",
+          "input": "xxh64:5d92a090a8e9250c"
+        },
+        "amazon": {
+          "captured": "2025-12-24T18:52:29Z",
+          "input": "xxh64:2297f91bf34c2483"
+        },
+        "bitnami": {
+          "captured": "2025-12-24T18:52:38Z",
+          "input": "xxh64:f5ecbdf83577f2a6"
+        },
+        "chainguard": {
+          "captured": "2025-12-24T18:52:35Z",
+          "input": "xxh64:bcf70ee8d7265525"
+        },
+        "chainguard-libraries": {
+          "captured": "2025-12-24T18:52:37Z",
+          "input": "xxh64:ced5f8566cc01aa5"
+        },
+        "debian": {
+          "captured": "2025-12-24T18:52:39Z",
+          "input": "xxh64:b48bde4aaf199344"
+        },
+        "echo": {
+          "captured": "2025-12-24T18:52:33Z",
+          "input": "xxh64:9f8fd745645c58d6"
+        },
+        "epss": {
+          "captured": "2025-12-24T18:52:33Z",
+          "input": "xxh64:3807868983f7fb74"
+        },
+        "github": {
+          "captured": "2025-12-24T18:52:42Z",
+          "input": "xxh64:ce0ce0e7f629424a"
+        },
+        "kev": {
+          "captured": "2025-12-24T18:52:40Z",
+          "input": "xxh64:41c85ebd6bbcbc08"
+        },
+        "mariner": {
+          "captured": "2025-12-24T18:52:27Z",
+          "input": "xxh64:a42df06c35fc51ad"
+        },
+        "minimos": {
+          "captured": "2025-12-24T18:52:35Z",
+          "input": "xxh64:acbba46d35731351"
+        },
+        "nvd": {
+          "captured": "2025-12-24T18:55:55Z",
+          "input": "xxh64:000458eb9d8332ed"
+        },
+        "oracle": {
+          "captured": "2025-12-24T18:52:43Z",
+          "input": "xxh64:6b430360a82b732e"
+        },
+        "rhel": {
+          "captured": "2025-12-24T18:53:33Z",
+          "input": "xxh64:640840284b28e7a0"
+        },
+        "sles": {
+          "captured": "2025-12-24T18:52:48Z",
+          "input": "xxh64:053485dad3b70339"
+        },
+        "ubuntu": {
+          "captured": "2025-12-24T18:54:01Z",
+          "input": "xxh64:db4bd9c2ded77231"
+        },
+        "wolfi": {
+          "captured": "2025-12-24T18:52:29Z",
+          "input": "xxh64:695b1691a152769b"
+        }
+      }
+    },
+    "timestamp": "2025-12-25T08:59:15.071668951Z"
+  }
+}

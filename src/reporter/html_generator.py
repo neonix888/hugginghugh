@@ -180,6 +180,7 @@ class HTMLReportGenerator:
                     "points": f.points,
                     "reason": f.reason,
                     "status": f.status,
+                    "tooltip": f.tooltip,
                 }
                 for f in trust_score.factors
             ],

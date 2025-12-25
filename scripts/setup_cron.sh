@@ -31,7 +31,8 @@ mkdir -p "$PROJECT_DIR/logs"
 chmod +x "$SCAN_SCRIPT"
 
 # Cron job entry (runs at 02:00 UTC daily)
-CRON_ENTRY="0 2 * * * $VENV_PYTHON $SCAN_SCRIPT >> $LOG_FILE 2>&1"
+# Scans 500 models and deploys to production
+CRON_ENTRY="0 2 * * * $VENV_PYTHON $SCAN_SCRIPT --deploy --limit 500 >> $LOG_FILE 2>&1"
 
 # Check if cron job already exists
 if crontab -l 2>/dev/null | grep -q "hugginghugh"; then

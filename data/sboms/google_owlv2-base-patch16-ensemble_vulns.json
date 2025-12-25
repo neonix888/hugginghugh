@@ -1,0 +1,51 @@
+{
+  "summary": {
+    "total": 0,
+    "critical": 0,
+    "high": 0,
+    "medium": 0,
+    "low": 0,
+    "unknown": 0
+  },
+  "by_severity": {},
+  "all_vulnerabilities": [],
+  "minimum_safe_versions": {
+    "torch": {
+      "min_version": "2.6.0",
+      "cve_id": "CVE-2025-32434",
+      "severity": "CRITICAL",
+      "description": "RCE via torch.load() even with weights_only=True"
+    },
+    "transformers": {
+      "min_version": "4.48.0",
+      "cve_id": "GHSA-torch",
+      "severity": "HIGH",
+      "description": "Requires torch>=2.6.0 for safe model loading"
+    },
+    "pillow": {
+      "min_version": "10.0.1",
+      "cve_id": "CVE-2023-4863",
+      "severity": "HIGH",
+      "description": "WebP heap buffer overflow"
+    },
+    "requests": {
+      "min_version": "2.32.0",
+      "cve_id": "CVE-2024-35195",
+      "severity": "MEDIUM",
+      "description": "Certificate verification bypass"
+    },
+    "numpy": {
+      "min_version": "1.22.0",
+      "cve_id": "CVE-2021-41495",
+      "severity": "HIGH",
+      "description": "NULL pointer dereference"
+    },
+    "scipy": {
+      "min_version": "1.10.0",
+      "cve_id": "CVE-2023-25399",
+      "severity": "MEDIUM",
+      "description": "Memory corruption in sparse arrays"
+    }
+  },
+  "security_recommendations": []
+}

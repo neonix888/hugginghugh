@@ -38,8 +38,19 @@ Granular task checklist for ongoing development. Update this document as tasks p
 - [ ] Configure black/isort
 - [ ] Configure bandit for security scanning
 - [ ] Set up pre-commit hooks
-- [ ] Run full production scan with 50 models
-- [ ] Deploy to hugginghugh.etcbin.io
+- [x] Run full production scan with 50 models ✅
+- [x] Deploy to hugginghugh.etcbin.io ✅
+- [x] Fix trust score summary text (was confusing users) ✅
+- [x] Add tooltip explanations for trust factors ✅
+- [x] Add deployment safeguards (--deploy flag, min model checks) ✅
+- [x] Generate self-SBOM report at /sbom.html ✅
+- [x] Add grade distribution cards (A/B/C/D/F) on dashboard ✅
+- [x] Increase models from 50 to 100 ✅
+- [x] Add Load More pagination (20 at a time) ✅
+- [x] Create individual grade pages (/grade/a.html, etc.) ✅
+- [x] Implement PostgreSQL leaderboard database ✅
+- [x] Create leaderboard podium on front page ✅
+- [x] Create full leaderboard page (/leaderboard.html) ✅
 
 ### Low Priority
 
@@ -115,7 +126,95 @@ Track what was done in each development session:
   2. NoneType error when license is None in license_analyzer.py
 - Test scan with 3 models: 3/3 successful
 - Commit: b7ef9c5
-- **Next:** Run production scan, deploy to Nginx
+
+### Session: 2025-12-10
+- Deployed to production at https://hugginghugh.etcbin.io
+- SSL certificate from Let's Encrypt (expires March 10, 2026)
+- Production scan with 50 top HuggingFace models
+- Fixed trust score summary text - was saying "1 critical, 5 warnings" which confused users
+  (these referred to trust FACTORS, not CVE vulnerabilities)
+  - Changed to "X of 8 factors passed" for clarity
+- Added tooltip explanations for all 8 trust factors:
+  - Each factor now has a "?" icon with popup explaining the scoring formula
+  - Tooltips show max points, criteria, and how the score is calculated
+- Verified 16 unique trust scores across 50 models (36-78 range)
+- Updated trust_scorer.py, html_generator.py, model_report.html, style.css
+- Added deployment safeguards to run_daily_scan.py:
+  - Requires explicit --deploy flag
+  - Minimum 50 models check before deploying
+  - Prevents accidental deployment of test scans
+- Created self-SBOM generator (scripts/generate_self_sbom.py):
+  - Generates SBOM of HuggingHugh project using Syft
+  - Scans for vulnerabilities using Grype
+  - Outputs HTML report at /sbom.html
+  - Integrated into daily scan workflow
+
+### Session: 2025-12-11 (Morning)
+- Added grade distribution cards (A/B/C/D/F) on dashboard front page
+- Increased models scanned from 50 to 100
+- Added "Load More" pagination (20 models at a time) with vanilla JS
+- Made grade cards clickable - link to individual grade pages
+- Created grade pages (/grade/a.html, /grade/b.html, etc.) with same pagination
+- Implemented PostgreSQL leaderboard system:
+  - Created database `hugginghugh` with tables: score_history, current_rankings, hall_of_fame
+  - Created src/database/leaderboard.py with LeaderboardDB class
+  - Eligibility: 1M+ downloads minimum
+  - Tie-breaker: 5-day grace period, then higher downloads wins
+  - Streak tracking: days at current rank with same score
+- Added leaderboard podium section on front page (top 3 models)
+- Created full leaderboard page (/leaderboard.html):
+  - Large podium display with gold/silver/bronze styling
+  - Full rankings table with all 100 eligible models
+  - Rank change indicators, streak badges, grade badges
+  - Rules info card explaining eligibility and tie-breakers
+- Added "Leaderboard" link to navigation
+- CSS cache buster updated to v=5
+
+### Session: 2025-12-11 (Afternoon/Evening)
+- Fixed deployment permissions (sudo for www-data owned directories)
+- Added global "Buy Me a Coffee" support card to base.html (appears on every page)
+  - Vietnamese coffee reference: "cà phê sữa đá"
+  - Removed redundant support cards from dashboard, model_report, about pages
+- Added OSV-Scanner integration alongside Grype for vulnerability scanning
+- Added timing tracking to daily scan script (Timer and TimingStats classes)
+- Added Environment Checklist (minimum safe versions for common ML packages)
+- Expanded ML framework dependency detection:
+  - Added 40+ frameworks: JAX/Flax, TensorFlow, MLX, ONNX, vLLM, etc.
+  - Added pipeline tag to dependencies mapping
+  - Added architecture patterns to dependencies mapping
+  - Added tag-based detection (GGUF, GPTQ, AWQ, quantization, etc.)
+  - Added file extension based detection
+  - Added quantization config parsing
+- Improved trust score algorithm:
+  - Recalibrated weights: security factors = 51% (safetensors 18%, no pickle 18%, CVEs 15%)
+  - Expanded known trustworthy organizations list (50+ orgs)
+  - Added GGUF and ONNX as safe serialization formats
+  - Downloads as reputation proxy for unknown publishers
+- Added methodology disclaimer to About page:
+  - "How We Build These Reports" section
+  - Explains dependency inference, vulnerability scanning, trust scores
+  - Sets expectations: "starting point for security review, not replacement"
+- Redesigned "Minimum Safe Versions" as "Environment Checklist":
+  - Removed alarming severity badges
+  - Cleaner card-based design
+  - Better context: "model uses current versions, ensure YOUR environment meets minimums"
+- Updated About page Trust Score Factors table with new weights
+- CSS cache buster updated to v=7
+
+### Session: 2025-12-13
+- Updated Hero section with new messaging (B+D hybrid):
+  - New headline: "The free security dashboard for AI models."
+  - New subtext emphasizing: pickle file risks, free SBOM reports, open methodology, zero paywall
+  - Added hero badges: "Security-First Scoring", "Free SBOM Reports", "Updated Daily"
+- Expanded model scanning from 100 to 1,000 models:
+  - Updated default --limit from 100 to 1000
+  - Updated minimum deployment threshold from 100 to 500
+  - Updated documentation and help text
+- CSS cache buster updated to v=8
+- Rationale: Position HuggingHugh as the free alternative to enterprise AI security tools
+  - Emphasize what makes us different: security-first scoring, pickle file penalties
+  - Scale to 1,000 models for credibility and coverage
+  - Clear messaging: "enterprise tools charge thousands, we're free"
 
 ---
 
@@ -138,6 +237,10 @@ Track significant code changes to maintain awareness:
 | 2024-12-10 | scripts/* | Daily scan orchestrator, setup scripts | No |
 | 2024-12-10 | src/generator/sbom_generator.py | Fix CycloneDX 1.5+ tools format handling | No |
 | 2024-12-10 | src/generator/license_analyzer.py | Fix NoneType error on null license | No |
+| 2025-12-10 | src/generator/trust_scorer.py | Added tooltip field, fixed summary text | No |
+| 2025-12-10 | src/reporter/html_generator.py | Pass tooltip to template context | No |
+| 2025-12-10 | templates/model_report.html | Added tooltip markup for trust factors | N/A |
+| 2025-12-10 | static/css/style.css | Added tooltip CSS styling | N/A |
 
 ---
 

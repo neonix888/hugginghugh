@@ -1,0 +1,1097 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HuggingHugh SBOM Report</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <style>
+        .sbom-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: var(--space-xl);
+            border-radius: var(--radius-lg);
+            margin-bottom: var(--space-xl);
+        }
+        .sbom-header h1 {
+            margin: 0 0 var(--space-sm) 0;
+            font-size: 2rem;
+        }
+        .sbom-header p {
+            margin: 0;
+            opacity: 0.9;
+        }
+        .score-circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: #ef4444;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            box-shadow: var(--shadow-lg);
+        }
+        .score-circle .score {
+            font-size: 2.5rem;
+            line-height: 1;
+        }
+        .score-circle .grade {
+            font-size: 1.5rem;
+            opacity: 0.9;
+        }
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: var(--space-md);
+            margin-bottom: var(--space-xl);
+        }
+        .summary-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: var(--space-lg);
+            text-align: center;
+        }
+        .summary-card .number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text);
+        }
+        .summary-card .label {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+        }
+        .summary-card.critical .number { color: #ef4444; }
+        .summary-card.high .number { color: #f97316; }
+        .summary-card.medium .number { color: #eab308; }
+        .summary-card.low .number { color: #22c55e; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: var(--space-xl);
+        }
+        th, td {
+            padding: var(--space-sm) var(--space-md);
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+        th {
+            background: var(--background);
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+        }
+        tr:hover {
+            background: var(--background);
+        }
+        .severity-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: var(--radius-full);
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .severity-badge.critical { background: #fef2f2; color: #dc2626; }
+        .severity-badge.high { background: #fff7ed; color: #ea580c; }
+        .severity-badge.medium { background: #fefce8; color: #ca8a04; }
+        .severity-badge.low { background: #f0fdf4; color: #16a34a; }
+        .severity-badge.unknown { background: #f3f4f6; color: #6b7280; }
+
+        .type-badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: var(--radius-sm);
+            font-size: 0.75rem;
+            background: var(--background);
+            color: var(--text-muted);
+        }
+
+        .section {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: var(--space-lg);
+            margin-bottom: var(--space-xl);
+        }
+        .section h2 {
+            margin: 0 0 var(--space-md) 0;
+            padding-bottom: var(--space-sm);
+            border-bottom: 2px solid var(--border);
+        }
+
+        .meta-info {
+            display: flex;
+            gap: var(--space-xl);
+            flex-wrap: wrap;
+            margin-top: var(--space-md);
+            padding-top: var(--space-md);
+            border-top: 1px solid rgba(255,255,255,0.2);
+            font-size: 0.875rem;
+        }
+        .meta-info span {
+            display: flex;
+            align-items: center;
+            gap: var(--space-xs);
+        }
+
+        .header-flex {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: var(--space-lg);
+        }
+
+        .table-container {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <header class="site-header">
+        <div class="container">
+            <div class="header-content">
+                <a href="/" class="logo">
+                    <span class="logo-icon">🤗</span>
+                    <span class="logo-text">HuggingHugh</span>
+                </a>
+                <nav class="main-nav">
+                    <a href="/">Dashboard</a>
+                    <a href="/about.html">About</a>
+                    <a href="/sbom.html" class="active">Our SBOM</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="container">
+            <div class="sbom-header">
+                <div class="header-flex">
+                    <div>
+                        <h1>HuggingHugh SBOM Report</h1>
+                        <p>Software Bill of Materials for this project - eating our own dog food!</p>
+                        <div class="meta-info">
+                            <span>Generated: 2025-12-25 08:59:15</span>
+                            <span>Components: 102</span>
+                            <span>Vulnerabilities: 14</span>
+                        </div>
+                    </div>
+                    <div class="score-circle">
+                        <span class="score">20</span>
+                        <span class="grade">F</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="summary-grid">
+                <div class="summary-card critical">
+                    <div class="number">2</div>
+                    <div class="label">Critical</div>
+                </div>
+                <div class="summary-card high">
+                    <div class="number">0</div>
+                    <div class="label">High</div>
+                </div>
+                <div class="summary-card medium">
+                    <div class="number">9</div>
+                    <div class="label">Medium</div>
+                </div>
+                <div class="summary-card low">
+                    <div class="number">3</div>
+                    <div class="label">Low</div>
+                </div>
+                <div class="summary-card">
+                    <div class="number">102</div>
+                    <div class="label">Components</div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Vulnerabilities</h2>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>CVE ID</th>
+                                <th>Severity</th>
+                                <th>Package</th>
+                                <th>Version</th>
+                                <th>Fix</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            
+        <tr class="vuln-critical">
+            <td><a href="https://nvd.nist.gov/vuln/detail/GHSA-53q9-r3pm-6pq6" target="_blank">GHSA-53q9-r3pm-6pq6</a></td>
+            <td><span class="severity-badge critical">Critical</span></td>
+            <td>torch</td>
+            <td>2.5.1</td>
+            <td>2.6.0</td>
+        </tr>
+        
+        <tr class="vuln-critical">
+            <td><a href="https://nvd.nist.gov/vuln/detail/GHSA-53q9-r3pm-6pq6" target="_blank">GHSA-53q9-r3pm-6pq6</a></td>
+            <td><span class="severity-badge critical">Critical</span></td>
+            <td>torch</td>
+            <td>2.5.1</td>
+            <td>2.6.0</td>
+        </tr>
+        
+        <tr class="vuln-medium">
+            <td><a href="https://nvd.nist.gov/vuln/detail/GHSA-9356-575x-2w9m" target="_blank">GHSA-9356-575x-2w9m</a></td>
+            <td><span class="severity-badge medium">Medium</span></td>
+            <td>transformers</td>
+            <td>4.51.0</td>
+            <td>4.53.0</td>
+        </tr>
+        
+        <tr class="vuln-medium">
+            <td><a href="https://nvd.nist.gov/vuln/detail/GHSA-37mw-44qp-f5jm" target="_blank">GHSA-37mw-44qp-f5jm</a></td>
+            <td><span class="severity-badge medium">Medium</span></td>
+            <td>transformers</td>
+            <td>4.51.0</td>
+            <td>4.52.1</td>
+        </tr>
+        
+        <tr class="vuln-medium">
+            <td><a href="https://nvd.nist.gov/vuln/detail/GHSA-4w7r-h757-3r74" target="_blank">GHSA-4w7r-h757-3r74</a></td>
+            <td><span class="severity-badge medium">Medium</span></td>
+            <td>transformers</td>
+            <td>4.51.0</td>
+            <td>4.53.0</td>
+        </tr>
+        
+        <tr class="vuln-medium">
+            <td><a href="https://nvd.nist.gov/vuln/detail/GHSA-59p9-h35m-wg4g" target="_blank">GHSA-59p9-h35m-wg4g</a></td>
+            <td><span class="severity-badge medium">Medium</span></td>
+            <td>transformers</td>
+            <td>4.51.0</td>
+            <td>4.53.0</td>
+        </tr>
+        
+        <tr class="vuln-medium">
+            <td><a href="https://nvd.nist.gov/vuln/detail/GHSA-rcv9-qm8p-9p6j" target="_blank">GHSA-rcv9-qm8p-9p6j</a></td>
+            <td><span class="severity-badge medium">Medium</span></td>
+            <td>transformers</td>
+            <td>4.51.0</td>
+            <td>4.53.0</td>
+        </tr>
+        
+        <tr class="vuln-medium">
+            <td><a href="https://nvd.nist.gov/vuln/detail/GHSA-887c-mr87-cxwp" target="_blank">GHSA-887c-mr87-cxwp</a></td>
+            <td><span class="severity-badge medium">Medium</span></td>
+            <td>torch</td>
+            <td>2.5.1</td>
+            <td>2.8.0</td>
+        </tr>
+        
+        <tr class="vuln-medium">
+            <td><a href="https://nvd.nist.gov/vuln/detail/GHSA-887c-mr87-cxwp" target="_blank">GHSA-887c-mr87-cxwp</a></td>
+            <td><span class="severity-badge medium">Medium</span></td>
+            <td>torch</td>
+            <td>2.5.1</td>
+            <td>2.8.0</td>
+        </tr>
+        
+        <tr class="vuln-medium">
+            <td><a href="https://nvd.nist.gov/vuln/detail/GHSA-428g-f7cq-pgp5" target="_blank">GHSA-428g-f7cq-pgp5</a></td>
+            <td><span class="severity-badge medium">Medium</span></td>
+            <td>marshmallow</td>
+            <td>4.1.1</td>
+            <td>4.1.2</td>
+        </tr>
+        
+        <tr class="vuln-medium">
+            <td><a href="https://nvd.nist.gov/vuln/detail/GHSA-w853-jp5j-5j7f" target="_blank">GHSA-w853-jp5j-5j7f</a></td>
+            <td><span class="severity-badge medium">Medium</span></td>
+            <td>filelock</td>
+            <td>3.20.0</td>
+            <td>3.20.1</td>
+        </tr>
+        
+        <tr class="vuln-low">
+            <td><a href="https://nvd.nist.gov/vuln/detail/GHSA-phhr-52qp-3mj4" target="_blank">GHSA-phhr-52qp-3mj4</a></td>
+            <td><span class="severity-badge low">Low</span></td>
+            <td>transformers</td>
+            <td>4.51.0</td>
+            <td>4.52.1</td>
+        </tr>
+        
+        <tr class="vuln-low">
+            <td><a href="https://nvd.nist.gov/vuln/detail/GHSA-3749-ghw9-m3mg" target="_blank">GHSA-3749-ghw9-m3mg</a></td>
+            <td><span class="severity-badge low">Low</span></td>
+            <td>torch</td>
+            <td>2.5.1</td>
+            <td>2.7.1-rc1</td>
+        </tr>
+        
+        <tr class="vuln-low">
+            <td><a href="https://nvd.nist.gov/vuln/detail/GHSA-3749-ghw9-m3mg" target="_blank">GHSA-3749-ghw9-m3mg</a></td>
+            <td><span class="severity-badge low">Low</span></td>
+            <td>torch</td>
+            <td>2.5.1</td>
+            <td>2.7.1-rc1</td>
+        </tr>
+        
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Components (102)</h2>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Version</th>
+                                <th>Type</th>
+                                <th>License</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            
+            <tr>
+                <td>Simple Launcher</td>
+                <td>1.1.0.14</td>
+                <td><span class="type-badge">application</span></td>
+                <td>Unknown</td>
+            </tr>
+            
+            <tr>
+                <td>Simple Launcher</td>
+                <td>1.1.0.14</td>
+                <td><span class="type-badge">application</span></td>
+                <td>Unknown</td>
+            </tr>
+            
+            <tr>
+                <td>Simple Launcher</td>
+                <td>1.1.0.14</td>
+                <td><span class="type-badge">application</span></td>
+                <td>Unknown</td>
+            </tr>
+            
+            <tr>
+                <td>Simple Launcher</td>
+                <td>1.1.0.14</td>
+                <td><span class="type-badge">application</span></td>
+                <td>Unknown</td>
+            </tr>
+            
+            <tr>
+                <td>Simple Launcher</td>
+                <td>1.1.0.14</td>
+                <td><span class="type-badge">application</span></td>
+                <td>Unknown</td>
+            </tr>
+            
+            <tr>
+                <td>Simple Launcher</td>
+                <td>1.1.0.14</td>
+                <td><span class="type-badge">application</span></td>
+                <td>Unknown</td>
+            </tr>
+            
+            <tr>
+                <td>accelerate</td>
+                <td>1.8.1</td>
+                <td><span class="type-badge">library</span></td>
+                <td>Unknown</td>
+            </tr>
+            
+            <tr>
+                <td>aiofiles</td>
+                <td>25.1.0</td>
+                <td><span class="type-badge">library</span></td>
+                <td>Apache-2.0</td>
+            </tr>
+            
+            <tr>
+                <td>annotated-types</td>
+                <td>0.7.0</td>
+                <td><span class="type-badge">library</span></td>
+                <td>Unknown</td>
+            </tr>
+            
+            <tr>
+                <td>anyio</td>
+                <td>4.12.0</td>
+                <td><span class="type-badge">library</span></td>
+                <td>MIT</td>
+            </tr>
+            
+            <tr>
+                <td>astroid</td>
+                <td>4.0.2</td>
+                <td><span class="type-badge">library</span></td>
+                <td>LGPL-2.1-or-later</td>
+            </tr>
+            
+            <tr>
+                <td>authlib</td>
+                <td>1.6.5</td>
+                <td><span class="type-badge">library</span></td>
+                <td>BSD-3-Clause</td>
+            </tr>
+            
+            <tr>
+                <td>bandit</td>
+                <td>1.9.2</td>
+                <td><span class="type-badge">library</span></td>
+                <td>Apache-2.0</td>
+            </tr>
+            
+            <tr>
+                <td>black</td>
+                <td>25.12.0</td>
+                <td><span class="type-badge">library</span></td>
+                <td>MIT</td>
+            </tr>
+            
+            <tr>
+                <td>boolean-py</td>
+                <td>5.0</td>
+                <td><span class="type-badge">library</span></td>
+                <td>BSD-2-Clause</td>
+            </tr>
+            
+            <tr>
+                <td>cachecontrol</td>
+                <td>0.14.4</td>
+                <td><span class="type-badge">library</span></td>
+                <td>Apache-2.0</td>
+            </tr>
+            
+            <tr>
+                <td>certifi</td>
+                <td>2025.11.12</td>
+                <td><span class="type-badge">library</span></td>
+                <td>MPL-2.0</td>
+            </tr>
+            
+            <tr>
+                <td>cffi</td>
+                <td>2.0.0</td>
+                <td><span class="type-badge">library</span></td>
+                <td>MIT</td>
+            </tr>
+            
+            <tr>
+                <td>charset-normalizer</td>
+                <td>3.4.4</td>
+                <td><span class="type-badge">library</span></td>
+                <td>MIT</td>
+            </tr>
+            
+            <tr>
+                <td>click</td>
+                <td>8.3.1</td>
+                <td><span class="type-badge">library</span></td>
+                <td>BSD-3-Clause</td>
+            </tr>
+            
+            <tr>
+                <td>coverage</td>
+                <td>7.13.0</td>
+                <td><span class="type-badge">library</span></td>
+                <td>Apache-2.0</td>
+            </tr>
+            
+            <tr>
+                <td>cryptography</td>
+                <td>46.0.3</td>
+                <td><span class="type-badge">library</span></td>
+                <td>Unknown</td>
+            </tr>
+            
+            <tr>
+                <td>cyclonedx-python-lib</td>
+                <td>11.6.0</td>
+                <td><span class="type-badge">library</span></td>
+                <td>Apache-2.0</td>
+            </tr>
+            
+            <tr>
+                <td>defusedxml</td>
+                <td>0.7.1</td>
+                <td><span class="type-badge">library</span></td>
+                <td>PSFL</td>
+            </tr>
+            
+            <tr>
+                <td>dill</td>
+                <td>0.4.0</td>
+                <td><span class="type-badge">library</span></td>
+                <td>BSD-3-Clause</td>
+            </tr>
+            
+            <tr>
+                <td>dparse</td>
+                <td>0.6.4</td>
+                <td><span class="type-badge">library</span></td>
+                <td>MIT license</td>
+            </tr>
+            
+            <tr>
+                <td>filelock</td>
+                <td>3.20.0</td>
+                <td><span class="type-badge">library</span></td>
+                <td>Unlicense</td>
+            </tr>
+            
+            <tr>
+                <td>fsspec</td>
+                <td>2025.12.0</td>
+                <td><span class="type-badge">library</span></td>
+                <td>BSD-3-Clause</td>
+            </tr>
+            
+            <tr>
+                <td>h11</td>
+                <td>0.16.0</td>
+                <td><span class="type-badge">library</span></td>
+                <td>MIT</td>
+            </tr>
+            
+            <tr>
+                <td>hf-xet</td>
+                <td>1.2.0</td>
+                <td><span class="type-badge">library</span></td>
+                <td>Apache-2.0</td>
+            </tr>
+            
+            <tr>
+                <td>httpcore</td>
+                <td>1.0.9</td>
+                <td><span class="type-badge">library</span></td>
+                <td>BSD-3-Clause</td>
+            </tr>
+            
+            <tr>
+                <td>httpx</td>
+                <td>0.28.1</td>
+                <td><span class="type-badge">library</span></td>
+                <td>BSD-3-Clause</td>
+            </tr>
+            
+            <tr>
+                <td>huggingface-hub</td>
+                <td>1.2.2</td>
+                <td><span class="type-badge">library</span></td>
+                <td>Apache</td>
+            </tr>
+            
+            <tr>
+                <td>idna</td>
+                <td>3.11</td>
+                <td><span class="type-badge">library</span></td>
+                <td>BSD-3-Clause</td>
+            </tr>
+            
+            <tr>
+                <td>iniconfig</td>
+                <td>2.3.0</td>
+                <td><span class="type-badge">library</span></td>
+                <td>MIT</td>
+            </tr>
+            
+            <tr>
+                <td>isort</td>
+                <td>7.0.0</td>
+                <td><span class="type-badge">library</span></td>
+                <td>MIT</td>
+            </tr>
+            
+            <tr>
+                <td>jinja2</td>
+                <td>3.1.6</td>
+                <td><span class="type-badge">library</span></td>
+                <td>Unknown</td>
+            </tr>
+            
+            <tr>
+                <td>joblib</td>
+                <td>1.5.2</td>
+                <td><span class="type-badge">library</span></td>
+                <td>BSD 3-Clause</td>
+            </tr>
+            
+            <tr>
+                <td>librt</td>
+                <td>0.7.3</td>
+                <td><span class="type-badge">library</span></td>
+                <td>MIT</td>
+            </tr>
+            
+            <tr>
+                <td>license-expression</td>
+                <td>30.4.4</td>
+                <td><span class="type-badge">library</span></td>
+                <td>Apache-2.0</td>
+            </tr>
+            
+            <tr>
+                <td>markdown-it-py</td>
+                <td>4.0.0</td>
+                <td><span class="type-badge">library</span></td>
+                <td>Unknown</td>
+            </tr>
+            
+            <tr>
+                <td>markupsafe</td>
+                <td>3.0.3</td>
+                <td><span class="type-badge">library</span></td>
+                <td>BSD-3-Clause</td>
+            </tr>
+            
+            <tr>
+                <td>marshmallow</td>
+                <td>4.1.1</td>
+                <td><span class="type-badge">library</span></td>
+                <td>Unknown</td>
+            </tr>
+            
+            <tr>
+                <td>mccabe</td>
+                <td>0.7.0</td>
+                <td><span class="type-badge">library</span></td>
+                <td>Expat license</td>
+            </tr>
+            
+            <tr>
+                <td>mdurl</td>
+                <td>0.1.2</td>
+                <td><span class="type-badge">library</span></td>
+                <td>MIT</td>
+            </tr>
+            
+            <tr>
+                <td>msgpack</td>
+                <td>1.1.2</td>
+                <td><span class="type-badge">library</span></td>
+                <td>Apache-2.0</td>
+            </tr>
+            
+            <tr>
+                <td>mypy</td>
+                <td>1.19.0</td>
+                <td><span class="type-badge">library</span></td>
+                <td>MIT</td>
+            </tr>
+            
+            <tr>
+                <td>mypy-extensions</td>
+                <td>1.1.0</td>
+                <td><span class="type-badge">library</span></td>
+                <td>MIT</td>
+            </tr>
+            
+            <tr>
+                <td>nltk</td>
+                <td>3.9.2</td>
+                <td><span class="type-badge">library</span></td>
+                <td>Apache License, Version 2.0</td>
+            </tr>
+            
+            <tr>
+                <td>packageurl-python</td>
+                <td>0.17.6</td>
+                <td><span class="type-badge">library</span></td>
+                <td>MIT</td>
+            </tr>
+            
+            <tr>
+                <td>packaging</td>
+                <td>25.0</td>
+                <td><span class="type-badge">library</span></td>
+                <td>Unknown</td>
+            </tr>
+            
+            <tr>
+                <td>pathspec</td>
+                <td>0.12.1</td>
+                <td><span class="type-badge">library</span></td>
+                <td>MPL-2.0</td>
+            </tr>
+            
+            <tr>
+                <td>pip</td>
+                <td>25.3</td>
+                <td><span class="type-badge">library</span></td>
+                <td>MIT</td>
+            </tr>
+            
+            <tr>
+                <td>pip-api</td>
+                <td>0.0.34</td>
+                <td><span class="type-badge">library</span></td>
+                <td>Apache-2.0</td>
+            </tr>
+            
+            <tr>
+                <td>pip-audit</td>
+                <td>2.10.0</td>
+                <td><span class="type-badge">library</span></td>
+                <td>Unknown</td>
+            </tr>
+            
+            <tr>
+                <td>pip-requirements-parser</td>
+                <td>32.0.1</td>
+                <td><span class="type-badge">library</span></td>
+                <td>MIT</td>
+            </tr>
+            
+            <tr>
+                <td>platformdirs</td>
+                <td>4.5.1</td>
+                <td><span class="type-badge">library</span></td>
+                <td>MIT</td>
+            </tr>
+            
+            <tr>
+                <td>pluggy</td>
+                <td>1.6.0</td>
+                <td><span class="type-badge">library</span></td>
+                <td>MIT</td>
+            </tr>
+            
+            <tr>
+                <td>psycopg2-binary</td>
+                <td>2.9.11</td>
+                <td><span class="type-badge">library</span></td>
+                <td>LGPL with exceptions</td>
+            </tr>
+            
+            <tr>
+                <td>py-serializable</td>
+                <td>2.1.0</td>
+                <td><span class="type-badge">library</span></td>
+                <td>Apache-2.0</td>
+            </tr>
+            
+            <tr>
+                <td>pycparser</td>
+                <td>2.23</td>
+                <td><span class="type-badge">library</span></td>
+                <td>BSD-3-Clause</td>
+            </tr>
+            
+            <tr>
+                <td>pydantic</td>
+                <td>2.12.5</td>
+                <td><span class="type-badge">library</span></td>
+                <td>MIT</td>
+            </tr>
+            
+            <tr>
+                <td>pydantic-core</td>
+                <td>2.41.5</td>
+                <td><span class="type-badge">library</span></td>
+                <td>MIT</td>
+            </tr>
+            
+            <tr>
+                <td>pygments</td>
+                <td>2.19.2</td>
+                <td><span class="type-badge">library</span></td>
+                <td>BSD-2-Clause</td>
+            </tr>
+            
+            <tr>
+                <td>pylint</td>
+                <td>4.0.4</td>
+                <td><span class="type-badge">library</span></td>
+                <td>GPL-2.0-or-later</td>
+            </tr>
+            
+            <tr>
+                <td>pyparsing</td>
+                <td>3.2.5</td>
+                <td><span class="type-badge">library</span></td>
+                <td>MIT</td>
+            </tr>
+            
+            <tr>
+                <td>pytest</td>
+                <td>9.0.2</td>
+                <td><span class="type-badge">library</span></td>
+                <td>MIT</td>
+            </tr>
+            
+            <tr>
+                <td>pytest-asyncio</td>
+                <td>1.3.0</td>
+                <td><span class="type-badge">library</span></td>
+                <td>Apache-2.0</td>
+            </tr>
+            
+            <tr>
+                <td>pytest-cov</td>
+                <td>7.0.0</td>
+                <td><span class="type-badge">library</span></td>
+                <td>MIT</td>
+            </tr>
+            
+            <tr>
+                <td>python-dateutil</td>
+                <td>2.9.0.post0</td>
+                <td><span class="type-badge">library</span></td>
+                <td>Dual License</td>
+            </tr>
+            
+            <tr>
+                <td>python-dotenv</td>
+                <td>1.2.1</td>
+                <td><span class="type-badge">library</span></td>
+                <td>BSD-3-Clause</td>
+            </tr>
+            
+            <tr>
+                <td>python-json-logger</td>
+                <td>4.0.0</td>
+                <td><span class="type-badge">library</span></td>
+                <td>BSD-2-Clause License</td>
+            </tr>
+            
+            <tr>
+                <td>pytokens</td>
+                <td>0.3.0</td>
+                <td><span class="type-badge">library</span></td>
+                <td>MIT</td>
+            </tr>
+            
+            <tr>
+                <td>pyvips</td>
+                <td>2.2.3</td>
+                <td><span class="type-badge">library</span></td>
+                <td>Unknown</td>
+            </tr>
+            
+            <tr>
+                <td>pyvips-binary</td>
+                <td>8.16.0</td>
+                <td><span class="type-badge">library</span></td>
+                <td>Unknown</td>
+            </tr>
+            
+            <tr>
+                <td>pyyaml</td>
+                <td>6.0.3</td>
+                <td><span class="type-badge">library</span></td>
+                <td>MIT</td>
+            </tr>
+            
+            <tr>
+                <td>regex</td>
+                <td>2025.11.3</td>
+                <td><span class="type-badge">library</span></td>
+                <td>Unknown</td>
+            </tr>
+            
+            <tr>
+                <td>requests</td>
+                <td>2.32.5</td>
+                <td><span class="type-badge">library</span></td>
+                <td>Apache-2.0</td>
+            </tr>
+            
+            <tr>
+                <td>rich</td>
+                <td>14.2.0</td>
+                <td><span class="type-badge">library</span></td>
+                <td>MIT</td>
+            </tr>
+            
+            <tr>
+                <td>ruamel-yaml</td>
+                <td>0.18.16</td>
+                <td><span class="type-badge">library</span></td>
+                <td>MIT license</td>
+            </tr>
+            
+            <tr>
+                <td>ruamel-yaml-clib</td>
+                <td>0.2.15</td>
+                <td><span class="type-badge">library</span></td>
+                <td>MIT</td>
+            </tr>
+            
+            <tr>
+                <td>safety</td>
+                <td>3.7.0</td>
+                <td><span class="type-badge">library</span></td>
+                <td>MIT</td>
+            </tr>
+            
+            <tr>
+                <td>safety-schemas</td>
+                <td>0.0.16</td>
+                <td><span class="type-badge">library</span></td>
+                <td>MIT</td>
+            </tr>
+            
+            <tr>
+                <td>shellingham</td>
+                <td>1.5.4</td>
+                <td><span class="type-badge">library</span></td>
+                <td>ISC License</td>
+            </tr>
+            
+            <tr>
+                <td>six</td>
+                <td>1.17.0</td>
+                <td><span class="type-badge">library</span></td>
+                <td>MIT</td>
+            </tr>
+            
+            <tr>
+                <td>sortedcontainers</td>
+                <td>2.4.0</td>
+                <td><span class="type-badge">library</span></td>
+                <td>Apache 2.0</td>
+            </tr>
+            
+            <tr>
+                <td>stevedore</td>
+                <td>5.6.0</td>
+                <td><span class="type-badge">library</span></td>
+                <td>Apache-2.0</td>
+            </tr>
+            
+            <tr>
+                <td>tenacity</td>
+                <td>9.1.2</td>
+                <td><span class="type-badge">library</span></td>
+                <td>Apache 2.0</td>
+            </tr>
+            
+            <tr>
+                <td>timm</td>
+                <td>0.8.13.dev0</td>
+                <td><span class="type-badge">library</span></td>
+                <td>Unknown</td>
+            </tr>
+            
+            <tr>
+                <td>tomli</td>
+                <td>2.3.0</td>
+                <td><span class="type-badge">library</span></td>
+                <td>MIT</td>
+            </tr>
+            
+            <tr>
+                <td>tomli-w</td>
+                <td>1.2.0</td>
+                <td><span class="type-badge">library</span></td>
+                <td>MIT</td>
+            </tr>
+            
+            <tr>
+                <td>tomlkit</td>
+                <td>0.13.3</td>
+                <td><span class="type-badge">library</span></td>
+                <td>MIT</td>
+            </tr>
+            
+            <tr>
+                <td>torch</td>
+                <td>2.5.1</td>
+                <td><span class="type-badge">library</span></td>
+                <td>Unknown</td>
+            </tr>
+            
+            <tr>
+                <td>torch</td>
+                <td>2.5.1</td>
+                <td><span class="type-badge">library</span></td>
+                <td>Unknown</td>
+            </tr>
+            
+            <tr>
+                <td>torchvision</td>
+                <td>0.20.1</td>
+                <td><span class="type-badge">library</span></td>
+                <td>Unknown</td>
+            </tr>
+            
+            <tr>
+                <td>tqdm</td>
+                <td>4.67.1</td>
+                <td><span class="type-badge">library</span></td>
+                <td>Unknown</td>
+            </tr>
+            
+            <tr>
+                <td>transformers</td>
+                <td>4.51.0</td>
+                <td><span class="type-badge">library</span></td>
+                <td>Unknown</td>
+            </tr>
+            
+            <tr>
+                <td>typer</td>
+                <td>0.20.0</td>
+                <td><span class="type-badge">library</span></td>
+                <td>Unknown</td>
+            </tr>
+            
+            <tr>
+                <td>typer-slim</td>
+                <td>0.20.0</td>
+                <td><span class="type-badge">library</span></td>
+                <td>Unknown</td>
+            </tr>
+            
+            <tr>
+                <td>typing-extensions</td>
+                <td>4.15.0</td>
+                <td><span class="type-badge">library</span></td>
+                <td>PSF-2.0</td>
+            </tr>
+            
+            <tr>
+                <td>typing-inspection</td>
+                <td>0.4.2</td>
+                <td><span class="type-badge">library</span></td>
+                <td>MIT</td>
+            </tr>
+            
+            <tr>
+                <td>urllib3</td>
+                <td>2.6.1</td>
+                <td><span class="type-badge">library</span></td>
+                <td>MIT</td>
+            </tr>
+            
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <p>HuggingHugh - Nutrition Labels for AI Models</p>
+            <p>SBOM generated with <a href="https://github.com/anchore/syft" target="_blank">Syft</a>,
+               scanned with <a href="https://github.com/anchore/grype" target="_blank">Grype</a></p>
+        </div>
+    </footer>
+</body>
+</html>

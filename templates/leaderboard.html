@@ -1,0 +1,160 @@
+{% extends "base.html" %}
+
+{% block title %}Leaderboard - HuggingHugh{% endblock %}
+
+{% block content %}
+<div class="container">
+    <a href="{{ base_url }}/" class="back-link">← Back to Dashboard</a>
+
+    <div class="page-header">
+        <h1>🏆 Trust Score Leaderboard</h1>
+        <p class="subtitle">Top models competing for the highest trust scores. Only models with 1M+ downloads are eligible.</p>
+    </div>
+
+    <!-- Podium Section -->
+    {% if rankings|length >= 3 %}
+    <div class="leaderboard-podium-large">
+        <!-- Second Place -->
+        <div class="podium-stand podium-stand-2">
+            <a href="{{ base_url }}/reports/{{ rankings[1].safe_id }}/index.html" class="podium-card">
+                <div class="podium-medal">🥈</div>
+                <div class="podium-position">#2</div>
+                <div class="podium-model-name">{{ rankings[1].model_name }}</div>
+                <div class="podium-author">by {{ rankings[1].author }}</div>
+                <div class="podium-score-large">{{ rankings[1].trust_score }}/100</div>
+                <div class="podium-grade grade-badge-{{ rankings[1].trust_grade|lower }}">{{ rankings[1].trust_grade }}</div>
+                <div class="podium-downloads">{{ rankings[1].downloads_formatted }} downloads</div>
+                {% if rankings[1].streak_days > 1 %}
+                <div class="podium-streak">🔥 {{ rankings[1].streak_days }} day streak</div>
+                {% endif %}
+            </a>
+            <div class="podium-base podium-base-2"></div>
+        </div>
+
+        <!-- First Place -->
+        <div class="podium-stand podium-stand-1">
+            <a href="{{ base_url }}/reports/{{ rankings[0].safe_id }}/index.html" class="podium-card podium-card-gold">
+                <div class="podium-crown">👑</div>
+                <div class="podium-medal">🥇</div>
+                <div class="podium-position">#1</div>
+                <div class="podium-model-name">{{ rankings[0].model_name }}</div>
+                <div class="podium-author">by {{ rankings[0].author }}</div>
+                <div class="podium-score-large">{{ rankings[0].trust_score }}/100</div>
+                <div class="podium-grade grade-badge-{{ rankings[0].trust_grade|lower }}">{{ rankings[0].trust_grade }}</div>
+                <div class="podium-downloads">{{ rankings[0].downloads_formatted }} downloads</div>
+                {% if rankings[0].streak_days > 1 %}
+                <div class="podium-streak">🔥 {{ rankings[0].streak_days }} day streak</div>
+                {% endif %}
+            </a>
+            <div class="podium-base podium-base-1"></div>
+        </div>
+
+        <!-- Third Place -->
+        <div class="podium-stand podium-stand-3">
+            <a href="{{ base_url }}/reports/{{ rankings[2].safe_id }}/index.html" class="podium-card">
+                <div class="podium-medal">🥉</div>
+                <div class="podium-position">#3</div>
+                <div class="podium-model-name">{{ rankings[2].model_name }}</div>
+                <div class="podium-author">by {{ rankings[2].author }}</div>
+                <div class="podium-score-large">{{ rankings[2].trust_score }}/100</div>
+                <div class="podium-grade grade-badge-{{ rankings[2].trust_grade|lower }}">{{ rankings[2].trust_grade }}</div>
+                <div class="podium-downloads">{{ rankings[2].downloads_formatted }} downloads</div>
+                {% if rankings[2].streak_days > 1 %}
+                <div class="podium-streak">🔥 {{ rankings[2].streak_days }} day streak</div>
+                {% endif %}
+            </a>
+            <div class="podium-base podium-base-3"></div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Eligibility Info -->
+    <div class="leaderboard-info-card">
+        <h3>📋 Leaderboard Rules</h3>
+        <ul>
+            <li><strong>Eligibility:</strong> Models must have 1M+ downloads to compete</li>
+            <li><strong>Ranking:</strong> Based on Trust Score (0-100)</li>
+            <li><strong>Tie-breaker:</strong> 5-day grace period, then higher downloads wins</li>
+            <li><strong>Streak:</strong> Days at current rank with same score</li>
+        </ul>
+    </div>
+
+    <!-- Full Rankings Table -->
+    <div class="leaderboard-table-section">
+        <h2>Full Rankings</h2>
+        <p class="leaderboard-table-subtitle">{{ eligible_count }} eligible models (1M+ downloads)</p>
+
+        {% if rankings|length == 0 %}
+        <div class="card" style="text-align: center; padding: var(--space-2xl);">
+            <p style="color: var(--text-muted); font-size: 1.125rem;">No eligible models yet.</p>
+            <p style="color: var(--text-muted);">Run a scan to populate the leaderboard.</p>
+        </div>
+        {% else %}
+        <table class="leaderboard-table">
+            <thead>
+                <tr>
+                    <th class="col-rank">Rank</th>
+                    <th class="col-change">Change</th>
+                    <th class="col-model">Model</th>
+                    <th class="col-score">Trust Score</th>
+                    <th class="col-grade">Grade</th>
+                    <th class="col-downloads">Downloads</th>
+                    <th class="col-streak">Streak</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for entry in rankings %}
+                <tr class="leaderboard-row {% if entry.rank <= 3 %}leaderboard-row-top3{% endif %}">
+                    <td class="col-rank">
+                        {% if entry.rank == 1 %}
+                        <span class="rank-medal">🥇</span>
+                        {% elif entry.rank == 2 %}
+                        <span class="rank-medal">🥈</span>
+                        {% elif entry.rank == 3 %}
+                        <span class="rank-medal">🥉</span>
+                        {% else %}
+                        <span class="rank-number">#{{ entry.rank }}</span>
+                        {% endif %}
+                    </td>
+                    <td class="col-change">
+                        {% if entry.rank_change > 0 %}
+                        <span class="rank-change rank-up">▲{{ entry.rank_change }}</span>
+                        {% elif entry.rank_change < 0 %}
+                        <span class="rank-change rank-down">▼{{ entry.rank_change|abs }}</span>
+                        {% else %}
+                        <span class="rank-change rank-same">—</span>
+                        {% endif %}
+                    </td>
+                    <td class="col-model">
+                        <a href="{{ base_url }}/reports/{{ entry.safe_id }}/index.html" class="leaderboard-model-link">
+                            <span class="leaderboard-model-name">{{ entry.model_name }}</span>
+                            <span class="leaderboard-model-author">by {{ entry.author }}</span>
+                        </a>
+                    </td>
+                    <td class="col-score">
+                        <span class="leaderboard-score">{{ entry.trust_score }}/100</span>
+                    </td>
+                    <td class="col-grade">
+                        <span class="grade-badge grade-badge-{{ entry.trust_grade|lower }}">{{ entry.trust_grade }}</span>
+                    </td>
+                    <td class="col-downloads">{{ entry.downloads_formatted }}</td>
+                    <td class="col-streak">
+                        {% if entry.streak_days > 1 %}
+                        <span class="streak-badge">🔥 {{ entry.streak_days }}d</span>
+                        {% else %}
+                        <span class="streak-new">New</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% endif %}
+    </div>
+
+    <!-- Last Updated -->
+    <p class="last-updated" style="text-align: center; margin-top: var(--space-xl);">
+        Last updated: {{ last_updated }}
+    </p>
+</div>
+{% endblock %}

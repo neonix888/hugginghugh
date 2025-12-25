@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About - HuggingHugh</title>
+    <meta name="description" content="Nutrition Labels for AI Models - SBOM Dashboard for HuggingFace Models">
+    <link rel="stylesheet" href="/static/css/style.css?v=8">
+    
+</head>
+<body>
+    <header class="site-header">
+        <div class="container">
+            <div class="header-content">
+                <a href="/" class="logo">
+                    <span class="logo-icon">🤗</span>
+                    <span class="logo-text">HuggingHugh</span>
+                </a>
+                <nav class="main-nav">
+                    <a href="/">Dashboard</a>
+                    <a href="/leaderboard.html">Leaderboard</a>
+                    <a href="/about.html">About</a>
+                    <a href="https://buymeacoffee.com/hugginghugh" target="_blank" class="btn btn-coffee">
+                        ☕ Buy me a coffee
+                    </a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-content">
+        
+<div class="container">
+    <div class="page-header">
+        <h1>About HuggingHugh</h1>
+        <p class="subtitle">Nutrition Labels for AI Models</p>
+    </div>
+
+    <div class="card" style="margin-bottom: var(--space-xl);">
+        <div class="card-body">
+            <h2 style="margin-bottom: var(--space-md);">What is this?</h2>
+            <p style="margin-bottom: var(--space-md);">
+                HuggingHugh provides Software Bill of Materials (SBOM) reports for the most popular
+                models on HuggingFace Hub. Think of it as <strong>nutrition labels for AI models</strong> —
+                helping you understand what dependencies, vulnerabilities, and licenses are involved
+                before you integrate a model into your project.
+            </p>
+            <p>
+                Just like food nutrition labels help you make informed dietary choices, HuggingHugh
+                helps you make informed decisions about the AI models you consume.
+            </p>
+        </div>
+    </div>
+
+    <div class="card" style="margin-bottom: var(--space-xl);">
+        <div class="card-body">
+            <h2 style="margin-bottom: var(--space-md);">What's in a report?</h2>
+            <ul style="padding-left: var(--space-lg); line-height: 1.8;">
+                <li><strong>Trust Score (0-100)</strong> — An overall assessment based on security, licensing, and quality factors</li>
+                <li><strong>Vulnerability Scan</strong> — CVEs found in inferred dependencies (via Grype)</li>
+                <li><strong>License Analysis</strong> — Model license, commercial use permissions, copyleft risks</li>
+                <li><strong>SBOM Components</strong> — Full list of inferred dependencies in CycloneDX format</li>
+                <li><strong>Security Indicators</strong> — SafeTensors usage, verified organization status</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="card" style="margin-bottom: var(--space-xl);">
+        <div class="card-body">
+            <h2 style="margin-bottom: var(--space-md);">Methodology</h2>
+            <p style="margin-bottom: var(--space-md);">
+                For each model, we:
+            </p>
+            <ol style="padding-left: var(--space-lg); line-height: 1.8;">
+                <li>Fetch metadata from the HuggingFace Hub API</li>
+                <li>Infer dependencies based on the library (transformers, diffusers, etc.) and model architecture</li>
+                <li>Generate an SBOM using Syft</li>
+                <li>Scan for vulnerabilities using Grype</li>
+                <li>Analyze the license from model card data</li>
+                <li>Calculate a trust score based on multiple factors</li>
+            </ol>
+            <p style="margin-top: var(--space-md); color: var(--text-muted);">
+                <strong>Note:</strong> Dependency inference is not perfect. The actual dependencies may vary
+                based on your specific environment and usage patterns.
+            </p>
+        </div>
+    </div>
+
+    <div class="card" style="margin-bottom: var(--space-xl);">
+        <div class="card-body">
+            <h2 style="margin-bottom: var(--space-md);">Trust Score Factors</h2>
+            <table class="vuln-table">
+                <thead>
+                    <tr>
+                        <th>Factor</th>
+                        <th>Weight</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>No Critical/High CVEs</td>
+                        <td>20%</td>
+                        <td>Dependencies free of critical and high severity vulnerabilities</td>
+                    </tr>
+                    <tr>
+                        <td>Verified Organization</td>
+                        <td>15%</td>
+                        <td>Published by a known, verified organization (Meta, Google, etc.)</td>
+                    </tr>
+                    <tr>
+                        <td>SafeTensors Format</td>
+                        <td>15%</td>
+                        <td>Uses secure safetensors format instead of pickle-based files</td>
+                    </tr>
+                    <tr>
+                        <td>Clear License</td>
+                        <td>15%</td>
+                        <td>License is clearly specified and appropriate for use</td>
+                    </tr>
+                    <tr>
+                        <td>No Pickle Files</td>
+                        <td>10%</td>
+                        <td>Does not contain pickle files (arbitrary code execution risk)</td>
+                    </tr>
+                    <tr>
+                        <td>Model Card Quality</td>
+                        <td>10%</td>
+                        <td>Has comprehensive documentation (README, config, tags)</td>
+                    </tr>
+                    <tr>
+                        <td>Recent Updates</td>
+                        <td>10%</td>
+                        <td>Model has been updated within the last 90 days</td>
+                    </tr>
+                    <tr>
+                        <td>Community Engagement</td>
+                        <td>5%</td>
+                        <td>Downloads and likes indicate community trust</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="card" style="background: linear-gradient(135deg, #fef3c7 0%, #fff7ed 100%);">
+        <div class="card-body" style="text-align: center; padding: var(--space-2xl);">
+            <h2 style="margin-bottom: var(--space-md);">Support This Project</h2>
+            <p style="color: var(--text-muted); margin-bottom: var(--space-lg); max-width: 500px; margin-left: auto; margin-right: auto;">
+                HuggingHugh is a free community resource. Running daily scans and hosting costs money.
+                If you find this useful, consider buying me a coffee!
+            </p>
+            <a href="https://buymeacoffee.com/hugginghugh" target="_blank" class="btn btn-coffee" style="font-size: 1.125rem; padding: var(--space-md) var(--space-xl);">
+                ☕ Buy me a coffee
+            </a>
+        </div>
+    </div>
+</div>
+
+    </main>
+
+    <!-- Support Card - appears on every page -->
+    <section class="support-section">
+        <div class="container">
+            <div class="support-card">
+                <div class="support-content">
+                    <h3 class="support-title">Real talk: I built this alone.</h3>
+                    <p class="support-text">
+                        Enterprise security audits cost thousands. HuggingHugh is free because AI security should be accessible. No VC funding. No sponsors. Just one developer and cà phê sữa đá. $5 keeps the daily scans running.
+                    </p>
+                </div>
+                <a href="https://buymeacoffee.com/hugginghugh" target="_blank" class="btn btn-support">
+                    ☕ Keep it running
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>HuggingHugh</h4>
+                    <p>Nutrition Labels for AI Models</p>
+                    <p class="footer-tagline">Know what you're consuming before you use it.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Resources</h4>
+                    <ul>
+                        <li><a href="https://huggingface.co" target="_blank">HuggingFace Hub</a></li>
+                        <li><a href="https://cyclonedx.org" target="_blank">CycloneDX</a></li>
+                        <li><a href="https://github.com/anchore/grype" target="_blank">Grype</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Support</h4>
+                    <p>This is a free community resource.</p>
+                    <a href="https://buymeacoffee.com/hugginghugh" target="_blank" class="btn btn-coffee-small">
+                        ☕ Support the project
+                    </a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>Last updated: 2025-12-25 08:59 UTC</p>
+                <p>Data refreshed daily at 02:00 UTC</p>
+            </div>
+        </div>
+    </footer>
+
+    
+</body>
+</html>

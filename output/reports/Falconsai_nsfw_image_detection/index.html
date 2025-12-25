@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Falconsai/nsfw_image_detection - SBOM Report | HuggingHugh</title>
+    <meta name="description" content="Software Bill of Materials and vulnerability report for Falconsai/nsfw_image_detection">
+    <link rel="stylesheet" href="/static/css/style.css?v=8">
+    
+</head>
+<body>
+    <header class="site-header">
+        <div class="container">
+            <div class="header-content">
+                <a href="/" class="logo">
+                    <span class="logo-icon">🤗</span>
+                    <span class="logo-text">HuggingHugh</span>
+                </a>
+                <nav class="main-nav">
+                    <a href="/">Dashboard</a>
+                    <a href="/leaderboard.html">Leaderboard</a>
+                    <a href="/about.html">About</a>
+                    <a href="https://buymeacoffee.com/hugginghugh" target="_blank" class="btn btn-coffee">
+                        ☕ Buy me a coffee
+                    </a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-content">
+        
+<div class="container">
+    <!-- Breadcrumb -->
+    <nav style="margin-bottom: var(--space-lg); font-size: 0.875rem;">
+        <a href="/" style="color: var(--text-muted);">Dashboard</a>
+        <span style="color: var(--text-muted);"> / </span>
+        <span>Falconsai/nsfw_image_detection</span>
+    </nav>
+
+    <div class="report-header">
+        <!-- Main Info -->
+        <div class="report-main">
+            <h1 style="font-size: 1.75rem; margin-bottom: var(--space-sm);">nsfw_image_detection</h1>
+            <p style="color: var(--text-muted); margin-bottom: var(--space-md);">
+                by <strong>Falconsai</strong>
+                
+            </p>
+
+            <div class="report-meta">
+                <div class="meta-item">
+                    <span class="meta-label">Downloads</span>
+                    <span class="meta-value">85.8M</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Likes</span>
+                    <span class="meta-value">917</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Size</span>
+                    <span class="meta-value">0 MB</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Files</span>
+                    <span class="meta-value">9</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Format</span>
+                    <span class="meta-value">
+                        
+                        <span style="color: var(--score-excellent);">SafeTensors ✓</span>
+                        
+                    </span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Last Updated</span>
+                    <span class="meta-value">2025-04-06</span>
+                </div>
+            </div>
+
+            <div style="margin-top: var(--space-lg);">
+                
+                <span class="tag tag-primary">image-classification</span>
+                
+                
+                <span class="tag">transformers</span>
+                
+                
+                <span class="tag">transformers</span>
+                
+                <span class="tag">pytorch</span>
+                
+                <span class="tag">safetensors</span>
+                
+                <span class="tag">vit</span>
+                
+                <span class="tag">image-classification</span>
+                
+            </div>
+
+            <div style="margin-top: var(--space-lg);">
+                <a href="https://huggingface.co/Falconsai/nsfw_image_detection" target="_blank" class="btn btn-primary">
+                    View on HuggingFace →
+                </a>
+                <a href="sbom.cdx.json" download class="btn" style="background: var(--background); color: var(--text);">
+                    Download SBOM (JSON)
+                </a>
+            </div>
+        </div>
+
+        <!-- Nutrition Label Sidebar -->
+        <div class="report-sidebar">
+            <div class="nutrition-label">
+                <div class="nutrition-header">
+                    <h2>Trust Score</h2>
+                    <div class="model-name">Falconsai/nsfw_image_detection</div>
+                </div>
+
+                <div class="nutrition-score">
+                    <div class="score-circle" style="background: #f97316;">
+                        <span class="score-value">57</span>
+                        <span class="score-grade">F</span>
+                    </div>
+                    <p style="font-size: 0.875rem; color: var(--text-muted);">
+                        This model has a low trust score. 2 of 8 factors passed.
+                    </p>
+                </div>
+
+                <div class="nutrition-facts">
+                    <div class="nutrition-row header">
+                        <span>Factor</span>
+                        <span>Status</span>
+                    </div>
+                    
+                    <div class="nutrition-row">
+                        <span class="label">
+                            Verified Organization
+                            <span class="tooltip-trigger" data-tooltip="Max 12 points. Verified orgs on HuggingFace have been vetted and display a verification badge. Full points for verified orgs, 85% for well-known AI labs/publishers, 40% for unknown publishers.">
+                                <span class="tooltip-icon">?</span>
+                                <span class="tooltip-content">Max 12 points. Verified orgs on HuggingFace have been vetted and display a verification badge. Full points for verified orgs, 85% for well-known AI labs/publishers, 40% for unknown publishers.</span>
+                            </span>
+                        </span>
+                        <span class="value status-warn">
+                            ⚠
+                            7.2/12
+                        </span>
+                    </div>
+                    
+                    <div class="nutrition-row">
+                        <span class="label">
+                            Safe Serialization
+                            <span class="tooltip-trigger" data-tooltip="Max 18 points. Safe formats (safetensors, GGUF, ONNX) prevent arbitrary code execution. Full points for safe formats only, 70% if both safe and unsafe formats exist, 0% if only pickle/bin files.">
+                                <span class="tooltip-icon">?</span>
+                                <span class="tooltip-content">Max 18 points. Safe formats (safetensors, GGUF, ONNX) prevent arbitrary code execution. Full points for safe formats only, 70% if both safe and unsafe formats exist, 0% if only pickle/bin files.</span>
+                            </span>
+                        </span>
+                        <span class="value status-warn">
+                            ⚠
+                            12.6/18
+                        </span>
+                    </div>
+                    
+                    <div class="nutrition-row">
+                        <span class="label">
+                            No Critical/High CVEs
+                            <span class="tooltip-trigger" data-tooltip="Max 15 points. Based on CVE vulnerabilities in dependencies. Full points if no critical/high CVEs, 70% if 1-2 high, 40% if 1-2 critical, 0% if 3+ critical vulnerabilities.">
+                                <span class="tooltip-icon">?</span>
+                                <span class="tooltip-content">Max 15 points. Based on CVE vulnerabilities in dependencies. Full points if no critical/high CVEs, 70% if 1-2 high, 40% if 1-2 critical, 0% if 3+ critical vulnerabilities.</span>
+                            </span>
+                        </span>
+                        <span class="value status-pass">
+                            ✓
+                            15/15
+                        </span>
+                    </div>
+                    
+                    <div class="nutrition-row">
+                        <span class="label">
+                            Clear License
+                            <span class="tooltip-trigger" data-tooltip="Max 13 points. Evaluates license clarity and usage rights. Full points for permissive licenses (MIT, Apache), 80% for commercial-friendly, 40% for restrictive, 0% if no license specified.">
+                                <span class="tooltip-icon">?</span>
+                                <span class="tooltip-content">Max 13 points. Evaluates license clarity and usage rights. Full points for permissive licenses (MIT, Apache), 80% for commercial-friendly, 40% for restrictive, 0% if no license specified.</span>
+                            </span>
+                        </span>
+                        <span class="value status-fail">
+                            ✗
+                            0/13
+                        </span>
+                    </div>
+                    
+                    <div class="nutrition-row">
+                        <span class="label">
+                            Model Card Quality
+                            <span class="tooltip-trigger" data-tooltip="Max 10 points. Checks for README (30%), config.json (20%), description (30%), and tags (20%). Full points if score &gt;= 80%, 60% if &gt;= 50%, otherwise 20%.">
+                                <span class="tooltip-icon">?</span>
+                                <span class="tooltip-content">Max 10 points. Checks for README (30%), config.json (20%), description (30%), and tags (20%). Full points if score &gt;= 80%, 60% if &gt;= 50%, otherwise 20%.</span>
+                            </span>
+                        </span>
+                        <span class="value status-warn">
+                            ⚠
+                            6.0/10
+                        </span>
+                    </div>
+                    
+                    <div class="nutrition-row">
+                        <span class="label">
+                            Recent Updates
+                            <span class="tooltip-trigger" data-tooltip="Max 8 points. Based on last update date. Full points if updated within 30 days, 70% within 90 days, 50% within 180 days, 20% if older.">
+                                <span class="tooltip-icon">?</span>
+                                <span class="tooltip-content">Max 8 points. Based on last update date. Full points if updated within 30 days, 70% within 90 days, 50% within 180 days, 20% if older.</span>
+                            </span>
+                        </span>
+                        <span class="value status-warn">
+                            ⚠
+                            1.6/8
+                        </span>
+                    </div>
+                    
+                    <div class="nutrition-row">
+                        <span class="label">
+                            Community Engagement
+                            <span class="tooltip-trigger" data-tooltip="Max 6 points. Combined score: 70% downloads (log scale, 10M=100%) + 30% likes (1000=100%). Full points if combined &gt;= 80%, 70% if &gt;= 50%, otherwise proportional.">
+                                <span class="tooltip-icon">?</span>
+                                <span class="tooltip-content">Max 6 points. Combined score: 70% downloads (log scale, 10M=100%) + 30% likes (1000=100%). Full points if combined &gt;= 80%, 70% if &gt;= 50%, otherwise proportional.</span>
+                            </span>
+                        </span>
+                        <span class="value status-pass">
+                            ✓
+                            6/6
+                        </span>
+                    </div>
+                    
+                    <div class="nutrition-row">
+                        <span class="label">
+                            No Pickle Files
+                            <span class="tooltip-trigger" data-tooltip="Max 18 points. Pickle files (.bin, .pt, .pkl) can contain arbitrary code. Full points if no pickle files, 50% if a safe alternative (safetensors/GGUF/ONNX) exists, 0% if only pickle.">
+                                <span class="tooltip-icon">?</span>
+                                <span class="tooltip-content">Max 18 points. Pickle files (.bin, .pt, .pkl) can contain arbitrary code. Full points if no pickle files, 50% if a safe alternative (safetensors/GGUF/ONNX) exists, 0% if only pickle.</span>
+                            </span>
+                        </span>
+                        <span class="value status-warn">
+                            ⚠
+                            9.0/18
+                        </span>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Vulnerability Summary -->
+    <div class="section">
+        <h2 class="section-title">Vulnerability Summary</h2>
+
+        <div class="summary-grid" style="grid-template-columns: repeat(5, 1fr);">
+            <div class="summary-card">
+                <div class="value" style="color: var(--severity-critical);">0</div>
+                <div class="label">Critical</div>
+            </div>
+            <div class="summary-card">
+                <div class="value" style="color: var(--severity-high);">0</div>
+                <div class="label">High</div>
+            </div>
+            <div class="summary-card">
+                <div class="value" style="color: var(--severity-medium);">0</div>
+                <div class="label">Medium</div>
+            </div>
+            <div class="summary-card">
+                <div class="value" style="color: var(--severity-low);">0</div>
+                <div class="label">Low</div>
+            </div>
+            <div class="summary-card">
+                <div class="value">0</div>
+                <div class="label">Total</div>
+            </div>
+        </div>
+
+        
+        <div class="card">
+            <div class="card-body" style="text-align: center; padding: var(--space-2xl);">
+                <div style="font-size: 3rem; margin-bottom: var(--space-md);">✅</div>
+                <h3>No Known Vulnerabilities</h3>
+                <p style="color: var(--text-muted);">
+                    No vulnerabilities were found in the inferred dependencies.
+                </p>
+            </div>
+        </div>
+        
+
+        <!-- Environment Checklist - Recommended Versions -->
+        
+        <div class="card" style="margin-top: var(--space-lg); border-left: 4px solid var(--primary); background: linear-gradient(135deg, #f0f9ff 0%, #ffffff 100%);">
+            <div class="card-header">
+                <h3 style="display: flex; align-items: center; gap: var(--space-sm);">
+                    <span style="font-size: 1.25rem;">📋</span> Environment Checklist
+                </h3>
+                <p style="color: var(--text-muted); margin-top: var(--space-xs);">
+                    The model's dependencies use current versions. For your own environment,
+                    ensure these packages meet the recommended minimums.
+                </p>
+            </div>
+            <div class="card-body">
+                <div style="display: grid; gap: var(--space-sm);">
+                    
+                    <div style="display: flex; align-items: center; padding: var(--space-sm) var(--space-md); background: white; border-radius: var(--radius-md); border: 1px solid var(--border);">
+                        <code style="font-weight: 600; min-width: 120px;">torch</code>
+                        <span style="color: var(--text-muted); margin: 0 var(--space-sm);">≥</span>
+                        <span style="font-weight: 500; color: var(--primary);">2.6.0</span>
+                        <span style="margin-left: auto; font-size: 0.8rem; color: var(--text-muted);">
+                            <a href="https://nvd.nist.gov/vuln/detail/CVE-2025-32434" target="_blank" style="color: var(--text-muted); text-decoration: none;">
+                                CVE-2025-32434 ↗
+                            </a>
+                        </span>
+                    </div>
+                    
+                    <div style="display: flex; align-items: center; padding: var(--space-sm) var(--space-md); background: white; border-radius: var(--radius-md); border: 1px solid var(--border);">
+                        <code style="font-weight: 600; min-width: 120px;">transformers</code>
+                        <span style="color: var(--text-muted); margin: 0 var(--space-sm);">≥</span>
+                        <span style="font-weight: 500; color: var(--primary);">4.48.0</span>
+                        <span style="margin-left: auto; font-size: 0.8rem; color: var(--text-muted);">
+                            <a href="https://nvd.nist.gov/vuln/detail/GHSA-torch" target="_blank" style="color: var(--text-muted); text-decoration: none;">
+                                GHSA-torch ↗
+                            </a>
+                        </span>
+                    </div>
+                    
+                    <div style="display: flex; align-items: center; padding: var(--space-sm) var(--space-md); background: white; border-radius: var(--radius-md); border: 1px solid var(--border);">
+                        <code style="font-weight: 600; min-width: 120px;">pillow</code>
+                        <span style="color: var(--text-muted); margin: 0 var(--space-sm);">≥</span>
+                        <span style="font-weight: 500; color: var(--primary);">10.0.1</span>
+                        <span style="margin-left: auto; font-size: 0.8rem; color: var(--text-muted);">
+                            <a href="https://nvd.nist.gov/vuln/detail/CVE-2023-4863" target="_blank" style="color: var(--text-muted); text-decoration: none;">
+                                CVE-2023-4863 ↗
+                            </a>
+                        </span>
+                    </div>
+                    
+                    <div style="display: flex; align-items: center; padding: var(--space-sm) var(--space-md); background: white; border-radius: var(--radius-md); border: 1px solid var(--border);">
+                        <code style="font-weight: 600; min-width: 120px;">requests</code>
+                        <span style="color: var(--text-muted); margin: 0 var(--space-sm);">≥</span>
+                        <span style="font-weight: 500; color: var(--primary);">2.32.0</span>
+                        <span style="margin-left: auto; font-size: 0.8rem; color: var(--text-muted);">
+                            <a href="https://nvd.nist.gov/vuln/detail/CVE-2024-35195" target="_blank" style="color: var(--text-muted); text-decoration: none;">
+                                CVE-2024-35195 ↗
+                            </a>
+                        </span>
+                    </div>
+                    
+                    <div style="display: flex; align-items: center; padding: var(--space-sm) var(--space-md); background: white; border-radius: var(--radius-md); border: 1px solid var(--border);">
+                        <code style="font-weight: 600; min-width: 120px;">numpy</code>
+                        <span style="color: var(--text-muted); margin: 0 var(--space-sm);">≥</span>
+                        <span style="font-weight: 500; color: var(--primary);">1.22.0</span>
+                        <span style="margin-left: auto; font-size: 0.8rem; color: var(--text-muted);">
+                            <a href="https://nvd.nist.gov/vuln/detail/CVE-2021-41495" target="_blank" style="color: var(--text-muted); text-decoration: none;">
+                                CVE-2021-41495 ↗
+                            </a>
+                        </span>
+                    </div>
+                    
+                    <div style="display: flex; align-items: center; padding: var(--space-sm) var(--space-md); background: white; border-radius: var(--radius-md); border: 1px solid var(--border);">
+                        <code style="font-weight: 600; min-width: 120px;">scipy</code>
+                        <span style="color: var(--text-muted); margin: 0 var(--space-sm);">≥</span>
+                        <span style="font-weight: 500; color: var(--primary);">1.10.0</span>
+                        <span style="margin-left: auto; font-size: 0.8rem; color: var(--text-muted);">
+                            <a href="https://nvd.nist.gov/vuln/detail/CVE-2023-25399" target="_blank" style="color: var(--text-muted); text-decoration: none;">
+                                CVE-2023-25399 ↗
+                            </a>
+                        </span>
+                    </div>
+                    
+                </div>
+                <p style="margin-top: var(--space-md); padding: var(--space-md); background: white; border-radius: var(--radius-md); color: var(--text-muted); font-size: 0.875rem;">
+                    <strong>Quick check:</strong>
+                    <code style="background: var(--background); padding: 2px 6px; border-radius: 4px; font-size: 0.8rem;">pip list | grep -E "torch|transformers|pillow|numpy|requests|scipy"</code>
+                </p>
+            </div>
+        </div>
+        
+    </div>
+
+    <!-- License Information -->
+    <div class="section">
+        <h2 class="section-title">License Information</h2>
+
+        <div class="license-info">
+            <div class="license-header">
+                <span class="license-name">Unknown</span>
+                <span class="license-badge license-unknown">
+                    unknown
+                </span>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--space-md); margin-top: var(--space-md);">
+                <div>
+                    <div class="meta-label">Commercial Use</div>
+                    <div class="meta-value">
+                        
+                        <span style="color: var(--score-poor);">✗ Not Allowed</span>
+                        
+                    </div>
+                </div>
+                <div>
+                    <div class="meta-label">Copyleft Risk</div>
+                    <div class="meta-value">unknown</div>
+                </div>
+                <div>
+                    <div class="meta-label">Dependency Licenses</div>
+                    <div class="meta-value">0 unique</div>
+                </div>
+            </div>
+
+            
+            <div style="margin-top: var(--space-md);">
+                <div class="meta-label">Restrictions</div>
+                <ul style="margin-top: var(--space-sm); padding-left: var(--space-lg);">
+                    
+                    <li style="color: var(--text-muted);">License not specified - use with caution</li>
+                    
+                </ul>
+            </div>
+            
+        </div>
+    </div>
+
+    <!-- SBOM Components -->
+    <div class="section">
+        <h2 class="section-title">SBOM Components (19)</h2>
+
+        <div class="card">
+            <div class="card-body component-list">
+                
+                <div class="component-item">
+                    <span class="component-name">Falconsai/nsfw_image_detection</span>
+                    <span class="component-version">04367978</span>
+                </div>
+                
+                <div class="component-item">
+                    <span class="component-name">accelerate</span>
+                    <span class="component-version">1.12.0</span>
+                </div>
+                
+                <div class="component-item">
+                    <span class="component-name">filelock</span>
+                    <span class="component-version">3.20.1</span>
+                </div>
+                
+                <div class="component-item">
+                    <span class="component-name">huggingface-hub</span>
+                    <span class="component-version">1.2.3</span>
+                </div>
+                
+                <div class="component-item">
+                    <span class="component-name">numpy</span>
+                    <span class="component-version">2.4.0</span>
+                </div>
+                
+                <div class="component-item">
+                    <span class="component-name">packaging</span>
+                    <span class="component-version">25.0</span>
+                </div>
+                
+                <div class="component-item">
+                    <span class="component-name">pillow</span>
+                    <span class="component-version">12.0.0</span>
+                </div>
+                
+                <div class="component-item">
+                    <span class="component-name">protobuf</span>
+                    <span class="component-version">6.33.2</span>
+                </div>
+                
+                <div class="component-item">
+                    <span class="component-name">pyyaml</span>
+                    <span class="component-version">6.0.3</span>
+                </div>
+                
+                <div class="component-item">
+                    <span class="component-name">regex</span>
+                    <span class="component-version">2025.11.3</span>
+                </div>
+                
+                <div class="component-item">
+                    <span class="component-name">requests</span>
+                    <span class="component-version">2.32.5</span>
+                </div>
+                
+                <div class="component-item">
+                    <span class="component-name">safetensors</span>
+                    <span class="component-version">0.7.0</span>
+                </div>
+                
+                <div class="component-item">
+                    <span class="component-name">sentencepiece</span>
+                    <span class="component-version">0.2.1</span>
+                </div>
+                
+                <div class="component-item">
+                    <span class="component-name">tokenizers</span>
+                    <span class="component-version">0.22.1</span>
+                </div>
+                
+                <div class="component-item">
+                    <span class="component-name">torch</span>
+                    <span class="component-version">2.9.1</span>
+                </div>
+                
+                <div class="component-item">
+                    <span class="component-name">torchvision</span>
+                    <span class="component-version">0.24.1</span>
+                </div>
+                
+                <div class="component-item">
+                    <span class="component-name">tqdm</span>
+                    <span class="component-version">4.67.1</span>
+                </div>
+                
+                <div class="component-item">
+                    <span class="component-name">transformers</span>
+                    <span class="component-version">4.57.3</span>
+                </div>
+                
+                <div class="component-item">
+                    <span class="component-name">/tmp/tmpigqq47lj/requirements.txt</span>
+                    <span class="component-version">unknown</span>
+                </div>
+                
+                
+            </div>
+        </div>
+    </div>
+
+</div>
+
+    </main>
+
+    <!-- Support Card - appears on every page -->
+    <section class="support-section">
+        <div class="container">
+            <div class="support-card">
+                <div class="support-content">
+                    <h3 class="support-title">Real talk: I built this alone.</h3>
+                    <p class="support-text">
+                        Enterprise security audits cost thousands. HuggingHugh is free because AI security should be accessible. No VC funding. No sponsors. Just one developer and cà phê sữa đá. $5 keeps the daily scans running.
+                    </p>
+                </div>
+                <a href="https://buymeacoffee.com/hugginghugh" target="_blank" class="btn btn-support">
+                    ☕ Keep it running
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>HuggingHugh</h4>
+                    <p>Nutrition Labels for AI Models</p>
+                    <p class="footer-tagline">Know what you're consuming before you use it.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Resources</h4>
+                    <ul>
+                        <li><a href="https://huggingface.co" target="_blank">HuggingFace Hub</a></li>
+                        <li><a href="https://cyclonedx.org" target="_blank">CycloneDX</a></li>
+                        <li><a href="https://github.com/anchore/grype" target="_blank">Grype</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Support</h4>
+                    <p>This is a free community resource.</p>
+                    <a href="https://buymeacoffee.com/hugginghugh" target="_blank" class="btn btn-coffee-small">
+                        ☕ Support the project
+                    </a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>Last updated: 2025-12-25 08:59 UTC</p>
+                <p>Data refreshed daily at 02:00 UTC</p>
+            </div>
+        </div>
+    </footer>
+
+    
+</body>
+</html>

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grade A Models - HuggingHugh</title>
+    <meta name="description" content="Nutrition Labels for AI Models - SBOM Dashboard for HuggingFace Models">
+    <link rel="stylesheet" href="/static/css/style.css?v=8">
+    
+</head>
+<body>
+    <header class="site-header">
+        <div class="container">
+            <div class="header-content">
+                <a href="/" class="logo">
+                    <span class="logo-icon">🤗</span>
+                    <span class="logo-text">HuggingHugh</span>
+                </a>
+                <nav class="main-nav">
+                    <a href="/">Dashboard</a>
+                    <a href="/leaderboard.html">Leaderboard</a>
+                    <a href="/about.html">About</a>
+                    <a href="https://buymeacoffee.com/hugginghugh" target="_blank" class="btn btn-coffee">
+                        ☕ Buy me a coffee
+                    </a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-content">
+        
+<div class="container">
+    <a href="/" class="back-link">← Back to Dashboard</a>
+
+    <div class="grade-page-header">
+        <div class="grade-page-badge grade-a">A</div>
+        <div class="grade-page-info">
+            <h1>Grade A Models</h1>
+            <p>Excellent trust score (80-100) — 0 models</p>
+        </div>
+    </div>
+
+    
+    <div class="card" style="text-align: center; padding: var(--space-2xl);">
+        <p style="color: var(--text-muted); font-size: 1.125rem;">No models with grade A yet.</p>
+        <p style="color: var(--text-muted);">This is actually good news for grade F!</p>
+    </div>
+    
+</div>
+
+<script>
+(function() {
+    const PAGE_SIZE = 20;
+    const grid = document.getElementById('model-grid');
+    const btn = document.getElementById('load-more-btn');
+    const status = document.getElementById('load-more-status');
+    const shownCount = document.getElementById('shown-count');
+
+    if (!grid || !btn) return;
+
+    const cards = grid.querySelectorAll('.model-card');
+    const total = cards.length;
+    let shown = PAGE_SIZE;
+
+    // Initially hide cards beyond PAGE_SIZE
+    cards.forEach((card, i) => {
+        if (i >= PAGE_SIZE) {
+            card.style.display = 'none';
+        }
+    });
+
+    // Update button visibility
+    function updateUI() {
+        if (shownCount) shownCount.textContent = Math.min(shown, total);
+        if (shown >= total) {
+            btn.style.display = 'none';
+            if (status) status.innerHTML = 'Showing all ' + total + ' models';
+        }
+    }
+
+    updateUI();
+
+    btn.addEventListener('click', function() {
+        const nextBatch = Math.min(shown + PAGE_SIZE, total);
+        for (let i = shown; i < nextBatch; i++) {
+            cards[i].style.display = '';
+        }
+        shown = nextBatch;
+        updateUI();
+    });
+})();
+</script>
+
+    </main>
+
+    <!-- Support Card - appears on every page -->
+    <section class="support-section">
+        <div class="container">
+            <div class="support-card">
+                <div class="support-content">
+                    <h3 class="support-title">Real talk: I built this alone.</h3>
+                    <p class="support-text">
+                        Enterprise security audits cost thousands. HuggingHugh is free because AI security should be accessible. No VC funding. No sponsors. Just one developer and cà phê sữa đá. $5 keeps the daily scans running.
+                    </p>
+                </div>
+                <a href="https://buymeacoffee.com/hugginghugh" target="_blank" class="btn btn-support">
+                    ☕ Keep it running
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>HuggingHugh</h4>
+                    <p>Nutrition Labels for AI Models</p>
+                    <p class="footer-tagline">Know what you're consuming before you use it.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Resources</h4>
+                    <ul>
+                        <li><a href="https://huggingface.co" target="_blank">HuggingFace Hub</a></li>
+                        <li><a href="https://cyclonedx.org" target="_blank">CycloneDX</a></li>
+                        <li><a href="https://github.com/anchore/grype" target="_blank">Grype</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Support</h4>
+                    <p>This is a free community resource.</p>
+                    <a href="https://buymeacoffee.com/hugginghugh" target="_blank" class="btn btn-coffee-small">
+                        ☕ Support the project
+                    </a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>Last updated: 2025-12-25 08:59 UTC</p>
+                <p>Data refreshed daily at 02:00 UTC</p>
+            </div>
+        </div>
+    </footer>
+
+    
+</body>
+</html>
