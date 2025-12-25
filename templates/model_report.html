@@ -20,7 +20,7 @@
             <p style="color: var(--text-muted); margin-bottom: var(--space-md);">
                 by <strong>{{ model.author }}</strong>
                 {% if model.is_verified_org %}
-                <span style="color: var(--score-excellent);">✓ Verified</span>
+                <span style="color: var(--score-excellent);"><span class="icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span> Verified</span>
                 {% endif %}
             </p>
 
@@ -45,7 +45,7 @@
                     <span class="meta-label">Format</span>
                     <span class="meta-value">
                         {% if model.has_safetensors %}
-                        <span style="color: var(--score-excellent);">SafeTensors ✓</span>
+                        <span style="color: var(--score-excellent);">SafeTensors <span class="icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span></span>
                         {% else %}
                         <span style="color: var(--score-moderate);">PyTorch/Other</span>
                         {% endif %}
@@ -112,7 +112,7 @@
                             </span>
                         </span>
                         <span class="value status-{{ factor.status }}">
-                            {% if factor.status == 'pass' %}✓{% elif factor.status == 'warn' %}⚠{% else %}✗{% endif %}
+                            {% if factor.status == 'pass' %}<span class="icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>{% elif factor.status == 'warn' %}<span class="icon"><svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></span>{% else %}<span class="icon"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span>{% endif %}
                             {{ factor.points|round(1) }}/{{ factor.weight }}
                         </span>
                     </div>
@@ -195,7 +195,7 @@
         {% else %}
         <div class="card">
             <div class="card-body" style="text-align: center; padding: var(--space-2xl);">
-                <div style="font-size: 3rem; margin-bottom: var(--space-md);">✅</div>
+                <div style="margin-bottom: var(--space-md);"><span class="icon icon-3xl icon-success"><svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></span></div>
                 <h3>No Known Vulnerabilities</h3>
                 <p style="color: var(--text-muted);">
                     No vulnerabilities were found in the inferred dependencies.
@@ -209,7 +209,7 @@
         <div class="card" style="margin-top: var(--space-lg); border-left: 4px solid var(--primary); background: linear-gradient(135deg, #f0f9ff 0%, #ffffff 100%);">
             <div class="card-header">
                 <h3 style="display: flex; align-items: center; gap: var(--space-sm);">
-                    <span style="font-size: 1.25rem;">📋</span> Environment Checklist
+                    <span class="icon icon-lg"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></span> Environment Checklist
                 </h3>
                 <p style="color: var(--text-muted); margin-top: var(--space-xs);">
                     The model's dependencies use current versions. For your own environment,
@@ -257,9 +257,9 @@
                     <div class="meta-label">Commercial Use</div>
                     <div class="meta-value">
                         {% if license_analysis.model.commercial_use %}
-                        <span style="color: var(--score-excellent);">✓ Allowed</span>
+                        <span style="color: var(--score-excellent);"><span class="icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span> Allowed</span>
                         {% else %}
-                        <span style="color: var(--score-poor);">✗ Not Allowed</span>
+                        <span style="color: var(--score-poor);"><span class="icon"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span> Not Allowed</span>
                         {% endif %}
                     </div>
                 </div>

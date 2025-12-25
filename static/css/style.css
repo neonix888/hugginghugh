@@ -1615,6 +1615,49 @@ a.grade-card:hover {
     }
 }
 
+/* SVG Icons */
+.icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1em;
+    height: 1em;
+    vertical-align: middle;
+}
+
+.icon svg {
+    width: 100%;
+    height: 100%;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.icon-sm { font-size: 0.875rem; }
+.icon-md { font-size: 1rem; }
+.icon-lg { font-size: 1.25rem; }
+.icon-xl { font-size: 1.5rem; }
+.icon-2xl { font-size: 2rem; }
+.icon-3xl { font-size: 3rem; }
+
+/* Medal icons with fill */
+.icon-medal svg {
+    fill: currentColor;
+    stroke: none;
+}
+
+.icon-gold { color: #fbbf24; }
+.icon-silver { color: #9ca3af; }
+.icon-bronze { color: #cd7f32; }
+
+/* Colored icons */
+.icon-success { color: var(--score-excellent); }
+.icon-warning { color: var(--score-moderate); }
+.icon-danger { color: var(--score-poor); }
+.icon-fire { color: #f97316; }
+
 /* Print styles */
 @media print {
     .site-header,
