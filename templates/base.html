@@ -5,7 +5,57 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}HuggingHugh{% endblock %}</title>
     <meta name="description" content="{% block description %}Nutrition Labels for AI Models - SBOM Dashboard for HuggingFace Models{% endblock %}">
-    <link rel="stylesheet" href="{{ base_url }}/static/css/style.css?v=9">
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="{% block canonical %}{{ site_url }}{% endblock %}">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="{% block og_type %}website{% endblock %}">
+    <meta property="og:url" content="{% block og_url %}{{ site_url }}{% endblock %}">
+    <meta property="og:title" content="{% block og_title %}HuggingHugh - AI Model Security Dashboard{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}Free security reports and trust scores for HuggingFace models. Know what you're consuming before you use it.{% endblock %}">
+    <meta property="og:image" content="{{ site_url }}/static/images/og-image.png">
+    <meta property="og:site_name" content="HuggingHugh">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="{% block twitter_url %}{{ site_url }}{% endblock %}">
+    <meta name="twitter:title" content="{% block twitter_title %}HuggingHugh - AI Model Security Dashboard{% endblock %}">
+    <meta name="twitter:description" content="{% block twitter_description %}Free security reports and trust scores for HuggingFace models. Know what you're consuming before you use it.{% endblock %}">
+    <meta name="twitter:image" content="{{ site_url }}/static/images/og-image.png">
+
+    <!-- Additional SEO -->
+    <meta name="robots" content="index, follow">
+    <meta name="author" content="HuggingHugh">
+    <meta name="keywords" content="AI security, machine learning, SBOM, software bill of materials, HuggingFace, model security, vulnerability scanning, trust score">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="{{ base_url }}/static/images/favicon.svg">
+    <link rel="apple-touch-icon" href="{{ base_url }}/static/images/apple-touch-icon.png">
+
+    <!-- JSON-LD Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "HuggingHugh",
+        "alternateName": "AI Model Security Dashboard",
+        "url": "{{ site_url }}",
+        "description": "Free security reports, SBOM generation, and trust scores for HuggingFace AI models.",
+        "publisher": {
+            "@type": "Organization",
+            "name": "HuggingHugh",
+            "url": "{{ site_url }}",
+            "logo": {
+                "@type": "ImageObject",
+                "url": "{{ site_url }}/static/images/logo.png"
+            }
+        }
+    }
+    </script>
+    {% block structured_data %}{% endblock %}
+
+    <link rel="stylesheet" href="{{ base_url }}/static/css/style.css?v=11">
     {% block head %}{% endblock %}
 </head>
 <body>
@@ -19,6 +69,8 @@
                 <nav class="main-nav">
                     <a href="{{ base_url }}/">Dashboard</a>
                     <a href="{{ base_url }}/leaderboard.html">Leaderboard</a>
+                    <a href="{{ base_url }}/blog/">Blog</a>
+                    <a href="{{ base_url }}/badges.html">Badges</a>
                     <a href="{{ base_url }}/about.html">About</a>
                     <a href="https://buymeacoffee.com/hugginghugh" target="_blank" class="btn btn-coffee">
                         <span class="icon"><svg viewBox="0 0 24 24"><path d="M17 8h1a4 4 0 1 1 0 8h-1"/><path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V8z"/><line x1="6" y1="2" x2="6" y2="4"/><line x1="10" y1="2" x2="10" y2="4"/><line x1="14" y1="2" x2="14" y2="4"/></svg></span> Buy me a coffee
@@ -32,22 +84,76 @@
         {% block content %}{% endblock %}
     </main>
 
-    <!-- Support Card - appears on every page -->
+    <!-- Newsletter + Support Section -->
     <section class="support-section">
         <div class="container">
-            <div class="support-card">
-                <div class="support-content">
+            <div class="support-grid">
+                <!-- Newsletter Signup -->
+                <div class="newsletter-card">
+                    <h3 class="newsletter-title">Stay Updated</h3>
+                    <p class="newsletter-text">
+                        Get weekly AI security insights, new vulnerability alerts, and leaderboard updates.
+                    </p>
+                    <form id="newsletter-form" class="newsletter-form">
+                        <input type="email" id="newsletter-email" placeholder="your@email.com" required>
+                        <button type="submit" class="btn btn-primary" id="newsletter-btn">Subscribe</button>
+                    </form>
+                    <p id="newsletter-message" class="newsletter-message" style="display: none;"></p>
+                    <p class="newsletter-privacy">No spam. Unsubscribe anytime.</p>
+                </div>
+
+                <!-- Support Card -->
+                <div class="support-card">
                     <h3 class="support-title">Real talk: I built this alone.</h3>
                     <p class="support-text">
-                        Enterprise security audits cost thousands. HuggingHugh is free because AI security should be accessible. No VC funding. No sponsors. Just one developer and cà phê sữa đá. $5 keeps the daily scans running.
+                        Enterprise security audits cost thousands. HuggingHugh is free because AI security should be accessible. No VC funding. No sponsors. Just one developer and cà phê sữa đá.
                     </p>
+                    <a href="https://buymeacoffee.com/hugginghugh" target="_blank" class="btn btn-support">
+                        <span class="icon"><svg viewBox="0 0 24 24"><path d="M17 8h1a4 4 0 1 1 0 8h-1"/><path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V8z"/><line x1="6" y1="2" x2="6" y2="4"/><line x1="10" y1="2" x2="10" y2="4"/><line x1="14" y1="2" x2="14" y2="4"/></svg></span> Keep it running
+                    </a>
                 </div>
-                <a href="https://buymeacoffee.com/hugginghugh" target="_blank" class="btn btn-support">
-                    <span class="icon"><svg viewBox="0 0 24 24"><path d="M17 8h1a4 4 0 1 1 0 8h-1"/><path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V8z"/><line x1="6" y1="2" x2="6" y2="4"/><line x1="10" y1="2" x2="10" y2="4"/><line x1="14" y1="2" x2="14" y2="4"/></svg></span> Keep it running
-                </a>
             </div>
         </div>
     </section>
+
+    <script>
+    // Newsletter signup handler
+    document.getElementById('newsletter-form').addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        const email = document.getElementById('newsletter-email').value;
+        const btn = document.getElementById('newsletter-btn');
+        const msg = document.getElementById('newsletter-message');
+
+        btn.disabled = true;
+        btn.textContent = 'Subscribing...';
+
+        try {
+            const response = await fetch('/api/newsletter/subscribe', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: email, source: 'website-footer' })
+            });
+
+            const data = await response.json();
+
+            msg.style.display = 'block';
+            msg.textContent = data.message;
+            msg.className = 'newsletter-message ' + (data.success ? 'success' : 'error');
+
+            if (data.success) {
+                document.getElementById('newsletter-email').value = '';
+            }
+        } catch (error) {
+            msg.style.display = 'block';
+            msg.textContent = 'Something went wrong. Please try again.';
+            msg.className = 'newsletter-message error';
+        }
+
+        btn.disabled = false;
+        btn.textContent = 'Subscribe';
+    });
+    </script>
 
     <footer class="site-footer">
         <div class="container">
