@@ -243,6 +243,8 @@ PERFORMANCE:
                         help="Show what tweets would be posted without actually posting")
     parser.add_argument("--workers", "-w", type=int, default=8,
                         help="Number of parallel workers (default: 8)")
+    parser.add_argument("--dev", action="store_true",
+                        help="Deploy to dev environment (hugginghugh.etcbin.io) instead of production")
     args = parser.parse_args()
 
     # Warn about deprecated --dry-run
@@ -269,7 +271,13 @@ PERFORMANCE:
     templates_dir = PROJECT_ROOT / "templates"
     static_dir = PROJECT_ROOT / "static"
     content_dir = PROJECT_ROOT / "content"
-    web_root = Path("/var/www/hugginghugh.etcbin.io")
+
+    # Web root: production (hugginghugh.com) or dev (hugginghugh.etcbin.io)
+    if args.dev:
+        web_root = Path("/var/www/hugginghugh.etcbin.io")
+        logger.info("DEV MODE: Will deploy to hugginghugh.etcbin.io")
+    else:
+        web_root = Path("/var/www/hugginghugh.com")
 
     # Create directories
     output_dir.mkdir(exist_ok=True)
