@@ -42,6 +42,7 @@ sys.path.insert(0, str(PROJECT_ROOT))
 from src.scanner import HuggingFaceClient, get_top_models, ModelFetcher
 from src.generator import SBOMGenerator, VulnerabilityScanner, LicenseAnalyzer, TrustScorer
 from src.reporter import HTMLReportGenerator, DashboardGenerator, BlogGenerator, BadgeGenerator
+from src.database import LeaderboardDB
 
 
 class Timer:
@@ -303,6 +304,16 @@ PERFORMANCE:
         output_dir=output_dir,
     )
 
+    # Initialize database connection for history data
+    # This is used for read-only queries to fetch historical data for reports
+    try:
+        history_db = LeaderboardDB()
+        history_db.connect()
+        logger.info("Connected to leaderboard database for history data")
+    except Exception as e:
+        logger.warning(f"Could not connect to database for history: {e}")
+        history_db = None
+
     stats.record("1. Initialization", phase_timer.stop())
 
     # Step 1: Fetch top models
@@ -347,13 +358,14 @@ PERFORMANCE:
             # Calculate trust score
             trust_score = trust_scorer.calculate_score(metadata, vulns, license_summary)
 
-            # Generate HTML report
+            # Generate HTML report (with history data if available)
             html_gen.generate_model_report(
                 model_metadata=metadata,
                 sbom=sbom,
                 vulnerabilities=vulns,
                 trust_score=trust_score,
                 license_analysis=license_summary,
+                db=history_db,
             )
 
             elapsed = model_timer.stop()
@@ -446,9 +458,7 @@ PERFORMANCE:
     logger.info("\nUpdating leaderboard database...")
     leaderboard_data = None
     try:
-        from src.database import LeaderboardDB
         from datetime import date as dt_date
-
         scan_date = dt_date.today()
         with LeaderboardDB() as db:
             # Record all scan results
@@ -618,6 +628,14 @@ PERFORMANCE:
         logger.info("NO DEPLOYMENT (use --deploy to deploy to production)")
         logger.info(f"Output available at: {output_dir}")
         logger.info("-" * 60)
+
+    # Cleanup: Close history database connection
+    if history_db:
+        try:
+            history_db.close()
+            logger.debug("Closed history database connection")
+        except Exception:
+            pass
 
     # Stop total timer
     total_elapsed = total_timer.stop()

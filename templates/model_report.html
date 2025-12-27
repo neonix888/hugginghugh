@@ -308,5 +308,134 @@
         </div>
     </div>
 
+    <!-- Historical Score Tracking -->
+    <div class="section history-section">
+        <div class="history-header">
+            <h2 class="section-title" style="margin-bottom: 0;">Score History</h2>
+            {% if has_history %}
+            <div class="time-range-selector">
+                <button class="time-range-btn" data-range="7">7D</button>
+                <button class="time-range-btn active" data-range="30">30D</button>
+                <button class="time-range-btn" data-range="90">90D</button>
+            </div>
+            {% endif %}
+        </div>
+
+        {% if has_history %}
+        <!-- Stats Summary -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value">{{ history.stats.total_scans }}</div>
+                <div class="stat-label">Days Tracked</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">{{ history.stats.best_score }}</div>
+                <div class="stat-label">Best Score</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value {% if history.stats.score_change_7d > 0 %}positive{% elif history.stats.score_change_7d < 0 %}negative{% endif %}">
+                    {% if history.stats.score_change_7d > 0 %}+{% endif %}{{ history.stats.score_change_7d }}
+                </div>
+                <div class="stat-label">7-Day Change</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">{{ history.stats.first_scan }}</div>
+                <div class="stat-label">First Scanned</div>
+            </div>
+        </div>
+
+        <!-- Charts Grid -->
+        <div class="charts-grid">
+            <!-- Trust Score Trend -->
+            <div class="chart-card">
+                <div class="chart-card-header">
+                    <div>
+                        <div class="chart-title">Trust Score Trend</div>
+                        <div class="chart-subtitle">Score over time (0-100)</div>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="scoreChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Vulnerability Trend -->
+            <div class="chart-card">
+                <div class="chart-card-header">
+                    <div>
+                        <div class="chart-title">Vulnerability Trend</div>
+                        <div class="chart-subtitle">Critical / High / Other</div>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="vulnChart"></canvas>
+                </div>
+            </div>
+
+            {% if is_eligible and history.rank_history %}
+            <!-- Rank History (only for eligible models) -->
+            <div class="chart-card rank-history-card">
+                <div class="chart-card-header">
+                    <div>
+                        <div class="chart-title">Leaderboard Rank</div>
+                        <div class="chart-subtitle">Position among 1M+ download models</div>
+                    </div>
+                    <span class="rank-badge-large">
+                        <span class="icon"><svg viewBox="0 0 24 24"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg></span>
+                        Eligible
+                    </span>
+                </div>
+                <div class="chart-container">
+                    <canvas id="rankChart"></canvas>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        {% else %}
+        <!-- No History State -->
+        <div class="card">
+            <div class="no-history">
+                <div class="no-history-icon">
+                    <span class="icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span>
+                </div>
+                <h3>History Coming Soon</h3>
+                <p>
+                    This model will start tracking history from its next scan.
+                    Check back later to see score trends and improvements over time.
+                </p>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
 </div>
+{% endblock %}
+
+{% block scripts %}
+{% if has_history %}
+<script src="{{ base_url }}/static/js/charts.js"></script>
+<script>
+    // History data from backend
+    const historyData = {{ history | tojson | safe }};
+
+    // Initialize charts on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize with 30-day default
+        HuggingHughCharts.initScoreChart('scoreChart', historyData.score_history, 30);
+        HuggingHughCharts.initVulnChart('vulnChart', historyData.score_history, 30);
+
+        {% if is_eligible and history.rank_history %}
+        HuggingHughCharts.initRankChart('rankChart', historyData.rank_history, 30);
+        {% endif %}
+
+        // Time range button handlers
+        document.querySelectorAll('.time-range-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const range = parseInt(this.dataset.range);
+                HuggingHughCharts.updateTimeRange(range, historyData);
+            });
+        });
+    });
+</script>
+{% endif %}
 {% endblock %}

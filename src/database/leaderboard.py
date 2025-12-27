@@ -341,21 +341,146 @@ class LeaderboardDB:
             days: Number of days of history
 
         Returns:
-            List of daily scores
+            List of daily scores with all tracked fields
         """
         conn = self.connect()
         cursor = conn.cursor(cursor_factory=RealDictCursor)
 
         cursor.execute("""
-            SELECT scan_date, trust_score, trust_grade, downloads, vuln_count
+            SELECT scan_date, trust_score, trust_grade, downloads, likes,
+                   vuln_count, vuln_critical, vuln_high, has_safetensors, license
             FROM score_history
             WHERE model_id = %s AND scan_date >= %s
-            ORDER BY scan_date DESC
+            ORDER BY scan_date ASC
         """, (model_id, date.today() - timedelta(days=days)))
 
-        results = [dict(r) for r in cursor.fetchall()]
+        results = []
+        for r in cursor.fetchall():
+            row = dict(r)
+            # Convert date to string for JSON serialization
+            row["scan_date"] = row["scan_date"].isoformat()
+            results.append(row)
+
         cursor.close()
         return results
+
+    def get_rank_history(
+        self, model_id: str, days: int = 30
+    ) -> list[dict[str, Any]]:
+        """
+        Get rank history for an eligible model.
+
+        Computes historical rank based on score_history data.
+
+        Args:
+            model_id: Model ID to query
+            days: Number of days of history
+
+        Returns:
+            List of daily ranks (empty if model not eligible)
+        """
+        conn = self.connect()
+        cursor = conn.cursor(cursor_factory=RealDictCursor)
+
+        # Get all scan dates in range
+        start_date = date.today() - timedelta(days=days)
+
+        # For each day, compute rank among eligible models
+        cursor.execute("""
+            WITH daily_ranks AS (
+                SELECT
+                    scan_date,
+                    model_id,
+                    trust_score,
+                    downloads,
+                    ROW_NUMBER() OVER (
+                        PARTITION BY scan_date
+                        ORDER BY trust_score DESC, downloads DESC
+                    ) as rank
+                FROM score_history
+                WHERE scan_date >= %s AND downloads >= %s
+            )
+            SELECT scan_date, rank, trust_score, downloads
+            FROM daily_ranks
+            WHERE model_id = %s
+            ORDER BY scan_date ASC
+        """, (start_date, MIN_DOWNLOADS_ELIGIBLE, model_id))
+
+        results = []
+        for r in cursor.fetchall():
+            row = dict(r)
+            row["scan_date"] = row["scan_date"].isoformat()
+            results.append(row)
+
+        cursor.close()
+        return results
+
+    def get_model_stats(self, model_id: str) -> dict[str, Any]:
+        """
+        Get statistics for a model's history.
+
+        Args:
+            model_id: Model ID to query
+
+        Returns:
+            Dictionary with first scan, best score, current streak, etc.
+        """
+        conn = self.connect()
+        cursor = conn.cursor(cursor_factory=RealDictCursor)
+
+        cursor.execute("""
+            SELECT
+                MIN(scan_date) as first_scan,
+                MAX(scan_date) as last_scan,
+                MAX(trust_score) as best_score,
+                MIN(trust_score) as lowest_score,
+                COUNT(*) as total_scans,
+                MAX(downloads) as peak_downloads
+            FROM score_history
+            WHERE model_id = %s
+        """, (model_id,))
+
+        result = cursor.fetchone()
+        if not result or not result["first_scan"]:
+            cursor.close()
+            return {}
+
+        stats = {
+            "first_scan": result["first_scan"].isoformat(),
+            "last_scan": result["last_scan"].isoformat(),
+            "best_score": result["best_score"],
+            "lowest_score": result["lowest_score"],
+            "total_scans": result["total_scans"],
+            "peak_downloads": result["peak_downloads"],
+            "days_tracked": (result["last_scan"] - result["first_scan"]).days + 1,
+        }
+
+        # Get current vs 7 days ago for trend
+        cursor.execute("""
+            SELECT trust_score
+            FROM score_history
+            WHERE model_id = %s
+            ORDER BY scan_date DESC
+            LIMIT 1
+        """, (model_id,))
+        current = cursor.fetchone()
+
+        cursor.execute("""
+            SELECT trust_score
+            FROM score_history
+            WHERE model_id = %s AND scan_date <= %s
+            ORDER BY scan_date DESC
+            LIMIT 1
+        """, (model_id, date.today() - timedelta(days=7)))
+        week_ago = cursor.fetchone()
+
+        if current and week_ago:
+            stats["score_change_7d"] = current["trust_score"] - week_ago["trust_score"]
+        else:
+            stats["score_change_7d"] = 0
+
+        cursor.close()
+        return stats
 
     def get_most_improved(self, days: int = 7) -> list[dict[str, Any]]:
         """

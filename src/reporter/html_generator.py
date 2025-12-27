@@ -8,11 +8,14 @@ import logging
 import shutil
 from datetime import datetime
 from pathlib import Path
-from typing import Optional
+from typing import Any, Optional
 
 from jinja2 import Environment, FileSystemLoader
 
 logger = logging.getLogger(__name__)
+
+# Minimum downloads for leaderboard eligibility
+MIN_DOWNLOADS_ELIGIBLE = 1_000_000
 
 
 def format_number(num: int) -> str:
@@ -55,6 +58,7 @@ class HTMLReportGenerator:
         output_dir: Path,
         static_dir: Path,
         base_url: str = "",
+        site_url: str = "https://hugginghugh.com",
     ):
         """
         Initialize HTML report generator.
@@ -63,12 +67,14 @@ class HTMLReportGenerator:
             templates_dir: Directory containing Jinja2 templates
             output_dir: Directory for output HTML files
             static_dir: Directory containing static assets (CSS, JS)
-            base_url: Base URL for the site (for links)
+            base_url: Base URL for relative links
+            site_url: Absolute URL for SEO meta tags
         """
         self.templates_dir = Path(templates_dir)
         self.output_dir = Path(output_dir)
         self.static_dir = Path(static_dir)
         self.base_url = base_url.rstrip("/")
+        self.site_url = site_url.rstrip("/")
 
         # Set up Jinja2
         self.env = Environment(
@@ -90,6 +96,7 @@ class HTMLReportGenerator:
         vulnerabilities: dict,
         trust_score,  # TrustScore dataclass
         license_analysis: dict,
+        db=None,  # Optional LeaderboardDB instance for history
     ) -> Path:
         """
         Generate HTML report for a single model.
@@ -100,6 +107,7 @@ class HTMLReportGenerator:
             vulnerabilities: Vulnerability scan results
             trust_score: TrustScore object
             license_analysis: License analysis results
+            db: Optional LeaderboardDB instance for fetching history
 
         Returns:
             Path to generated HTML file
@@ -113,15 +121,22 @@ class HTMLReportGenerator:
         report_dir = self.output_dir / "reports" / safe_id
         report_dir.mkdir(parents=True, exist_ok=True)
 
+        # Fetch history data if database available
+        history_data = self._get_history_data(model_id, model_metadata, db)
+
         # Prepare template context
         context = {
             "base_url": self.base_url,
+            "site_url": self.site_url,
             "last_updated": datetime.utcnow().strftime("%Y-%m-%d %H:%M UTC"),
             "model": self._prepare_model_context(model_metadata),
             "sbom": sbom,
             "vulnerabilities": vulnerabilities,
             "trust_score": self._prepare_trust_score_context(trust_score),
             "license_analysis": license_analysis,
+            "history": history_data,
+            "has_history": bool(history_data.get("score_history")),
+            "is_eligible": model_metadata.get("downloads", 0) >= MIN_DOWNLOADS_ELIGIBLE,
         }
 
         # Render template
@@ -140,8 +155,52 @@ class HTMLReportGenerator:
         vuln_file = report_dir / "vulnerabilities.json"
         vuln_file.write_text(json.dumps(vulnerabilities, indent=2))
 
+        # Write history JSON if available
+        if history_data.get("score_history"):
+            history_file = report_dir / "history.json"
+            history_file.write_text(json.dumps(history_data, indent=2))
+
         logger.info(f"Report generated: {html_file}")
         return html_file
+
+    def _get_history_data(
+        self, model_id: str, metadata: dict, db
+    ) -> dict[str, Any]:
+        """
+        Fetch history data for a model from the database.
+
+        Args:
+            model_id: Model ID
+            metadata: Model metadata
+            db: LeaderboardDB instance
+
+        Returns:
+            Dictionary with score history, rank history, and stats
+        """
+        if db is None:
+            return {}
+
+        try:
+            # Get 90 days of history
+            score_history = db.get_model_history(model_id, days=90)
+
+            # Get rank history if eligible
+            downloads = metadata.get("downloads", 0)
+            rank_history = []
+            if downloads >= MIN_DOWNLOADS_ELIGIBLE:
+                rank_history = db.get_rank_history(model_id, days=90)
+
+            # Get stats
+            stats = db.get_model_stats(model_id)
+
+            return {
+                "score_history": score_history,
+                "rank_history": rank_history,
+                "stats": stats,
+            }
+        except Exception as e:
+            logger.warning(f"Failed to fetch history for {model_id}: {e}")
+            return {}
 
     def _prepare_model_context(self, metadata: dict) -> dict:
         """Prepare model data for template context."""
