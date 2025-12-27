@@ -30,8 +30,10 @@ import shutil
 import subprocess
 import sys
 import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timedelta
 from pathlib import Path
+from threading import Lock
 
 # Add project root to path
 PROJECT_ROOT = Path(__file__).parent.parent
@@ -39,7 +41,7 @@ sys.path.insert(0, str(PROJECT_ROOT))
 
 from src.scanner import HuggingFaceClient, get_top_models, ModelFetcher
 from src.generator import SBOMGenerator, VulnerabilityScanner, LicenseAnalyzer, TrustScorer
-from src.reporter import HTMLReportGenerator, DashboardGenerator
+from src.reporter import HTMLReportGenerator, DashboardGenerator, BlogGenerator, BadgeGenerator
 
 
 class Timer:
@@ -204,15 +206,21 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  %(prog)s                      # Scan 1000 models, no deploy
+  %(prog)s                      # Scan 1000 models with 8 workers, no deploy
   %(prog)s --limit 10           # Scan 10 models for testing, no deploy
   %(prog)s --deploy             # Scan 1000 models and deploy to production
   %(prog)s --deploy --force     # Force re-scan all and deploy
+  %(prog)s -w 16                # Use 16 parallel workers (faster on multi-core)
 
 SAFEGUARDS:
   - Deployment requires explicit --deploy flag
   - Minimum 500 models required for deployment
   - Use --min-models to override (not recommended)
+
+PERFORMANCE:
+  - Default 8 workers process ~8 models concurrently
+  - Increase --workers for faster scans on multi-core systems
+  - Decrease --workers if hitting rate limits or memory issues
         """
     )
     parser.add_argument("--deploy", action="store_true",
@@ -228,6 +236,12 @@ SAFEGUARDS:
     # Keep --dry-run for backwards compatibility but it's now the default
     parser.add_argument("--dry-run", action="store_true",
                         help="(Deprecated) No deployment is now the default behavior")
+    parser.add_argument("--tweet", action="store_true",
+                        help="Post tweets about scan results (requires Twitter API credentials)")
+    parser.add_argument("--tweet-dry-run", action="store_true",
+                        help="Show what tweets would be posted without actually posting")
+    parser.add_argument("--workers", "-w", type=int, default=8,
+                        help="Number of parallel workers (default: 8)")
     args = parser.parse_args()
 
     # Warn about deprecated --dry-run
@@ -253,6 +267,7 @@ SAFEGUARDS:
     data_dir = PROJECT_ROOT / "data"
     templates_dir = PROJECT_ROOT / "templates"
     static_dir = PROJECT_ROOT / "static"
+    content_dir = PROJECT_ROOT / "content"
     web_root = Path("/var/www/hugginghugh.etcbin.io")
 
     # Create directories
@@ -278,6 +293,15 @@ SAFEGUARDS:
         output_dir=output_dir,
         base_url="",
     )
+    blog_gen = BlogGenerator(
+        templates_dir=templates_dir,
+        content_dir=content_dir,
+        output_dir=output_dir,
+        base_url="",
+    )
+    badge_gen = BadgeGenerator(
+        output_dir=output_dir,
+    )
 
     stats.record("1. Initialization", phase_timer.stop())
 
@@ -288,48 +312,42 @@ SAFEGUARDS:
     logger.info(f"Found {len(models)} models")
     stats.record("2. Fetch Model List", phase_timer.stop())
 
-    # Step 2: Process each model
+    # Step 2: Process models in parallel
     phase_timer = Timer("Process Models", logger).start()
     all_results = []
     successful = 0
     failed = 0
+    results_lock = Lock()
+    progress_lock = Lock()
+    processed_count = [0]  # Use list for mutable counter in closure
 
-    for i, model in enumerate(models, 1):
-        model_timer = Timer(f"Model {i}", logger).start()
-        logger.info(f"\n[{i}/{len(models)}] Processing: {model.model_id}")
-        logger.info(f"  Downloads: {model.downloads:,}, Likes: {model.likes:,}")
+    def process_single_model(model_with_index):
+        """Process a single model - runs in thread pool."""
+        i, model = model_with_index
+        model_timer = Timer(f"Model {i}", None).start()
 
         try:
             # Fetch metadata
-            logger.info("  Fetching metadata...")
             metadata = fetcher.fetch_model_metadata(model, force=args.force)
 
             # Generate SBOM
-            logger.info("  Generating SBOM...")
             sbom = sbom_gen.generate_sbom(metadata)
 
             # Get versioned requirements for OSV-Scanner
             requirements = sbom_gen._infer_requirements(metadata)
 
-            # Scan vulnerabilities (Grype + OSV-Scanner)
-            logger.info("  Scanning vulnerabilities...")
+            # Scan vulnerabilities (Grype + OSV-Scanner) - main bottleneck
             vulns = vuln_scanner.scan_sbom(sbom, model.model_id, requirements=requirements)
 
             # Analyze license
-            logger.info("  Analyzing license...")
             model_license = license_analyzer.analyze_model_license(metadata)
             sbom_licenses = license_analyzer.analyze_sbom_licenses(sbom)
             license_summary = license_analyzer.get_license_summary(model_license, sbom_licenses)
 
             # Calculate trust score
-            logger.info("  Calculating trust score...")
             trust_score = trust_scorer.calculate_score(metadata, vulns, license_summary)
 
-            logger.info(f"  Trust Score: {trust_score.total_score}/100 ({trust_score.grade})")
-            logger.info(f"  Vulnerabilities: {vulns['summary']['total']} total, {vulns['summary']['critical']} critical")
-
             # Generate HTML report
-            logger.info("  Generating HTML report...")
             html_gen.generate_model_report(
                 model_metadata=metadata,
                 sbom=sbom,
@@ -338,8 +356,11 @@ SAFEGUARDS:
                 license_analysis=license_summary,
             )
 
-            # Collect results for dashboard
-            all_results.append({
+            elapsed = model_timer.stop()
+
+            # Return result
+            return {
+                "success": True,
                 "model_id": model.model_id,
                 "model_name": model.model_name,
                 "author": model.author,
@@ -352,16 +373,48 @@ SAFEGUARDS:
                 "has_safetensors": model.has_safetensors,
                 "pipeline_tag": model.pipeline_tag,
                 "library_name": model.library_name,
-            })
-
-            successful += 1
-            stats.record_model(model.model_id, model_timer.stop())
+                "elapsed": elapsed,
+            }
 
         except Exception as e:
-            logger.error(f"  ERROR: Failed to process {model.model_id}: {e}")
-            failed += 1
-            stats.record_model(model.model_id, model_timer.stop())
-            continue
+            elapsed = model_timer.stop()
+            return {
+                "success": False,
+                "model_id": model.model_id,
+                "error": str(e),
+                "elapsed": elapsed,
+            }
+
+    # Process models in parallel
+    num_workers = min(args.workers, len(models))
+    logger.info(f"Processing {len(models)} models with {num_workers} parallel workers...")
+
+    with ThreadPoolExecutor(max_workers=num_workers) as executor:
+        # Submit all tasks
+        future_to_model = {
+            executor.submit(process_single_model, (i, model)): model
+            for i, model in enumerate(models, 1)
+        }
+
+        # Process results as they complete
+        for future in as_completed(future_to_model):
+            result = future.result()
+            with progress_lock:
+                processed_count[0] += 1
+                count = processed_count[0]
+
+            if result["success"]:
+                with results_lock:
+                    all_results.append(result)
+                    successful += 1
+                elapsed_str = Timer._format_duration(result["elapsed"])
+                logger.info(f"[{count}/{len(models)}] {result['model_id']} - Score: {result['trust_score']} ({result['trust_grade']}) - {elapsed_str}")
+                stats.record_model(result["model_id"], result["elapsed"])
+            else:
+                with results_lock:
+                    failed += 1
+                logger.error(f"[{count}/{len(models)}] FAILED: {result['model_id']} - {result['error']}")
+                stats.record_model(result["model_id"], result["elapsed"])
 
     stats.record("3. Process All Models", phase_timer.stop())
 
@@ -432,7 +485,74 @@ SAFEGUARDS:
 
     stats.record("5. Update Leaderboard", phase_timer.stop())
 
-    # Step 4: Deploy to production (only with --deploy flag)
+    # Step 5.5: Generate blog pages
+    blog_posts = []
+    logger.info("\nGenerating blog pages...")
+    try:
+        blog_posts = blog_gen.load_posts()
+        if blog_posts:
+            blog_gen.generate_all()
+            logger.info(f"  Blog generated: {len(blog_posts)} posts")
+        else:
+            logger.info("  No blog posts found")
+    except Exception as e:
+        logger.warning(f"  Failed to generate blog: {e}")
+
+    # Step 5.6: Generate badges
+    logger.info("\nGenerating badges...")
+    try:
+        badge_count = badge_gen.generate_all_badges(all_results)
+        logger.info(f"  Badges generated: {badge_count} models")
+
+        # Generate badges page
+        badges_template = templates_dir / "badges.html"
+        if badges_template.exists():
+            from jinja2 import Environment, FileSystemLoader
+            env = Environment(loader=FileSystemLoader(str(templates_dir)), autoescape=True)
+            template = env.get_template("badges.html")
+            html_content = template.render(
+                base_url="",
+                site_url="https://hugginghugh.com",
+                last_updated=datetime.now().strftime("%Y-%m-%d %H:%M UTC"),
+            )
+            (output_dir / "badges.html").write_text(html_content)
+            logger.info("  Badges page generated")
+    except Exception as e:
+        logger.warning(f"  Failed to generate badges: {e}")
+
+    # Step 5.7: Generate SEO files (sitemap.xml, robots.txt)
+    logger.info("\nGenerating SEO files...")
+    try:
+        dashboard_gen.generate_sitemap(all_results, blog_posts=blog_posts)
+        dashboard_gen.generate_robots_txt()
+        logger.info("  SEO files generated successfully")
+    except Exception as e:
+        logger.warning(f"  Failed to generate SEO files: {e}")
+
+    # Step 5.8: Post to Twitter (only with --tweet or --tweet-dry-run flag)
+    if args.tweet or args.tweet_dry_run:
+        logger.info("\nRunning Twitter bot...")
+        try:
+            from src.social.twitter_bot import TwitterBot
+
+            bot = TwitterBot(dry_run=args.tweet_dry_run)
+
+            if not bot.is_configured() and not args.tweet_dry_run:
+                logger.warning("  Twitter API credentials not configured")
+                logger.info("  Set TWITTER_API_KEY, TWITTER_API_SECRET, TWITTER_ACCESS_TOKEN, TWITTER_ACCESS_TOKEN_SECRET")
+            else:
+                tweets_posted = bot.run_daily_tweets(
+                    models_data=all_results,
+                    leaderboard_data=leaderboard_data,
+                )
+                if args.tweet_dry_run:
+                    logger.info(f"  [DRY RUN] Would post {tweets_posted} tweets")
+                else:
+                    logger.info(f"  Posted {tweets_posted} tweets")
+        except Exception as e:
+            logger.warning(f"  Failed to run Twitter bot: {e}")
+
+    # Step 6: Deploy to production (only with --deploy flag)
     if args.deploy:
         phase_timer = Timer("Deploy to Production", logger).start()
         logger.info("\n" + "=" * 60)
