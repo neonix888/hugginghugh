@@ -27,12 +27,12 @@ Granular task checklist for ongoing development. Update this document as tasks p
 - [x] Add explicit nginx location blocks for SEO files
 
 ### Phase 3: Content Marketing
-- [ ] Create blog infrastructure
-- [ ] Write initial security content posts
+- [x] Create blog infrastructure ✅
+- [x] Write initial security content posts ✅
 
 ### Phase 4: Viral Mechanics
-- [ ] Create embeddable trust score badges for model READMEs
-- [ ] Add badge API endpoints
+- [x] Create embeddable trust score badges for model READMEs ✅
+- [x] Add badge API endpoints ✅
 
 ### Phase 5: Social Presence
 - [ ] Build Twitter bot for score announcements

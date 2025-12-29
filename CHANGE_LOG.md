@@ -17,6 +17,10 @@ Concise changelog for all project changes. Format: `[date] - [type] - [descripti
 - `config` - Updated requirements.txt with pre-commit, flake8, detect-secrets
 - `style` - Auto-formatted 27 Python files with black
 - `style` - Auto-sorted imports in 3 files with isort
+- `docs` - Verified blog infrastructure complete (BlogGenerator, templates, CSS, 3 posts)
+- `docs` - Updated TASKS.md marking Phase 3 Content Marketing complete
+- `docs` - Verified badge infrastructure complete (BadgeGenerator, 4 SVG styles, shields.io JSON endpoints)
+- `docs` - Updated TASKS.md marking Phase 4 Viral Mechanics complete
 
 ---
 
