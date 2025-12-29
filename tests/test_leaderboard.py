@@ -1,11 +1,13 @@
 """
 Tests for the Leaderboard Database module.
 """
-import pytest
+
 from datetime import date
 from unittest.mock import MagicMock, patch
 
-from src.database.leaderboard import LeaderboardDB, MIN_DOWNLOADS_ELIGIBLE, TIE_BREAKER_GRACE_DAYS
+import pytest
+
+from src.database.leaderboard import MIN_DOWNLOADS_ELIGIBLE, TIE_BREAKER_GRACE_DAYS, LeaderboardDB
 
 
 class TestLeaderboardConstants:
@@ -163,7 +165,14 @@ class TestLeaderboardDataFormat:
 
     def test_ranking_output_fields(self):
         """Ranking output should have expected fields."""
-        expected_fields = ["rank", "model_id", "trust_score", "trust_grade", "downloads", "streak_days"]
+        expected_fields = [
+            "rank",
+            "model_id",
+            "trust_score",
+            "trust_grade",
+            "downloads",
+            "streak_days",
+        ]
         sample_ranking = {
             "rank": 1,
             "model_id": "test/model",

@@ -23,10 +23,7 @@ sys.path.insert(0, str(PROJECT_ROOT))
 
 from src.newsletter.subscriber import SubscriberDB
 
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s [%(levelname)s] %(message)s"
-)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger(__name__)
 
 
@@ -100,21 +97,17 @@ def main():
 
     # List command
     list_parser = subparsers.add_parser("list", help="List active subscribers")
-    list_parser.add_argument("--limit", type=int, default=50,
-                             help="Maximum subscribers to show")
+    list_parser.add_argument("--limit", type=int, default=50, help="Maximum subscribers to show")
 
     # Export command
     export_parser = subparsers.add_parser("export", help="Export subscribers")
-    export_parser.add_argument("--json", action="store_true",
-                               help="Export as JSON (default: CSV)")
-    export_parser.add_argument("--output", "-o", type=str,
-                               help="Output file path")
+    export_parser.add_argument("--json", action="store_true", help="Export as JSON (default: CSV)")
+    export_parser.add_argument("--output", "-o", type=str, help="Output file path")
 
     # Add command
     add_parser = subparsers.add_parser("add", help="Add subscriber manually")
     add_parser.add_argument("email", help="Email address to add")
-    add_parser.add_argument("--source", default="admin",
-                            help="Source identifier")
+    add_parser.add_argument("--source", default="admin", help="Source identifier")
 
     args = parser.parse_args()
 

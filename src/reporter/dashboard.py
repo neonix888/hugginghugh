@@ -3,6 +3,7 @@ Dashboard Generator
 
 Generates the main dashboard page with all models.
 """
+
 import json
 import logging
 from datetime import datetime
@@ -45,6 +46,7 @@ class DashboardGenerator:
         templates_dir: Path,
         output_dir: Path,
         base_url: str = "",
+        site_url: str = "https://hugginghugh.com",
     ):
         """
         Initialize dashboard generator.
@@ -52,11 +54,13 @@ class DashboardGenerator:
         Args:
             templates_dir: Directory containing Jinja2 templates
             output_dir: Directory for output HTML files
-            base_url: Base URL for the site
+            base_url: Base URL for relative links
+            site_url: Absolute URL for SEO meta tags
         """
         self.templates_dir = Path(templates_dir)
         self.output_dir = Path(output_dir)
         self.base_url = base_url.rstrip("/")
+        self.site_url = site_url.rstrip("/")
 
         # Set up Jinja2
         self.env = Environment(
@@ -86,15 +90,15 @@ class DashboardGenerator:
 
         # Calculate summary stats
         total_vulns = sum(
-            m.get("vulnerabilities", {}).get("summary", {}).get("total", 0)
-            for m in models_data
+            m.get("vulnerabilities", {}).get("summary", {}).get("total", 0) for m in models_data
         )
 
         trust_scores = [m.get("trust_score", 0) for m in models_data if m.get("trust_score")]
         avg_trust = round(sum(trust_scores) / len(trust_scores)) if trust_scores else 0
 
         models_with_issues = sum(
-            1 for m in models_data
+            1
+            for m in models_data
             if m.get("vulnerabilities", {}).get("summary", {}).get("critical", 0) > 0
             or m.get("vulnerabilities", {}).get("summary", {}).get("high", 0) > 0
         )
@@ -111,23 +115,27 @@ class DashboardGenerator:
         # Prepare model cards data
         model_cards = []
         for model in models_data:
-            model_cards.append({
-                "model_id": model.get("model_id", "unknown"),
-                "model_name": model.get("model_name", "Unknown"),
-                "author": model.get("author", "Unknown"),
-                "safe_id": model.get("model_id", "unknown").replace("/", "_"),
-                "downloads": model.get("downloads", 0),
-                "downloads_formatted": format_number(model.get("downloads", 0)),
-                "likes": model.get("likes", 0),
-                "likes_formatted": format_number(model.get("likes", 0)),
-                "vuln_count": model.get("vulnerabilities", {}).get("summary", {}).get("total", 0),
-                "trust_score": model.get("trust_score", 0),
-                "trust_grade": model.get("trust_grade", "?"),
-                "trust_grade_class": get_trust_grade_class(model.get("trust_score", 0)),
-                "pipeline_tag": model.get("pipeline_tag"),
-                "library_name": model.get("library_name"),
-                "has_safetensors": model.get("has_safetensors", False),
-            })
+            model_cards.append(
+                {
+                    "model_id": model.get("model_id", "unknown"),
+                    "model_name": model.get("model_name", "Unknown"),
+                    "author": model.get("author", "Unknown"),
+                    "safe_id": model.get("model_id", "unknown").replace("/", "_"),
+                    "downloads": model.get("downloads", 0),
+                    "downloads_formatted": format_number(model.get("downloads", 0)),
+                    "likes": model.get("likes", 0),
+                    "likes_formatted": format_number(model.get("likes", 0)),
+                    "vuln_count": model.get("vulnerabilities", {})
+                    .get("summary", {})
+                    .get("total", 0),
+                    "trust_score": model.get("trust_score", 0),
+                    "trust_grade": model.get("trust_grade", "?"),
+                    "trust_grade_class": get_trust_grade_class(model.get("trust_score", 0)),
+                    "pipeline_tag": model.get("pipeline_tag"),
+                    "library_name": model.get("library_name"),
+                    "has_safetensors": model.get("has_safetensors", False),
+                }
+            )
 
         # Sort by downloads (should already be sorted, but ensure)
         model_cards.sort(key=lambda x: x["downloads"], reverse=True)
@@ -141,23 +149,26 @@ class DashboardGenerator:
                 model_name = model_id.split("/")[-1] if "/" in model_id else model_id
                 author = model_id.split("/")[0] if "/" in model_id else "unknown"
 
-                leaderboard_display.append({
-                    "rank": r.get("rank"),
-                    "model_id": model_id,
-                    "model_name": model_name,
-                    "author": author,
-                    "safe_id": model_id.replace("/", "_"),
-                    "trust_score": r.get("trust_score"),
-                    "trust_grade": r.get("trust_grade"),
-                    "downloads": r.get("downloads", 0),
-                    "downloads_formatted": format_number(r.get("downloads", 0)),
-                    "streak_days": r.get("streak_days", 1),
-                    "rank_change": r.get("rank_change", 0),
-                })
+                leaderboard_display.append(
+                    {
+                        "rank": r.get("rank"),
+                        "model_id": model_id,
+                        "model_name": model_name,
+                        "author": author,
+                        "safe_id": model_id.replace("/", "_"),
+                        "trust_score": r.get("trust_score"),
+                        "trust_grade": r.get("trust_grade"),
+                        "downloads": r.get("downloads", 0),
+                        "downloads_formatted": format_number(r.get("downloads", 0)),
+                        "streak_days": r.get("streak_days", 1),
+                        "rank_change": r.get("rank_change", 0),
+                    }
+                )
 
         # Prepare template context
         context = {
             "base_url": self.base_url,
+            "site_url": self.site_url,
             "last_updated": datetime.utcnow().strftime("%Y-%m-%d %H:%M UTC"),
             "total_models": len(models_data),
             "total_vulnerabilities": total_vulns,
@@ -212,6 +223,7 @@ class DashboardGenerator:
 
             context = {
                 "base_url": self.base_url,
+                "site_url": self.site_url,
                 "grade": grade,
                 "grade_description": grade_descriptions.get(grade, ""),
                 "models": grade_models,
@@ -246,25 +258,28 @@ class DashboardGenerator:
             model_name = model_id.split("/")[-1] if "/" in model_id else model_id
             author = model_id.split("/")[0] if "/" in model_id else "unknown"
 
-            rankings_display.append({
-                "rank": r.get("rank"),
-                "model_id": model_id,
-                "model_name": model_name,
-                "author": author,
-                "safe_id": model_id.replace("/", "_"),
-                "trust_score": r.get("trust_score"),
-                "trust_grade": r.get("trust_grade", "?"),
-                "downloads": r.get("downloads", 0),
-                "downloads_formatted": format_number(r.get("downloads", 0)),
-                "streak_days": r.get("streak_days", 1),
-                "rank_change": r.get("rank_change", 0),
-            })
+            rankings_display.append(
+                {
+                    "rank": r.get("rank"),
+                    "model_id": model_id,
+                    "model_name": model_name,
+                    "author": author,
+                    "safe_id": model_id.replace("/", "_"),
+                    "trust_score": r.get("trust_score"),
+                    "trust_grade": r.get("trust_grade", "?"),
+                    "downloads": r.get("downloads", 0),
+                    "downloads_formatted": format_number(r.get("downloads", 0)),
+                    "streak_days": r.get("streak_days", 1),
+                    "rank_change": r.get("rank_change", 0),
+                }
+            )
 
         # Get eligible count
         eligible_count = len(rankings_display)
 
         context = {
             "base_url": self.base_url,
+            "site_url": self.site_url,
             "last_updated": datetime.utcnow().strftime("%Y-%m-%d %H:%M UTC"),
             "rankings": rankings_display,
             "eligible_count": eligible_count,
@@ -308,8 +323,12 @@ class DashboardGenerator:
                     "likes": m.get("likes"),
                     "trust_score": m.get("trust_score"),
                     "trust_grade": m.get("trust_grade"),
-                    "vulnerability_count": m.get("vulnerabilities", {}).get("summary", {}).get("total", 0),
-                    "critical_count": m.get("vulnerabilities", {}).get("summary", {}).get("critical", 0),
+                    "vulnerability_count": m.get("vulnerabilities", {})
+                    .get("summary", {})
+                    .get("total", 0),
+                    "critical_count": m.get("vulnerabilities", {})
+                    .get("summary", {})
+                    .get("critical", 0),
                     "high_count": m.get("vulnerabilities", {}).get("summary", {}).get("high", 0),
                     "has_safetensors": m.get("has_safetensors"),
                     "license": m.get("license"),
@@ -467,6 +486,7 @@ class DashboardGenerator:
         template = self.env.get_template("about.html")
         html_content = template.render(
             base_url=self.base_url,
+            site_url=self.site_url,
             last_updated=datetime.utcnow().strftime("%Y-%m-%d %H:%M UTC"),
         )
 
@@ -475,3 +495,110 @@ class DashboardGenerator:
 
         logger.info(f"About page generated: {html_file}")
         return html_file
+
+    def generate_sitemap(
+        self,
+        models_data: list[dict[str, Any]],
+        blog_posts: list[dict[str, Any]] = None,
+    ) -> Path:
+        """
+        Generate sitemap.xml for SEO.
+
+        Args:
+            models_data: List of model data dictionaries
+            blog_posts: Optional list of blog post metadata
+
+        Returns:
+            Path to generated sitemap.xml
+        """
+        from datetime import datetime
+
+        last_mod = datetime.utcnow().strftime("%Y-%m-%d")
+
+        # Start sitemap XML
+        sitemap_lines = [
+            '<?xml version="1.0" encoding="UTF-8"?>',
+            '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
+        ]
+
+        # Main pages
+        main_pages = [
+            ("", "1.0", "daily"),  # Homepage
+            ("/leaderboard.html", "0.9", "daily"),
+            ("/blog/", "0.9", "weekly"),  # Blog index
+            ("/badges.html", "0.8", "monthly"),  # Badges page
+            ("/about.html", "0.5", "monthly"),
+            ("/grade/a.html", "0.7", "daily"),
+            ("/grade/b.html", "0.7", "daily"),
+            ("/grade/c.html", "0.7", "daily"),
+            ("/grade/d.html", "0.7", "daily"),
+            ("/grade/f.html", "0.7", "daily"),
+        ]
+
+        for path, priority, changefreq in main_pages:
+            sitemap_lines.append("  <url>")
+            sitemap_lines.append(f"    <loc>{self.site_url}{path}</loc>")
+            sitemap_lines.append(f"    <lastmod>{last_mod}</lastmod>")
+            sitemap_lines.append(f"    <changefreq>{changefreq}</changefreq>")
+            sitemap_lines.append(f"    <priority>{priority}</priority>")
+            sitemap_lines.append("  </url>")
+
+        # Blog post pages
+        if blog_posts:
+            for post in blog_posts:
+                slug = post.get("slug", "")
+                date_iso = post.get("date_iso", last_mod)
+                sitemap_lines.append("  <url>")
+                sitemap_lines.append(f"    <loc>{self.site_url}/blog/{slug}.html</loc>")
+                sitemap_lines.append(f"    <lastmod>{date_iso}</lastmod>")
+                sitemap_lines.append("    <changefreq>monthly</changefreq>")
+                sitemap_lines.append("    <priority>0.8</priority>")
+                sitemap_lines.append("  </url>")
+
+        # Model report pages
+        for model in models_data:
+            model_id = model.get("model_id", "")
+            safe_id = model_id.replace("/", "_")
+            sitemap_lines.append("  <url>")
+            sitemap_lines.append(f"    <loc>{self.site_url}/reports/{safe_id}/index.html</loc>")
+            sitemap_lines.append(f"    <lastmod>{last_mod}</lastmod>")
+            sitemap_lines.append("    <changefreq>daily</changefreq>")
+            sitemap_lines.append("    <priority>0.8</priority>")
+            sitemap_lines.append("  </url>")
+
+        sitemap_lines.append("</urlset>")
+
+        # Write sitemap
+        sitemap_content = "\n".join(sitemap_lines)
+        sitemap_file = self.output_dir / "sitemap.xml"
+        sitemap_file.write_text(sitemap_content)
+
+        logger.info(
+            f"Sitemap generated: {sitemap_file} ({len(models_data) + len(main_pages)} URLs)"
+        )
+        return sitemap_file
+
+    def generate_robots_txt(self) -> Path:
+        """
+        Generate robots.txt file.
+
+        Returns:
+            Path to generated robots.txt
+        """
+        robots_content = f"""# robots.txt for HuggingHugh
+# {self.site_url}
+
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: {self.site_url}/sitemap.xml
+
+# Crawl-delay suggestion (be nice to the server)
+Crawl-delay: 1
+"""
+        robots_file = self.output_dir / "robots.txt"
+        robots_file.write_text(robots_content)
+
+        logger.info(f"robots.txt generated: {robots_file}")
+        return robots_file

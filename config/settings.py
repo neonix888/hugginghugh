@@ -1,6 +1,7 @@
 """
 HuggingHugh Configuration Settings
 """
+
 import os
 from pathlib import Path
 
@@ -60,16 +61,18 @@ SEVERITY_ORDER = ["critical", "high", "medium", "low", "unknown"]
 
 # License classifications
 PERMISSIVE_LICENSES = [
-    "mit", "apache-2.0", "bsd-2-clause", "bsd-3-clause", "isc", "unlicense", "cc0-1.0"
+    "mit",
+    "apache-2.0",
+    "bsd-2-clause",
+    "bsd-3-clause",
+    "isc",
+    "unlicense",
+    "cc0-1.0",
 ]
 
-COPYLEFT_LICENSES = [
-    "gpl-2.0", "gpl-3.0", "lgpl-2.1", "lgpl-3.0", "agpl-3.0"
-]
+COPYLEFT_LICENSES = ["gpl-2.0", "gpl-3.0", "lgpl-2.1", "lgpl-3.0", "agpl-3.0"]
 
-RESTRICTIVE_LICENSES = [
-    "cc-by-nc-4.0", "cc-by-nc-sa-4.0", "llama2", "llama3", "gemma"
-]
+RESTRICTIVE_LICENSES = ["cc-by-nc-4.0", "cc-by-nc-sa-4.0", "llama2", "llama3", "gemma"]
 
 # Logging
 LOG_FILE = LOGS_DIR / "scanner.log"

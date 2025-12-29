@@ -4,9 +4,10 @@ Trust Score Calculator
 Calculates a trust score (0-100) for ML models based on various factors.
 Weights are calibrated based on real-world security incidents and best practices.
 """
+
 import logging
-from datetime import datetime, timedelta, timezone
 from dataclasses import dataclass
+from datetime import datetime, timedelta, timezone
 from typing import Optional
 
 logger = logging.getLogger(__name__)
@@ -17,36 +18,77 @@ logger = logging.getLogger(__name__)
 # - Provenance factors: 25 points (verified org, license)
 # - Quality factors: 25 points (docs, recency, community)
 WEIGHTS = {
-    "verified_org": 12,          # Provenance: known publisher
-    "safetensors_format": 18,    # Security: safe serialization (high weight due to CVE-2025-32434)
-    "no_critical_cves": 15,      # Security: vulnerability-free dependencies
-    "clear_license": 13,         # Provenance: usage rights
-    "model_card_quality": 10,    # Quality: documentation
-    "recent_updates": 8,         # Quality: maintenance status
-    "community_engagement": 6,   # Quality: adoption signals
-    "no_pickle_files": 18,       # Security: no arbitrary code execution risk
+    "verified_org": 12,  # Provenance: known publisher
+    "safetensors_format": 18,  # Security: safe serialization (high weight due to CVE-2025-32434)
+    "no_critical_cves": 15,  # Security: vulnerability-free dependencies
+    "clear_license": 13,  # Provenance: usage rights
+    "model_card_quality": 10,  # Quality: documentation
+    "recent_updates": 8,  # Quality: maintenance status
+    "community_engagement": 6,  # Quality: adoption signals
+    "no_pickle_files": 18,  # Security: no arbitrary code execution risk
 }
 
 # Known well-maintained organizations (partial credit if not officially verified)
 KNOWN_TRUSTWORTHY_ORGS = [
     # Major AI labs
-    "meta-llama", "meta", "facebook", "openai", "google", "deepmind",
-    "microsoft", "nvidia", "amazon", "alibaba", "baidu", "tencent",
+    "meta-llama",
+    "meta",
+    "facebook",
+    "openai",
+    "google",
+    "deepmind",
+    "microsoft",
+    "nvidia",
+    "amazon",
+    "alibaba",
+    "baidu",
+    "tencent",
     # HuggingFace ecosystem
-    "huggingface", "bigscience", "bigcode", "sentence-transformers",
+    "huggingface",
+    "bigscience",
+    "bigcode",
+    "sentence-transformers",
     # AI research orgs
-    "stabilityai", "stability-ai", "runwayml", "compvis", "laion",
-    "eleutherai", "togethercomputer", "together", "mistralai", "mistral-ai",
+    "stabilityai",
+    "stability-ai",
+    "runwayml",
+    "compvis",
+    "laion",
+    "eleutherai",
+    "togethercomputer",
+    "together",
+    "mistralai",
+    "mistral-ai",
     # Model-specific well-known publishers
-    "qwen", "deepseek-ai", "thudm", "internlm", "baichuan-inc",
-    "01-ai", "cohere", "anthropic", "allenai", "berkeley-nest",
-    "lmsys", "teknium", "openchat", "nousresearch", "cognitivecomputations",
+    "qwen",
+    "deepseek-ai",
+    "thudm",
+    "internlm",
+    "baichuan-inc",
+    "01-ai",
+    "cohere",
+    "anthropic",
+    "allenai",
+    "berkeley-nest",
+    "lmsys",
+    "teknium",
+    "openchat",
+    "nousresearch",
+    "cognitivecomputations",
     # Vision/Multimodal specialists
-    "timm", "openclip", "salesforce", "clip-benchmark",
+    "timm",
+    "openclip",
+    "salesforce",
+    "clip-benchmark",
     # Audio specialists
-    "openai-whisper", "pyannote", "speechbrain", "coqui",
+    "openai-whisper",
+    "pyannote",
+    "speechbrain",
+    "coqui",
     # RL/Robotics
-    "cleanrl", "stable-baselines", "huggingface-rl",
+    "cleanrl",
+    "stable-baselines",
+    "huggingface-rl",
 ]
 
 
@@ -405,12 +447,14 @@ class TrustScorer:
         has_description = bool(card_data.get("description") or card_data.get("summary"))
         has_tags = len(metadata.get("tags", [])) > 2
 
-        quality_score = sum([
-            0.3 if has_readme else 0,
-            0.2 if has_config else 0,
-            0.3 if has_description else 0,
-            0.2 if has_tags else 0,
-        ])
+        quality_score = sum(
+            [
+                0.3 if has_readme else 0,
+                0.2 if has_config else 0,
+                0.3 if has_description else 0,
+                0.2 if has_tags else 0,
+            ]
+        )
         tooltip = (
             f"Max {weight} points. Checks for README (30%), config.json (20%), "
             "description (30%), and tags (20%). Full points if score >= 80%, "
@@ -536,6 +580,7 @@ class TrustScorer:
 
         # Normalize scores (log scale for downloads)
         import math
+
         download_score = min(1.0, math.log10(max(1, downloads)) / 7)  # 10M = 1.0
         like_score = min(1.0, likes / 1000)  # 1000 likes = 1.0
 

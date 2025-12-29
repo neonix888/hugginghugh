@@ -26,10 +26,7 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s"
-)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(name)s: %(message)s")
 logger = logging.getLogger(__name__)
 
 
@@ -51,6 +48,7 @@ def init_database():
 def run_server(host: str, port: int):
     """Run the newsletter API server."""
     import uvicorn
+
     from src.newsletter.api import create_newsletter_app
 
     app = create_newsletter_app()
@@ -72,12 +70,11 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
 
-    parser.add_argument("--host", default="127.0.0.1",
-                        help="Host to bind to (default: 127.0.0.1)")
-    parser.add_argument("--port", type=int, default=8001,
-                        help="Port to bind to (default: 8001)")
-    parser.add_argument("--init-db", action="store_true",
-                        help="Initialize database schema and exit")
+    parser.add_argument("--host", default="127.0.0.1", help="Host to bind to (default: 127.0.0.1)")
+    parser.add_argument("--port", type=int, default=8001, help="Port to bind to (default: 8001)")
+    parser.add_argument(
+        "--init-db", action="store_true", help="Initialize database schema and exit"
+    )
 
     args = parser.parse_args()
 

@@ -7,14 +7,15 @@ Handles all PostgreSQL operations for the HuggingHugh leaderboard:
 - Tie-breaker logic with 5-day grace period
 - Historical queries for hall of fame
 """
+
 import logging
 import os
 from datetime import date, datetime, timedelta
 from typing import Any, Optional
 
 import psycopg2
-from psycopg2.extras import RealDictCursor
 from dotenv import load_dotenv
+from psycopg2.extras import RealDictCursor
 
 logger = logging.getLogger(__name__)
 
@@ -81,7 +82,8 @@ class LeaderboardDB:
             try:
                 vuln_summary = model.get("vulnerabilities", {}).get("summary", {})
 
-                cursor.execute("""
+                cursor.execute(
+                    """
                     INSERT INTO score_history (
                         scan_date, model_id, trust_score, trust_grade,
                         downloads, likes, vuln_count, vuln_critical, vuln_high,
@@ -97,19 +99,21 @@ class LeaderboardDB:
                         vuln_high = EXCLUDED.vuln_high,
                         has_safetensors = EXCLUDED.has_safetensors,
                         license = EXCLUDED.license
-                """, (
-                    scan_date,
-                    model.get("model_id"),
-                    model.get("trust_score", 0),
-                    model.get("trust_grade", "F"),
-                    model.get("downloads", 0),
-                    model.get("likes", 0),
-                    vuln_summary.get("total", 0),
-                    vuln_summary.get("critical", 0),
-                    vuln_summary.get("high", 0),
-                    model.get("has_safetensors", False),
-                    model.get("license"),
-                ))
+                """,
+                    (
+                        scan_date,
+                        model.get("model_id"),
+                        model.get("trust_score", 0),
+                        model.get("trust_grade", "F"),
+                        model.get("downloads", 0),
+                        model.get("likes", 0),
+                        vuln_summary.get("total", 0),
+                        vuln_summary.get("critical", 0),
+                        vuln_summary.get("high", 0),
+                        model.get("has_safetensors", False),
+                        model.get("license"),
+                    ),
+                )
                 inserted += 1
             except Exception as e:
                 logger.error(f"Error recording {model.get('model_id')}: {e}")
@@ -139,22 +143,27 @@ class LeaderboardDB:
         cursor = conn.cursor(cursor_factory=RealDictCursor)
 
         # Get today's eligible models sorted by score (desc), then downloads (desc)
-        cursor.execute("""
+        cursor.execute(
+            """
             SELECT model_id, trust_score, trust_grade, downloads, likes,
                    vuln_count, has_safetensors, license
             FROM score_history
             WHERE scan_date = %s AND downloads >= %s
             ORDER BY trust_score DESC, downloads DESC
-        """, (scan_date, MIN_DOWNLOADS_ELIGIBLE))
+        """,
+            (scan_date, MIN_DOWNLOADS_ELIGIBLE),
+        )
 
         todays_models = cursor.fetchall()
 
         # Get previous rankings for comparison
-        cursor.execute("""
+        cursor.execute(
+            """
             SELECT rank, model_id, trust_score, first_achieved_rank_date, streak_days
             FROM current_rankings
             ORDER BY rank
-        """)
+        """
+        )
         previous_rankings = {r["model_id"]: dict(r) for r in cursor.fetchall()}
 
         # Compute new rankings with tie-breaker logic
@@ -189,20 +198,22 @@ class LeaderboardDB:
                 streak = 1
                 rank_change = 0
 
-            new_rankings.append({
-                "rank": current_rank,
-                "model_id": model_id,
-                "trust_score": score,
-                "trust_grade": model["trust_grade"],
-                "downloads": model["downloads"],
-                "likes": model["likes"],
-                "vuln_count": model["vuln_count"],
-                "has_safetensors": model["has_safetensors"],
-                "first_achieved_rank_date": first_achieved,
-                "streak_days": streak,
-                "previous_rank": previous_rankings.get(model_id, {}).get("rank"),
-                "rank_change": rank_change,
-            })
+            new_rankings.append(
+                {
+                    "rank": current_rank,
+                    "model_id": model_id,
+                    "trust_score": score,
+                    "trust_grade": model["trust_grade"],
+                    "downloads": model["downloads"],
+                    "likes": model["likes"],
+                    "vuln_count": model["vuln_count"],
+                    "has_safetensors": model["has_safetensors"],
+                    "first_achieved_rank_date": first_achieved,
+                    "streak_days": streak,
+                    "previous_rank": previous_rankings.get(model_id, {}).get("rank"),
+                    "rank_change": rank_change,
+                }
+            )
 
         # Apply tie-breaker logic for models with same score
         new_rankings = self._apply_tie_breaker(new_rankings, scan_date)
@@ -213,9 +224,7 @@ class LeaderboardDB:
         cursor.close()
         return new_rankings
 
-    def _apply_tie_breaker(
-        self, rankings: list[dict], scan_date: date
-    ) -> list[dict]:
+    def _apply_tie_breaker(self, rankings: list[dict], scan_date: date) -> list[dict]:
         """
         Apply tie-breaker logic to rankings.
 
@@ -275,22 +284,25 @@ class LeaderboardDB:
 
         # Insert new rankings
         for r in rankings:
-            cursor.execute("""
+            cursor.execute(
+                """
                 INSERT INTO current_rankings (
                     rank, model_id, trust_score, trust_grade, downloads,
                     first_achieved_rank_date, streak_days, previous_rank, rank_change
                 ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
-            """, (
-                r["rank"],
-                r["model_id"],
-                r["trust_score"],
-                r["trust_grade"],
-                r["downloads"],
-                r["first_achieved_rank_date"],
-                r["streak_days"],
-                r["previous_rank"],
-                r["rank_change"],
-            ))
+            """,
+                (
+                    r["rank"],
+                    r["model_id"],
+                    r["trust_score"],
+                    r["trust_grade"],
+                    r["downloads"],
+                    r["first_achieved_rank_date"],
+                    r["streak_days"],
+                    r["previous_rank"],
+                    r["rank_change"],
+                ),
+            )
 
         conn.commit()
         cursor.close()
@@ -309,13 +321,16 @@ class LeaderboardDB:
         conn = self.connect()
         cursor = conn.cursor(cursor_factory=RealDictCursor)
 
-        cursor.execute("""
+        cursor.execute(
+            """
             SELECT rank, model_id, trust_score, trust_grade, downloads,
                    first_achieved_rank_date, streak_days, previous_rank, rank_change
             FROM current_rankings
             ORDER BY rank
             LIMIT %s
-        """, (n,))
+        """,
+            (n,),
+        )
 
         results = [dict(r) for r in cursor.fetchall()]
         cursor.close()
@@ -330,9 +345,7 @@ class LeaderboardDB:
         """
         return self.get_top_n(n=1000)  # Effectively all
 
-    def get_model_history(
-        self, model_id: str, days: int = 30
-    ) -> list[dict[str, Any]]:
+    def get_model_history(self, model_id: str, days: int = 30) -> list[dict[str, Any]]:
         """
         Get score history for a specific model.
 
@@ -346,13 +359,16 @@ class LeaderboardDB:
         conn = self.connect()
         cursor = conn.cursor(cursor_factory=RealDictCursor)
 
-        cursor.execute("""
+        cursor.execute(
+            """
             SELECT scan_date, trust_score, trust_grade, downloads, likes,
                    vuln_count, vuln_critical, vuln_high, has_safetensors, license
             FROM score_history
             WHERE model_id = %s AND scan_date >= %s
             ORDER BY scan_date ASC
-        """, (model_id, date.today() - timedelta(days=days)))
+        """,
+            (model_id, date.today() - timedelta(days=days)),
+        )
 
         results = []
         for r in cursor.fetchall():
@@ -364,9 +380,7 @@ class LeaderboardDB:
         cursor.close()
         return results
 
-    def get_rank_history(
-        self, model_id: str, days: int = 30
-    ) -> list[dict[str, Any]]:
+    def get_rank_history(self, model_id: str, days: int = 30) -> list[dict[str, Any]]:
         """
         Get rank history for an eligible model.
 
@@ -386,7 +400,8 @@ class LeaderboardDB:
         start_date = date.today() - timedelta(days=days)
 
         # For each day, compute rank among eligible models
-        cursor.execute("""
+        cursor.execute(
+            """
             WITH daily_ranks AS (
                 SELECT
                     scan_date,
@@ -404,7 +419,9 @@ class LeaderboardDB:
             FROM daily_ranks
             WHERE model_id = %s
             ORDER BY scan_date ASC
-        """, (start_date, MIN_DOWNLOADS_ELIGIBLE, model_id))
+        """,
+            (start_date, MIN_DOWNLOADS_ELIGIBLE, model_id),
+        )
 
         results = []
         for r in cursor.fetchall():
@@ -428,7 +445,8 @@ class LeaderboardDB:
         conn = self.connect()
         cursor = conn.cursor(cursor_factory=RealDictCursor)
 
-        cursor.execute("""
+        cursor.execute(
+            """
             SELECT
                 MIN(scan_date) as first_scan,
                 MAX(scan_date) as last_scan,
@@ -438,7 +456,9 @@ class LeaderboardDB:
                 MAX(downloads) as peak_downloads
             FROM score_history
             WHERE model_id = %s
-        """, (model_id,))
+        """,
+            (model_id,),
+        )
 
         result = cursor.fetchone()
         if not result or not result["first_scan"]:
@@ -456,22 +476,28 @@ class LeaderboardDB:
         }
 
         # Get current vs 7 days ago for trend
-        cursor.execute("""
+        cursor.execute(
+            """
             SELECT trust_score
             FROM score_history
             WHERE model_id = %s
             ORDER BY scan_date DESC
             LIMIT 1
-        """, (model_id,))
+        """,
+            (model_id,),
+        )
         current = cursor.fetchone()
 
-        cursor.execute("""
+        cursor.execute(
+            """
             SELECT trust_score
             FROM score_history
             WHERE model_id = %s AND scan_date <= %s
             ORDER BY scan_date DESC
             LIMIT 1
-        """, (model_id, date.today() - timedelta(days=7)))
+        """,
+            (model_id, date.today() - timedelta(days=7)),
+        )
         week_ago = cursor.fetchone()
 
         if current and week_ago:
@@ -497,7 +523,8 @@ class LeaderboardDB:
 
         compare_date = date.today() - timedelta(days=days)
 
-        cursor.execute("""
+        cursor.execute(
+            """
             WITH today AS (
                 SELECT model_id, trust_score
                 FROM score_history
@@ -518,7 +545,9 @@ class LeaderboardDB:
             WHERE t.trust_score > p.trust_score
             ORDER BY improvement DESC
             LIMIT 10
-        """, (compare_date,))
+        """,
+            (compare_date,),
+        )
 
         results = [dict(r) for r in cursor.fetchall()]
         cursor.close()
@@ -536,10 +565,13 @@ class LeaderboardDB:
         conn = self.connect()
         cursor = conn.cursor()
 
-        cursor.execute("""
+        cursor.execute(
+            """
             INSERT INTO hall_of_fame (category, model_id, value, achieved_date, details)
             VALUES (%s, %s, %s, %s, %s)
-        """, (category, model_id, value, achieved_date, psycopg2.extras.Json(details)))
+        """,
+            (category, model_id, value, achieved_date, psycopg2.extras.Json(details)),
+        )
 
         conn.commit()
         cursor.close()
@@ -550,10 +582,13 @@ class LeaderboardDB:
         conn = self.connect()
         cursor = conn.cursor()
 
-        cursor.execute("""
+        cursor.execute(
+            """
             SELECT COUNT(*) FROM score_history
             WHERE scan_date = %s AND downloads >= %s
-        """, (scan_date, MIN_DOWNLOADS_ELIGIBLE))
+        """,
+            (scan_date, MIN_DOWNLOADS_ELIGIBLE),
+        )
 
         count = cursor.fetchone()[0]
         cursor.close()

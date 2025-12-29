@@ -3,6 +3,7 @@ Top Models Fetcher
 
 Fetches and processes the top N models from HuggingFace Hub.
 """
+
 import logging
 from dataclasses import dataclass, field
 from datetime import datetime
@@ -46,10 +47,7 @@ class ModelInfo:
     @property
     def has_safetensors(self) -> bool:
         """Check if model uses safetensors format."""
-        return any(
-            s.get("rfilename", "").endswith(".safetensors")
-            for s in self.siblings
-        )
+        return any(s.get("rfilename", "").endswith(".safetensors") for s in self.siblings)
 
     @property
     def has_pickle(self) -> bool:
@@ -73,7 +71,7 @@ class ModelInfo:
     @property
     def total_size_gb(self) -> float:
         """Get total size in gigabytes."""
-        return self.total_size_bytes / (1024 ** 3)
+        return self.total_size_bytes / (1024**3)
 
     @property
     def license(self) -> Optional[str]:
@@ -85,10 +83,24 @@ class ModelInfo:
         """Check if the author is a verified organization."""
         # Major verified orgs on HuggingFace
         verified_orgs = {
-            "meta-llama", "google", "microsoft", "facebook", "openai",
-            "huggingface", "mistralai", "stabilityai", "bigscience",
-            "EleutherAI", "tiiuae", "Qwen", "deepseek-ai", "nvidia",
-            "databricks", "NousResearch", "allenai", "anthropic",
+            "meta-llama",
+            "google",
+            "microsoft",
+            "facebook",
+            "openai",
+            "huggingface",
+            "mistralai",
+            "stabilityai",
+            "bigscience",
+            "EleutherAI",
+            "tiiuae",
+            "Qwen",
+            "deepseek-ai",
+            "nvidia",
+            "databricks",
+            "NousResearch",
+            "allenai",
+            "anthropic",
         }
         return self.author in verified_orgs
 
@@ -133,9 +145,7 @@ def get_top_models(
             created_at = None
             if raw.get("createdAt"):
                 try:
-                    created_at = datetime.fromisoformat(
-                        raw["createdAt"].replace("Z", "+00:00")
-                    )
+                    created_at = datetime.fromisoformat(raw["createdAt"].replace("Z", "+00:00"))
                 except (ValueError, TypeError):
                     pass
 

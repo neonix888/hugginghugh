@@ -1,6 +1,7 @@
 """
 Pytest configuration and shared fixtures.
 """
+
 import json
 import tempfile
 from pathlib import Path
@@ -152,9 +153,11 @@ def sample_trust_factors():
 def mock_hf_client():
     """Mock HuggingFace client."""
     client = MagicMock()
-    client.get_model_info = MagicMock(return_value={
-        "id": "test-org/test-model",
-        "downloads": 1000000,
-        "likes": 100,
-    })
+    client.get_model_info = MagicMock(
+        return_value={
+            "id": "test-org/test-model",
+            "downloads": 1000000,
+            "likes": 100,
+        }
+    )
     return client

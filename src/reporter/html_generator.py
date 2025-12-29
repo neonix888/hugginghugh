@@ -3,6 +3,7 @@ HTML Report Generator
 
 Generates HTML reports for individual models and the dashboard.
 """
+
 import json
 import logging
 import shutil
@@ -163,9 +164,7 @@ class HTMLReportGenerator:
         logger.info(f"Report generated: {html_file}")
         return html_file
 
-    def _get_history_data(
-        self, model_id: str, metadata: dict, db
-    ) -> dict[str, Any]:
+    def _get_history_data(self, model_id: str, metadata: dict, db) -> dict[str, Any]:
         """
         Fetch history data for a model from the database.
 

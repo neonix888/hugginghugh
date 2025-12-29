@@ -1,0 +1,124 @@
+# pyproject.toml - Python project configuration
+# Tool settings for black, isort, bandit, flake8, mypy
+
+[project]
+name = "hugginghugh"
+version = "1.0.0"
+description = "SBOM Security Dashboard for HuggingFace Models"
+requires-python = ">=3.11"
+
+[tool.black]
+line-length = 100
+target-version = ['py311', 'py312']
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.git
+    | \.hg
+    | \.mypy_cache
+    | \.pytest_cache
+    | \.tox
+    | \.venv
+    | venv
+    | _build
+    | buck-out
+    | build
+    | dist
+    | data
+    | output
+    | node_modules
+)/
+'''
+
+[tool.isort]
+profile = "black"
+line_length = 100
+skip_gitignore = true
+skip = ["venv", ".venv", "data", "output"]
+known_first_party = ["src"]
+known_third_party = [
+    "click",
+    "fastapi",
+    "httpx",
+    "huggingface_hub",
+    "jinja2",
+    "psycopg2",
+    "pydantic",
+    "pytest",
+    "rich",
+    "yaml"
+]
+sections = ["FUTURE", "STDLIB", "THIRDPARTY", "FIRSTPARTY", "LOCALFOLDER"]
+
+[tool.bandit]
+exclude_dirs = ["venv", ".venv", "tests", "data", "output"]
+skips = [
+    "B101",  # assert used (expected in tests)
+    "B110",  # try/except/pass (used for cleanup code)
+    "B311",  # random used (not for security/crypto purposes)
+    "B404",  # import subprocess (necessary for external tools)
+    "B603",  # subprocess call without shell (safer than shell=True)
+    "B607",  # partial path (acceptable for system tools like sudo)
+]
+
+[tool.flake8]
+max-line-length = 100
+extend-ignore = [
+    "E203",  # whitespace before ':' (conflicts with black)
+    "E501",  # line too long (handled by black)
+    "W503",  # line break before binary operator (conflicts with black)
+]
+exclude = [
+    ".git",
+    "__pycache__",
+    "venv",
+    ".venv",
+    "data",
+    "output",
+    "build",
+    "dist",
+]
+per-file-ignores = [
+    "__init__.py:F401",  # imported but unused (expected in __init__)
+    "tests/*:S101",      # use of assert (expected in tests)
+]
+
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = true
+warn_unused_configs = true
+ignore_missing_imports = true
+exclude = [
+    "venv",
+    "data",
+    "output",
+    "tests",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "-v --tb=short --strict-markers"
+markers = [
+    "unit: Unit tests (no external dependencies)",
+    "integration: Integration tests (may require network/external tools)",
+    "slow: Slow tests (skipped by default)",
+]
+filterwarnings = [
+    "ignore::DeprecationWarning",
+    "ignore::PendingDeprecationWarning",
+]
+
+[tool.coverage.run]
+source = ["src"]
+omit = ["*/tests/*", "*/venv/*"]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+]

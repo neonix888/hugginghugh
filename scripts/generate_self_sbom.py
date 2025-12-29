@@ -46,7 +46,8 @@ def sanitize_sbom(sbom: dict) -> dict:
             # Clean up any path references in the component
             if "properties" in comp:
                 comp["properties"] = [
-                    p for p in comp["properties"]
+                    p
+                    for p in comp["properties"]
                     if project_path not in str(p.get("value", ""))
                     and "/home/" not in str(p.get("value", ""))
                 ]
@@ -63,9 +64,7 @@ def generate_sbom() -> dict:
     print("Generating SBOM with Syft...")
     sbom_file = DATA_DIR / "self_sbom.json"
 
-    code, stdout, stderr = run_command([
-        "syft", str(PROJECT_ROOT), "-o", "cyclonedx-json"
-    ])
+    code, stdout, stderr = run_command(["syft", str(PROJECT_ROOT), "-o", "cyclonedx-json"])
 
     if code != 0:
         print(f"Error generating SBOM: {stderr}")
@@ -88,9 +87,7 @@ def scan_vulnerabilities(sbom_file: Path) -> dict:
     print("Scanning for vulnerabilities with Grype...")
     vulns_file = DATA_DIR / "self_vulns.json"
 
-    code, stdout, stderr = run_command([
-        "grype", f"sbom:{sbom_file}", "-o", "json"
-    ])
+    code, stdout, stderr = run_command(["grype", f"sbom:{sbom_file}", "-o", "json"])
 
     if code != 0 and "no vulnerabilities found" not in stderr.lower():
         print(f"Warning: Grype returned non-zero: {stderr}")
@@ -155,8 +152,12 @@ def generate_html_report(sbom: dict, vulns: dict) -> str:
 
     # Build vulnerability rows
     vuln_rows = ""
-    for match in sorted(matches, key=lambda x: {"critical": 0, "high": 1, "medium": 2, "low": 3}.get(
-            x.get("vulnerability", {}).get("severity", "").lower(), 4)):
+    for match in sorted(
+        matches,
+        key=lambda x: {"critical": 0, "high": 1, "medium": 2, "low": 3}.get(
+            x.get("vulnerability", {}).get("severity", "").lower(), 4
+        ),
+    ):
         vuln = match.get("vulnerability", {})
         artifact = match.get("artifact", {})
         severity = vuln.get("severity", "Unknown")
@@ -180,10 +181,16 @@ def generate_html_report(sbom: dict, vulns: dict) -> str:
     for comp_type, comps in sorted(by_type.items()):
         for comp in sorted(comps, key=lambda x: x.get("name", "")):
             licenses = comp.get("licenses", [])
-            license_str = ", ".join([
-                lic.get("license", {}).get("id", "") or lic.get("license", {}).get("name", "Unknown")
-                for lic in licenses
-            ]) or "Unknown"
+            license_str = (
+                ", ".join(
+                    [
+                        lic.get("license", {}).get("id", "")
+                        or lic.get("license", {}).get("name", "Unknown")
+                        for lic in licenses
+                    ]
+                )
+                or "Unknown"
+            )
 
             comp_rows += f"""
             <tr>

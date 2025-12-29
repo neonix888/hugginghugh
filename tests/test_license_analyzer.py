@@ -1,14 +1,15 @@
 """
 Tests for the License Analyzer.
 """
+
 import pytest
 
 from src.generator.license_analyzer import (
-    LicenseAnalyzer,
-    LicenseInfo,
-    PERMISSIVE_LICENSES,
     COPYLEFT_LICENSES,
     MODEL_LICENSES,
+    PERMISSIVE_LICENSES,
+    LicenseAnalyzer,
+    LicenseInfo,
 )
 
 

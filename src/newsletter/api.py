@@ -21,6 +21,7 @@ logger = logging.getLogger(__name__)
 
 class SubscribeRequest(BaseModel):
     """Request model for newsletter subscription."""
+
     email: str
     source: str = "website"
 
@@ -34,6 +35,7 @@ class SubscribeRequest(BaseModel):
 
 class SubscribeResponse(BaseModel):
     """Response model for newsletter subscription."""
+
     success: bool
     message: str
 
@@ -221,4 +223,5 @@ app = create_newsletter_app()
 
 if __name__ == "__main__":
     import uvicorn
+
     uvicorn.run(app, host="127.0.0.1", port=8001)

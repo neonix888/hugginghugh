@@ -1,0 +1,86 @@
+# Pre-commit hooks configuration
+# Install: pip install pre-commit && pre-commit install
+# Run manually: pre-commit run --all-files
+
+default_language_version:
+  python: python3.12
+
+repos:
+  # General file fixes
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: trailing-whitespace
+        exclude: ^(data/|output/|venv/|\.coverage)
+      - id: end-of-file-fixer
+        exclude: ^(data/|output/|venv/)
+      - id: check-yaml
+        args: [--unsafe]
+      - id: check-json
+        exclude: ^(data/|output/)
+      - id: check-toml
+      - id: check-merge-conflict
+      - id: check-added-large-files
+        args: ['--maxkb=1000']
+      - id: detect-private-key
+      - id: check-case-conflict
+      - id: check-executables-have-shebangs
+
+  # Python code formatting
+  - repo: https://github.com/psf/black
+    rev: 25.12.0
+    hooks:
+      - id: black
+        args: ['--config', 'pyproject.toml']
+        exclude: ^(venv/|data/|output/)
+
+  # Import sorting
+  - repo: https://github.com/pycqa/isort
+    rev: 7.0.0
+    hooks:
+      - id: isort
+        args: ['--settings-path', 'pyproject.toml']
+        exclude: ^(venv/|data/|output/)
+
+  # Security scanning (SAST)
+  - repo: https://github.com/PyCQA/bandit
+    rev: 1.9.2
+    hooks:
+      - id: bandit
+        args: ['-c', 'pyproject.toml', '-r']
+        additional_dependencies: ['bandit[toml]']
+        exclude: ^(venv/|tests/|data/|output/)
+
+  # Secrets detection
+  - repo: https://github.com/Yelp/detect-secrets
+    rev: v1.5.0
+    hooks:
+      - id: detect-secrets
+        args: ['--baseline', '.secrets.baseline']
+        exclude: ^(venv/|data/|output/|\.env\.example|\.env$)
+
+  # Python linting (fast checks only)
+  - repo: https://github.com/pycqa/flake8
+    rev: 7.3.0
+    hooks:
+      - id: flake8
+        additional_dependencies:
+          - flake8-bugbear
+          - flake8-comprehensions
+        exclude: ^(venv/|data/|output/)
+
+  # Check for common security issues in dependencies
+  - repo: local
+    hooks:
+      - id: safety-check
+        name: safety dependency check
+        entry: bash -c 'safety check --short-report 2>/dev/null || true'
+        language: system
+        pass_filenames: false
+        always_run: true
+
+# CI configuration
+ci:
+  autofix_commit_msg: 'style: auto-fix by pre-commit hooks'
+  autoupdate_commit_msg: 'chore: update pre-commit hooks'
+  skip: [safety-check]  # Skip in CI (run separately)

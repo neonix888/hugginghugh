@@ -39,10 +39,10 @@ from threading import Lock
 PROJECT_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
-from src.scanner import HuggingFaceClient, get_top_models, ModelFetcher
-from src.generator import SBOMGenerator, VulnerabilityScanner, LicenseAnalyzer, TrustScorer
-from src.reporter import HTMLReportGenerator, DashboardGenerator, BlogGenerator, BadgeGenerator
 from src.database import LeaderboardDB
+from src.generator import LicenseAnalyzer, SBOMGenerator, TrustScorer, VulnerabilityScanner
+from src.reporter import BadgeGenerator, BlogGenerator, DashboardGenerator, HTMLReportGenerator
+from src.scanner import HuggingFaceClient, ModelFetcher, get_top_models
 
 
 class Timer:
@@ -183,7 +183,9 @@ def verify_deployment_ready(output_dir: Path, min_models: int, logger) -> bool:
     report_count = len(list(reports_dir.glob("*")))
 
     if report_count < min_models:
-        logger.error(f"DEPLOY BLOCKED: Only {report_count} reports found, minimum {min_models} required")
+        logger.error(
+            f"DEPLOY BLOCKED: Only {report_count} reports found, minimum {min_models} required"
+        )
         logger.error(f"Use --min-models {report_count} to override (NOT RECOMMENDED)")
         return False
 
@@ -222,29 +224,48 @@ PERFORMANCE:
   - Default 8 workers process ~8 models concurrently
   - Increase --workers for faster scans on multi-core systems
   - Decrease --workers if hitting rate limits or memory issues
-        """
+        """,
     )
-    parser.add_argument("--deploy", action="store_true",
-                        help="Deploy to production after scan (requires min models)")
-    parser.add_argument("--limit", type=int, default=1000,
-                        help="Number of models to scan (default: 1000)")
-    parser.add_argument("--min-models", type=int, default=500,
-                        help="Minimum models required for deployment (default: 500)")
-    parser.add_argument("--verbose", "-v", action="store_true",
-                        help="Verbose output")
-    parser.add_argument("--force", "-f", action="store_true",
-                        help="Force re-scan all models")
+    parser.add_argument(
+        "--deploy",
+        action="store_true",
+        help="Deploy to production after scan (requires min models)",
+    )
+    parser.add_argument(
+        "--limit", type=int, default=1000, help="Number of models to scan (default: 1000)"
+    )
+    parser.add_argument(
+        "--min-models",
+        type=int,
+        default=500,
+        help="Minimum models required for deployment (default: 500)",
+    )
+    parser.add_argument("--verbose", "-v", action="store_true", help="Verbose output")
+    parser.add_argument("--force", "-f", action="store_true", help="Force re-scan all models")
     # Keep --dry-run for backwards compatibility but it's now the default
-    parser.add_argument("--dry-run", action="store_true",
-                        help="(Deprecated) No deployment is now the default behavior")
-    parser.add_argument("--tweet", action="store_true",
-                        help="Post tweets about scan results (requires Twitter API credentials)")
-    parser.add_argument("--tweet-dry-run", action="store_true",
-                        help="Show what tweets would be posted without actually posting")
-    parser.add_argument("--workers", "-w", type=int, default=8,
-                        help="Number of parallel workers (default: 8)")
-    parser.add_argument("--dev", action="store_true",
-                        help="Deploy to dev environment (hugginghugh.etcbin.io) instead of production")
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="(Deprecated) No deployment is now the default behavior",
+    )
+    parser.add_argument(
+        "--tweet",
+        action="store_true",
+        help="Post tweets about scan results (requires Twitter API credentials)",
+    )
+    parser.add_argument(
+        "--tweet-dry-run",
+        action="store_true",
+        help="Show what tweets would be posted without actually posting",
+    )
+    parser.add_argument(
+        "--workers", "-w", type=int, default=8, help="Number of parallel workers (default: 8)"
+    )
+    parser.add_argument(
+        "--dev",
+        action="store_true",
+        help="Deploy to dev environment (hugginghugh.etcbin.io) instead of production",
+    )
     args = parser.parse_args()
 
     # Warn about deprecated --dry-run
@@ -428,12 +449,16 @@ PERFORMANCE:
                     all_results.append(result)
                     successful += 1
                 elapsed_str = Timer._format_duration(result["elapsed"])
-                logger.info(f"[{count}/{len(models)}] {result['model_id']} - Score: {result['trust_score']} ({result['trust_grade']}) - {elapsed_str}")
+                logger.info(
+                    f"[{count}/{len(models)}] {result['model_id']} - Score: {result['trust_score']} ({result['trust_grade']}) - {elapsed_str}"
+                )
                 stats.record_model(result["model_id"], result["elapsed"])
             else:
                 with results_lock:
                     failed += 1
-                logger.error(f"[{count}/{len(models)}] FAILED: {result['model_id']} - {result['error']}")
+                logger.error(
+                    f"[{count}/{len(models)}] FAILED: {result['model_id']} - {result['error']}"
+                )
                 stats.record_model(result["model_id"], result["elapsed"])
 
     stats.record("3. Process All Models", phase_timer.stop())
@@ -449,13 +474,21 @@ PERFORMANCE:
     # Step 3.5: Generate self-SBOM (eat our own dog food!)
     logger.info("\nGenerating self-SBOM report...")
     try:
-        from scripts.generate_self_sbom import generate_sbom, scan_vulnerabilities, generate_html_report, categorize_vulns
+        from scripts.generate_self_sbom import (
+            categorize_vulns,
+            generate_html_report,
+            generate_sbom,
+            scan_vulnerabilities,
+        )
+
         sbom_data = generate_sbom()
         vulns_data = scan_vulnerabilities(PROJECT_ROOT / "data" / "self_sbom.json")
         html_content = generate_html_report(sbom_data, vulns_data)
         (output_dir / "sbom.html").write_text(html_content)
         summary = categorize_vulns(vulns_data)
-        logger.info(f"  Self-SBOM: {len(sbom_data.get('components', []))} components, {summary['total']} vulnerabilities")
+        logger.info(
+            f"  Self-SBOM: {len(sbom_data.get('components', []))} components, {summary['total']} vulnerabilities"
+        )
     except Exception as e:
         logger.warning(f"  Failed to generate self-SBOM: {e}")
 
@@ -467,6 +500,7 @@ PERFORMANCE:
     leaderboard_data = None
     try:
         from datetime import date as dt_date
+
         scan_date = dt_date.today()
         with LeaderboardDB() as db:
             # Record all scan results
@@ -497,7 +531,9 @@ PERFORMANCE:
             with LeaderboardDB() as db:
                 full_rankings = db.get_full_leaderboard()
                 dashboard_gen.generate_leaderboard_page(full_rankings)
-                logger.info(f"  Leaderboard page generated with {len(full_rankings)} eligible models")
+                logger.info(
+                    f"  Leaderboard page generated with {len(full_rankings)} eligible models"
+                )
         except Exception as e:
             logger.warning(f"  Failed to generate leaderboard page: {e}")
 
@@ -526,6 +562,7 @@ PERFORMANCE:
         badges_template = templates_dir / "badges.html"
         if badges_template.exists():
             from jinja2 import Environment, FileSystemLoader
+
             env = Environment(loader=FileSystemLoader(str(templates_dir)), autoescape=True)
             template = env.get_template("badges.html")
             html_content = template.render(
@@ -557,7 +594,9 @@ PERFORMANCE:
 
             if not bot.is_configured() and not args.tweet_dry_run:
                 logger.warning("  Twitter API credentials not configured")
-                logger.info("  Set TWITTER_API_KEY, TWITTER_API_SECRET, TWITTER_ACCESS_TOKEN, TWITTER_ACCESS_TOKEN_SECRET")
+                logger.info(
+                    "  Set TWITTER_API_KEY, TWITTER_API_SECRET, TWITTER_ACCESS_TOKEN, TWITTER_ACCESS_TOKEN_SECRET"
+                )
             else:
                 tweets_posted = bot.run_daily_tweets(
                     models_data=all_results,
@@ -600,27 +639,20 @@ PERFORMANCE:
         try:
             logger.info("Removing old files...")
             # Use bash -c to properly expand the glob pattern
-            subprocess.run(
-                ["sudo", "bash", "-c", f"rm -rf {web_root}/*"],
-                check=True
-            )
+            subprocess.run(["sudo", "bash", "-c", f"rm -rf {web_root}/*"], check=True)
 
             logger.info("Copying new files...")
             # Use sudo cp -r to copy files
             subprocess.run(
-                ["sudo", "cp", "-r"] + [str(p) for p in output_dir.iterdir()] + [str(web_root) + "/"],
-                check=True
+                ["sudo", "cp", "-r"]
+                + [str(p) for p in output_dir.iterdir()]
+                + [str(web_root) + "/"],
+                check=True,
             )
 
             logger.info("Setting permissions...")
-            subprocess.run(
-                ["sudo", "chown", "-R", "www-data:www-data", str(web_root)],
-                check=True
-            )
-            subprocess.run(
-                ["sudo", "chmod", "-R", "755", str(web_root)],
-                check=True
-            )
+            subprocess.run(["sudo", "chown", "-R", "www-data:www-data", str(web_root)], check=True)
+            subprocess.run(["sudo", "chmod", "-R", "755", str(web_root)], check=True)
 
             logger.info("DEPLOYMENT COMPLETE!")
             stats.record("6. Deploy to Production", phase_timer.stop())
@@ -669,14 +701,19 @@ PERFORMANCE:
 
     # Save run summary
     summary_file = PROJECT_ROOT / "data" / "last_run.json"
-    summary_file.write_text(json.dumps({
-        "timestamp": datetime.now().isoformat(),
-        "total_models": len(models),
-        "successful": successful,
-        "failed": failed,
-        "elapsed_seconds": elapsed.total_seconds(),
-        "deployed": args.deploy,
-    }, indent=2))
+    summary_file.write_text(
+        json.dumps(
+            {
+                "timestamp": datetime.now().isoformat(),
+                "total_models": len(models),
+                "successful": successful,
+                "failed": failed,
+                "elapsed_seconds": elapsed.total_seconds(),
+                "deployed": args.deploy,
+            },
+            indent=2,
+        )
+    )
 
     return 0 if failed == 0 else 1
 

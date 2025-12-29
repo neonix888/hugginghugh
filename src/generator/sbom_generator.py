@@ -5,13 +5,14 @@ Generates Software Bill of Materials using Syft, with special handling
 for ML model dependencies. Fetches real package versions from PyPI for
 accurate vulnerability scanning.
 """
+
 import json
 import logging
 import subprocess
 import tempfile
+from datetime import datetime
 from pathlib import Path
 from typing import Any, Optional
-from datetime import datetime
 
 import requests
 
@@ -23,18 +24,22 @@ _pypi_version_cache = {}
 # Known minimum safe versions for common ML packages (based on CVE data)
 # Format: package_name -> (min_safe_version, cve_id, severity, description)
 KNOWN_MINIMUM_VERSIONS = {
-    "torch": ("2.6.0", "CVE-2025-32434", "CRITICAL",
-              "RCE via torch.load() even with weights_only=True"),
-    "transformers": ("4.48.0", "GHSA-torch", "HIGH",
-                     "Requires torch>=2.6.0 for safe model loading"),
-    "pillow": ("10.0.1", "CVE-2023-4863", "HIGH",
-               "WebP heap buffer overflow"),
-    "requests": ("2.32.0", "CVE-2024-35195", "MEDIUM",
-                 "Certificate verification bypass"),
-    "numpy": ("1.22.0", "CVE-2021-41495", "HIGH",
-              "NULL pointer dereference"),
-    "scipy": ("1.10.0", "CVE-2023-25399", "MEDIUM",
-              "Memory corruption in sparse arrays"),
+    "torch": (
+        "2.6.0",
+        "CVE-2025-32434",
+        "CRITICAL",
+        "RCE via torch.load() even with weights_only=True",
+    ),
+    "transformers": (
+        "4.48.0",
+        "GHSA-torch",
+        "HIGH",
+        "Requires torch>=2.6.0 for safe model loading",
+    ),
+    "pillow": ("10.0.1", "CVE-2023-4863", "HIGH", "WebP heap buffer overflow"),
+    "requests": ("2.32.0", "CVE-2024-35195", "MEDIUM", "Certificate verification bypass"),
+    "numpy": ("1.22.0", "CVE-2021-41495", "HIGH", "NULL pointer dereference"),
+    "scipy": ("1.10.0", "CVE-2023-25399", "MEDIUM", "Memory corruption in sparse arrays"),
 }
 
 # Known ML framework dependencies - expanded for better detection
@@ -415,6 +420,7 @@ def check_version_safety(package_name: str, version: str) -> Optional[dict]:
         if pkg_lower == known_lower or package_name.lower() == known_pkg.lower():
             try:
                 from packaging import version as pkg_version
+
                 if pkg_version.parse(version) < pkg_version.parse(min_ver):
                     return {
                         "package": package_name,
@@ -470,10 +476,7 @@ def get_pypi_version(package_name: str) -> Optional[str]:
     try:
         # Normalize package name (PyPI uses lowercase with hyphens)
         normalized = package_name.lower().replace("_", "-")
-        resp = requests.get(
-            f"https://pypi.org/pypi/{normalized}/json",
-            timeout=10
-        )
+        resp = requests.get(f"https://pypi.org/pypi/{normalized}/json", timeout=10)
         if resp.status_code == 200:
             version = resp.json().get("info", {}).get("version")
             _pypi_version_cache[package_name] = version
@@ -651,8 +654,12 @@ class SBOMGenerator:
         has_safetensors = any(f.endswith(".safetensors") for f in file_names)
         has_gguf = any(f.endswith(".gguf") for f in file_names)
         has_onnx = any(f.endswith(".onnx") for f in file_names)
-        has_pt = any(f.endswith(".pt") or f.endswith(".pth") or f.endswith(".bin") for f in file_names)
-        has_tf = any(f.endswith(".h5") or f.endswith(".keras") or "tf_model" in f for f in file_names)
+        has_pt = any(
+            f.endswith(".pt") or f.endswith(".pth") or f.endswith(".bin") for f in file_names
+        )
+        has_tf = any(
+            f.endswith(".h5") or f.endswith(".keras") or "tf_model" in f for f in file_names
+        )
         has_flax = any("flax" in f.lower() for f in file_names)
         has_mlx = any("mlx" in f.lower() for f in file_names)
         has_coreml = any(f.endswith(".mlmodel") or f.endswith(".mlpackage") for f in file_names)
@@ -687,7 +694,11 @@ class SBOMGenerator:
                 requirements.add("optimum")
             if "awq" in quant_method.lower():
                 requirements.add("autoawq")
-            if "bitsandbytes" in quant_method.lower() or quant_config.get("load_in_8bit") or quant_config.get("load_in_4bit"):
+            if (
+                "bitsandbytes" in quant_method.lower()
+                or quant_config.get("load_in_8bit")
+                or quant_config.get("load_in_4bit")
+            ):
                 requirements.add("bitsandbytes")
 
         # 9. Default fallback if we found nothing
@@ -711,7 +722,9 @@ class SBOMGenerator:
             else:
                 versioned_reqs.append(req)
 
-        logger.info(f"Inferred {len(versioned_reqs)} dependencies for {model_metadata.get('model_id')}")
+        logger.info(
+            f"Inferred {len(versioned_reqs)} dependencies for {model_metadata.get('model_id')}"
+        )
         return versioned_reqs
 
     def _run_syft(self, target_dir: Path, output_format: str) -> Optional[dict]:
@@ -730,7 +743,8 @@ class SBOMGenerator:
                 [
                     self.syft_path,
                     f"dir:{target_dir}",
-                    "-o", output_format,
+                    "-o",
+                    output_format,
                 ],
                 capture_output=True,
                 text=True,
@@ -765,7 +779,9 @@ class SBOMGenerator:
         model_component = {
             "type": "machine-learning-model",
             "name": model_metadata.get("model_id", "unknown"),
-            "version": model_metadata.get("sha", "unknown")[:8] if model_metadata.get("sha") else "unknown",
+            "version": (
+                model_metadata.get("sha", "unknown")[:8] if model_metadata.get("sha") else "unknown"
+            ),
             "description": f"HuggingFace model: {model_metadata.get('model_id')}",
             "properties": [
                 {"name": "hf:model_id", "value": model_metadata.get("model_id", "")},
@@ -774,7 +790,10 @@ class SBOMGenerator:
                 {"name": "hf:likes", "value": str(model_metadata.get("likes", 0))},
                 {"name": "hf:library", "value": model_metadata.get("library_name", "")},
                 {"name": "hf:pipeline_tag", "value": model_metadata.get("pipeline_tag", "")},
-                {"name": "hf:has_safetensors", "value": str(model_metadata.get("has_safetensors", False))},
+                {
+                    "name": "hf:has_safetensors",
+                    "value": str(model_metadata.get("has_safetensors", False)),
+                },
                 {"name": "hf:has_pickle", "value": str(model_metadata.get("has_pickle", False))},
                 {"name": "hf:total_size_gb", "value": str(model_metadata.get("total_size_gb", 0))},
             ],
@@ -837,25 +856,33 @@ class SBOMGenerator:
         components = []
 
         # Add model as component
-        components.append({
-            "type": "machine-learning-model",
-            "name": model_metadata.get("model_id", "unknown"),
-            "version": model_metadata.get("sha", "unknown")[:8] if model_metadata.get("sha") else "unknown",
-            "properties": [
-                {"name": "hf:model_id", "value": model_metadata.get("model_id", "")},
-                {"name": "hf:author", "value": model_metadata.get("author", "")},
-                {"name": "hf:library", "value": model_metadata.get("library_name", "")},
-            ],
-        })
+        components.append(
+            {
+                "type": "machine-learning-model",
+                "name": model_metadata.get("model_id", "unknown"),
+                "version": (
+                    model_metadata.get("sha", "unknown")[:8]
+                    if model_metadata.get("sha")
+                    else "unknown"
+                ),
+                "properties": [
+                    {"name": "hf:model_id", "value": model_metadata.get("model_id", "")},
+                    {"name": "hf:author", "value": model_metadata.get("author", "")},
+                    {"name": "hf:library", "value": model_metadata.get("library_name", "")},
+                ],
+            }
+        )
 
         # Add inferred dependencies
         for req in requirements:
-            components.append({
-                "type": "library",
-                "name": req,
-                "version": "inferred",
-                "purl": f"pkg:pypi/{req}",
-            })
+            components.append(
+                {
+                    "type": "library",
+                    "name": req,
+                    "version": "inferred",
+                    "purl": f"pkg:pypi/{req}",
+                }
+            )
 
         return {
             "bomFormat": "CycloneDX",
@@ -863,11 +890,13 @@ class SBOMGenerator:
             "version": 1,
             "metadata": {
                 "timestamp": datetime.utcnow().isoformat() + "Z",
-                "tools": [{
-                    "vendor": "HuggingHugh",
-                    "name": "hugginghugh-sbom-generator",
-                    "version": "0.1.0",
-                }],
+                "tools": [
+                    {
+                        "vendor": "HuggingHugh",
+                        "name": "hugginghugh-sbom-generator",
+                        "version": "0.1.0",
+                    }
+                ],
             },
             "components": components,
         }

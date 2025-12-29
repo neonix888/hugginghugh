@@ -20,6 +20,7 @@ from psycopg2.extras import RealDictCursor
 # Load .env file if python-dotenv is available
 try:
     from dotenv import load_dotenv
+
     load_dotenv()
 except ImportError:
     pass
@@ -38,13 +39,15 @@ def parse_database_url(url: str) -> dict:
         "password": parsed.password or "",
     }
 
+
 # Email validation regex
-EMAIL_REGEX = re.compile(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$')
+EMAIL_REGEX = re.compile(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")
 
 
 @dataclass
 class Subscriber:
     """Represents a newsletter subscriber."""
+
     id: Optional[int] = None
     email: str = ""
     email_hash: str = ""
@@ -148,7 +151,8 @@ class SubscriberDB:
     def init_schema(self):
         """Initialize the subscribers table."""
         with self.conn.cursor() as cur:
-            cur.execute("""
+            cur.execute(
+                """
                 CREATE TABLE IF NOT EXISTS newsletter_subscribers (
                     id SERIAL PRIMARY KEY,
                     email VARCHAR(254) NOT NULL,
@@ -171,7 +175,8 @@ class SubscriberDB:
                     ON newsletter_subscribers(confirmed) WHERE confirmed = TRUE;
                 CREATE INDEX IF NOT EXISTS idx_subscribers_active
                     ON newsletter_subscribers(unsubscribed) WHERE unsubscribed = FALSE;
-            """)
+            """
+            )
             self.conn.commit()
             logger.info("Newsletter schema initialized")
 
@@ -206,8 +211,7 @@ class SubscriberDB:
         with self.conn.cursor(cursor_factory=RealDictCursor) as cur:
             # Check if already subscribed
             cur.execute(
-                "SELECT * FROM newsletter_subscribers WHERE email_hash = %s",
-                (email_hashed,)
+                "SELECT * FROM newsletter_subscribers WHERE email_hash = %s", (email_hashed,)
             )
             existing = cur.fetchone()
 
@@ -215,7 +219,8 @@ class SubscriberDB:
                 if existing["unsubscribed"]:
                     # Re-subscribe
                     new_token = generate_token()
-                    cur.execute("""
+                    cur.execute(
+                        """
                         UPDATE newsletter_subscribers
                         SET unsubscribed = FALSE,
                             unsubscribed_at = NULL,
@@ -225,18 +230,28 @@ class SubscriberDB:
                             subscribed_at = CURRENT_TIMESTAMP
                         WHERE email_hash = %s
                         RETURNING *
-                    """, (
-                        not require_confirmation,
-                        datetime.utcnow() if not require_confirmation else None,
-                        new_token if require_confirmation else None,
-                        email_hashed,
-                    ))
+                    """,
+                        (
+                            not require_confirmation,
+                            datetime.utcnow() if not require_confirmation else None,
+                            new_token if require_confirmation else None,
+                            email_hashed,
+                        ),
+                    )
                     subscriber = cur.fetchone()
                     self.conn.commit()
-                    return True, "Welcome back! You've been re-subscribed.", self._row_to_subscriber(subscriber)
+                    return (
+                        True,
+                        "Welcome back! You've been re-subscribed.",
+                        self._row_to_subscriber(subscriber),
+                    )
                 elif not existing["confirmed"] and require_confirmation:
                     # Already pending confirmation
-                    return True, "Already subscribed. Check your email for confirmation.", self._row_to_subscriber(existing)
+                    return (
+                        True,
+                        "Already subscribed. Check your email for confirmation.",
+                        self._row_to_subscriber(existing),
+                    )
                 else:
                     # Already subscribed and confirmed
                     return True, "You're already subscribed!", self._row_to_subscriber(existing)
@@ -245,28 +260,35 @@ class SubscriberDB:
             confirm_token = generate_token() if require_confirmation else None
             unsubscribe_token = generate_token()
 
-            cur.execute("""
+            cur.execute(
+                """
                 INSERT INTO newsletter_subscribers
                     (email, email_hash, confirmed, confirmed_at, confirm_token,
                      unsubscribe_token, source, ip_address, user_agent)
                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
                 RETURNING *
-            """, (
-                email_normalized,
-                email_hashed,
-                not require_confirmation,
-                datetime.utcnow() if not require_confirmation else None,
-                confirm_token,
-                unsubscribe_token,
-                source,
-                ip_address,
-                user_agent,
-            ))
+            """,
+                (
+                    email_normalized,
+                    email_hashed,
+                    not require_confirmation,
+                    datetime.utcnow() if not require_confirmation else None,
+                    confirm_token,
+                    unsubscribe_token,
+                    source,
+                    ip_address,
+                    user_agent,
+                ),
+            )
             subscriber = cur.fetchone()
             self.conn.commit()
 
             if require_confirmation:
-                return True, "Thanks! Please check your email to confirm your subscription.", self._row_to_subscriber(subscriber)
+                return (
+                    True,
+                    "Thanks! Please check your email to confirm your subscription.",
+                    self._row_to_subscriber(subscriber),
+                )
             else:
                 return True, "Thanks for subscribing!", self._row_to_subscriber(subscriber)
 
@@ -278,14 +300,17 @@ class SubscriberDB:
             Tuple of (success, message)
         """
         with self.conn.cursor() as cur:
-            cur.execute("""
+            cur.execute(
+                """
                 UPDATE newsletter_subscribers
                 SET confirmed = TRUE,
                     confirmed_at = CURRENT_TIMESTAMP,
                     confirm_token = NULL
                 WHERE confirm_token = %s AND confirmed = FALSE
                 RETURNING id
-            """, (token,))
+            """,
+                (token,),
+            )
             result = cur.fetchone()
             self.conn.commit()
 
@@ -302,13 +327,16 @@ class SubscriberDB:
             Tuple of (success, message)
         """
         with self.conn.cursor() as cur:
-            cur.execute("""
+            cur.execute(
+                """
                 UPDATE newsletter_subscribers
                 SET unsubscribed = TRUE,
                     unsubscribed_at = CURRENT_TIMESTAMP
                 WHERE unsubscribe_token = %s AND unsubscribed = FALSE
                 RETURNING id
-            """, (token,))
+            """,
+                (token,),
+            )
             result = cur.fetchone()
             self.conn.commit()
 
@@ -320,24 +348,28 @@ class SubscriberDB:
     def get_active_subscribers(self) -> list[Subscriber]:
         """Get all active (confirmed and not unsubscribed) subscribers."""
         with self.conn.cursor(cursor_factory=RealDictCursor) as cur:
-            cur.execute("""
+            cur.execute(
+                """
                 SELECT * FROM newsletter_subscribers
                 WHERE confirmed = TRUE AND unsubscribed = FALSE
                 ORDER BY subscribed_at DESC
-            """)
+            """
+            )
             return [self._row_to_subscriber(row) for row in cur.fetchall()]
 
     def get_subscriber_count(self) -> dict:
         """Get subscriber statistics."""
         with self.conn.cursor(cursor_factory=RealDictCursor) as cur:
-            cur.execute("""
+            cur.execute(
+                """
                 SELECT
                     COUNT(*) as total,
                     COUNT(*) FILTER (WHERE confirmed = TRUE AND unsubscribed = FALSE) as active,
                     COUNT(*) FILTER (WHERE confirmed = FALSE AND unsubscribed = FALSE) as pending,
                     COUNT(*) FILTER (WHERE unsubscribed = TRUE) as unsubscribed
                 FROM newsletter_subscribers
-            """)
+            """
+            )
             return dict(cur.fetchone())
 
     def export_subscribers(self, format: str = "csv") -> str:
@@ -354,10 +386,14 @@ class SubscriberDB:
 
         if format == "json":
             import json
-            return json.dumps([
-                {"email": s.email, "subscribed_at": s.subscribed_at.isoformat()}
-                for s in subscribers
-            ], indent=2)
+
+            return json.dumps(
+                [
+                    {"email": s.email, "subscribed_at": s.subscribed_at.isoformat()}
+                    for s in subscribers
+                ],
+                indent=2,
+            )
         else:
             lines = ["email,subscribed_at"]
             for s in subscribers:

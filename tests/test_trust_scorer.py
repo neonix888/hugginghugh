@@ -1,10 +1,12 @@
 """
 Tests for the Trust Score Calculator.
 """
-import pytest
+
 from datetime import datetime, timedelta, timezone
 
-from src.generator.trust_scorer import TrustScorer, TrustScore, TrustFactor, WEIGHTS
+import pytest
+
+from src.generator.trust_scorer import WEIGHTS, TrustFactor, TrustScore, TrustScorer
 
 
 class TestTrustScorer:
@@ -66,18 +68,21 @@ class TestTrustScorer:
         assert sum(scorer.weights.values()) == pytest.approx(100, rel=0.01)
 
     # Test grade calculation
-    @pytest.mark.parametrize("score,expected_grade", [
-        (95, "A"),
-        (90, "A"),
-        (89, "B"),
-        (80, "B"),
-        (79, "C"),
-        (70, "C"),
-        (69, "D"),
-        (60, "D"),
-        (59, "F"),
-        (0, "F"),
-    ])
+    @pytest.mark.parametrize(
+        "score,expected_grade",
+        [
+            (95, "A"),
+            (90, "A"),
+            (89, "B"),
+            (80, "B"),
+            (79, "C"),
+            (70, "C"),
+            (69, "D"),
+            (60, "D"),
+            (59, "F"),
+            (0, "F"),
+        ],
+    )
     def test_grade_calculation(self, scorer, score, expected_grade):
         """Test grade assignment for different scores."""
         assert scorer._get_grade(score) == expected_grade
@@ -158,28 +163,36 @@ class TestTrustScorer:
     # Test license scoring
     def test_permissive_license_full_points(self, scorer):
         """Permissive license gets full points."""
-        license_analysis = {"model": {"category": "permissive", "name": "MIT", "commercial_use": True}}
+        license_analysis = {
+            "model": {"category": "permissive", "name": "MIT", "commercial_use": True}
+        }
         factor = scorer._score_license(license_analysis)
         assert factor.score == 1.0
         assert factor.status == "pass"
 
     def test_commercial_license_high_points(self, scorer):
         """Commercial license gets high points."""
-        license_analysis = {"model": {"category": "model-specific", "name": "Llama", "commercial_use": True}}
+        license_analysis = {
+            "model": {"category": "model-specific", "name": "Llama", "commercial_use": True}
+        }
         factor = scorer._score_license(license_analysis)
         assert factor.score == 0.8
         assert factor.status == "pass"
 
     def test_restrictive_license_partial_points(self, scorer):
         """Restrictive license gets partial points."""
-        license_analysis = {"model": {"category": "copyleft", "name": "GPL", "commercial_use": False}}
+        license_analysis = {
+            "model": {"category": "copyleft", "name": "GPL", "commercial_use": False}
+        }
         factor = scorer._score_license(license_analysis)
         assert factor.score == 0.4
         assert factor.status == "warn"
 
     def test_unknown_license_no_points(self, scorer):
         """Unknown license gets no points."""
-        license_analysis = {"model": {"category": "unknown", "name": "Unknown", "commercial_use": False}}
+        license_analysis = {
+            "model": {"category": "unknown", "name": "Unknown", "commercial_use": False}
+        }
         factor = scorer._score_license(license_analysis)
         assert factor.score == 0.0
         assert factor.status == "fail"
@@ -332,7 +345,9 @@ class TestTrustScorer:
             "likes": 0,
         }
         vuln = {"summary": {"critical": 5, "high": 3, "medium": 0, "low": 0}}
-        license_info = {"model": {"category": "unknown", "name": "Unknown", "commercial_use": False}}
+        license_info = {
+            "model": {"category": "unknown", "name": "Unknown", "commercial_use": False}
+        }
 
         result = scorer.calculate_score(metadata, vuln, license_info)
         assert "concern" in result.summary.lower() or "low" in result.summary.lower()

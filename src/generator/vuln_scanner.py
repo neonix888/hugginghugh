@@ -5,15 +5,16 @@ Scans SBOMs for vulnerabilities using Grype and OSV-Scanner.
 OSV-Scanner provides better coverage for Python packages.
 Also includes security recommendations based on known CVEs.
 """
+
 import json
 import logging
 import subprocess
 import tempfile
+from collections import defaultdict
 from pathlib import Path
 from typing import Any, Optional
-from collections import defaultdict
 
-from src.generator.sbom_generator import get_security_recommendations, KNOWN_MINIMUM_VERSIONS
+from src.generator.sbom_generator import KNOWN_MINIMUM_VERSIONS, get_security_recommendations
 
 logger = logging.getLogger(__name__)
 
@@ -137,9 +138,13 @@ class VulnerabilityScanner:
 
             # Log recommendations
             if recommendations:
-                logger.info(f"  Security recommendations: {len(recommendations)} packages need attention")
+                logger.info(
+                    f"  Security recommendations: {len(recommendations)} packages need attention"
+                )
                 for rec in recommendations:
-                    logger.debug(f"    {rec['package']}: upgrade to >= {rec['minimum_safe_version']} ({rec['cve_id']})")
+                    logger.debug(
+                        f"    {rec['package']}: upgrade to >= {rec['minimum_safe_version']} ({rec['cve_id']})"
+                    )
 
         # Save results
         vuln_file = self.output_dir / f"{safe_name}_vulns.json"
@@ -159,7 +164,8 @@ class VulnerabilityScanner:
                 [
                     self.grype_path,
                     f"sbom:{sbom_file}",
-                    "-o", "json",
+                    "-o",
+                    "json",
                 ],
                 capture_output=True,
                 text=True,
@@ -235,9 +241,7 @@ class VulnerabilityScanner:
                 "unknown": severity_counts.get("unknown", 0),
             },
             "by_severity": dict(vulns_by_severity),
-            "all_vulnerabilities": [
-                v for vulns in vulns_by_severity.values() for v in vulns
-            ],
+            "all_vulnerabilities": [v for vulns in vulns_by_severity.values() for v in vulns],
         }
 
     def _get_fix_version(self, match: dict) -> Optional[str]:
@@ -326,20 +330,19 @@ class VulnerabilityScanner:
         try:
             # Create temporary requirements.txt
             with tempfile.NamedTemporaryFile(
-                mode='w',
-                suffix='.txt',
-                prefix=f'requirements_{safe_name}_',
-                delete=False
+                mode="w", suffix=".txt", prefix=f"requirements_{safe_name}_", delete=False
             ) as f:
-                f.write('\n'.join(requirements))
+                f.write("\n".join(requirements))
                 req_file = Path(f.name)
 
             try:
                 result = subprocess.run(
                     [
                         self.osv_scanner_path,
-                        "--format", "json",
-                        "-L", str(req_file),
+                        "--format",
+                        "json",
+                        "-L",
+                        str(req_file),
                     ],
                     capture_output=True,
                     text=True,
@@ -435,9 +438,7 @@ class VulnerabilityScanner:
                 "unknown": severity_counts.get("unknown", 0),
             },
             "by_severity": dict(vulns_by_severity),
-            "all_vulnerabilities": [
-                v for vulns in vulns_by_severity.values() for v in vulns
-            ],
+            "all_vulnerabilities": [v for vulns in vulns_by_severity.values() for v in vulns],
         }
 
     def _get_osv_severity(self, vuln: dict) -> str:

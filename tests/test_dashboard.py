@@ -1,10 +1,12 @@
 """
 Tests for the Dashboard Generator.
 """
-import pytest
+
+from datetime import datetime
 from pathlib import Path
 from unittest.mock import MagicMock, patch
-from datetime import datetime
+
+import pytest
 
 from src.reporter.dashboard import DashboardGenerator, format_number
 
@@ -54,43 +56,53 @@ class TestDashboardGenerator:
 
         # Create minimal templates
         base_template = templates_dir / "base.html"
-        base_template.write_text("""
+        base_template.write_text(
+            """
 <!DOCTYPE html>
 <html>
 <head><title>{% block title %}{% endblock %}</title></head>
 <body>{% block content %}{% endblock %}</body>
 </html>
-""")
+"""
+        )
 
         dashboard_template = templates_dir / "dashboard.html"
-        dashboard_template.write_text("""
+        dashboard_template.write_text(
+            """
 {% extends "base.html" %}
 {% block title %}Dashboard{% endblock %}
 {% block content %}
 <h1>Models: {{ models|length }}</h1>
 {% endblock %}
-""")
+"""
+        )
 
         about_template = templates_dir / "about.html"
-        about_template.write_text("""
+        about_template.write_text(
+            """
 {% extends "base.html" %}
 {% block title %}About{% endblock %}
 {% block content %}<h1>About</h1>{% endblock %}
-""")
+"""
+        )
 
         grade_page_template = templates_dir / "grade_page.html"
-        grade_page_template.write_text("""
+        grade_page_template.write_text(
+            """
 {% extends "base.html" %}
 {% block title %}Grade {{ grade }}{% endblock %}
 {% block content %}<h1>Grade {{ grade }}</h1>{% endblock %}
-""")
+"""
+        )
 
         leaderboard_template = templates_dir / "leaderboard.html"
-        leaderboard_template.write_text("""
+        leaderboard_template.write_text(
+            """
 {% extends "base.html" %}
 {% block title %}Leaderboard{% endblock %}
 {% block content %}<h1>Leaderboard</h1>{% endblock %}
-""")
+"""
+        )
 
         return templates_dir
 
@@ -147,9 +159,7 @@ class TestDashboardGenerator:
         assert result.exists()
         assert result.name == "index.html"
 
-    def test_generate_dashboard_content(
-        self, temp_output_dir, temp_templates_dir, sample_models
-    ):
+    def test_generate_dashboard_content(self, temp_output_dir, temp_templates_dir, sample_models):
         """Dashboard should contain model count."""
         generator = DashboardGenerator(
             output_dir=temp_output_dir,
@@ -163,13 +173,16 @@ class TestDashboardGenerator:
 class TestGradeCalculation:
     """Test grade-related calculations."""
 
-    @pytest.mark.parametrize("score,expected_class", [
-        (95, "excellent"),
-        (85, "good"),
-        (75, "moderate"),
-        (65, "low"),
-        (50, "poor"),
-    ])
+    @pytest.mark.parametrize(
+        "score,expected_class",
+        [
+            (95, "excellent"),
+            (85, "good"),
+            (75, "moderate"),
+            (65, "low"),
+            (50, "poor"),
+        ],
+    )
     def test_grade_class_mapping(self, score, expected_class):
         """Trust scores should map to correct CSS classes."""
         if score >= 90:

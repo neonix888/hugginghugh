@@ -3,10 +3,11 @@ License Analyzer
 
 Analyzes licenses from model metadata and SBOM components.
 """
+
 import logging
 import re
-from typing import Optional
 from dataclasses import dataclass, field
+from typing import Optional
 
 logger = logging.getLogger(__name__)
 
@@ -40,21 +41,77 @@ COPYLEFT_LICENSES = {
 
 # Model-specific licenses (often restrictive)
 MODEL_LICENSES = {
-    "llama2": {"name": "Llama 2 Community License", "commercial": True, "restrictions": ["Meta attribution required", "Usage limits for large deployments"]},
-    "llama3": {"name": "Llama 3 Community License", "commercial": True, "restrictions": ["Meta attribution required"]},
-    "llama3.1": {"name": "Llama 3.1 Community License", "commercial": True, "restrictions": ["Meta attribution required"]},
-    "llama-3.2": {"name": "Llama 3.2 Community License", "commercial": True, "restrictions": ["Meta attribution required"]},
-    "gemma": {"name": "Gemma Terms of Use", "commercial": True, "restrictions": ["Google terms apply"]},
+    "llama2": {
+        "name": "Llama 2 Community License",
+        "commercial": True,
+        "restrictions": ["Meta attribution required", "Usage limits for large deployments"],
+    },
+    "llama3": {
+        "name": "Llama 3 Community License",
+        "commercial": True,
+        "restrictions": ["Meta attribution required"],
+    },
+    "llama3.1": {
+        "name": "Llama 3.1 Community License",
+        "commercial": True,
+        "restrictions": ["Meta attribution required"],
+    },
+    "llama-3.2": {
+        "name": "Llama 3.2 Community License",
+        "commercial": True,
+        "restrictions": ["Meta attribution required"],
+    },
+    "gemma": {
+        "name": "Gemma Terms of Use",
+        "commercial": True,
+        "restrictions": ["Google terms apply"],
+    },
     "mistral": {"name": "Apache 2.0", "commercial": True, "restrictions": []},
-    "qwen": {"name": "Qianwen License", "commercial": True, "restrictions": ["Alibaba terms apply"]},
-    "cc-by-nc-4.0": {"name": "CC BY-NC 4.0", "commercial": False, "restrictions": ["Non-commercial use only"]},
-    "cc-by-nc-sa-4.0": {"name": "CC BY-NC-SA 4.0", "commercial": False, "restrictions": ["Non-commercial use only", "Share-alike required"]},
-    "cc-by-4.0": {"name": "CC BY 4.0", "commercial": True, "restrictions": ["Attribution required"]},
-    "openrail": {"name": "OpenRAIL", "commercial": True, "restrictions": ["Responsible AI use required"]},
-    "openrail++": {"name": "OpenRAIL++", "commercial": True, "restrictions": ["Responsible AI use required"]},
-    "bigscience-openrail-m": {"name": "BigScience OpenRAIL-M", "commercial": True, "restrictions": ["Responsible AI use required"]},
-    "bigcode-openrail-m": {"name": "BigCode OpenRAIL-M", "commercial": True, "restrictions": ["Responsible AI use required"]},
-    "creativeml-openrail-m": {"name": "CreativeML OpenRAIL-M", "commercial": True, "restrictions": ["Responsible AI use required"]},
+    "qwen": {
+        "name": "Qianwen License",
+        "commercial": True,
+        "restrictions": ["Alibaba terms apply"],
+    },
+    "cc-by-nc-4.0": {
+        "name": "CC BY-NC 4.0",
+        "commercial": False,
+        "restrictions": ["Non-commercial use only"],
+    },
+    "cc-by-nc-sa-4.0": {
+        "name": "CC BY-NC-SA 4.0",
+        "commercial": False,
+        "restrictions": ["Non-commercial use only", "Share-alike required"],
+    },
+    "cc-by-4.0": {
+        "name": "CC BY 4.0",
+        "commercial": True,
+        "restrictions": ["Attribution required"],
+    },
+    "openrail": {
+        "name": "OpenRAIL",
+        "commercial": True,
+        "restrictions": ["Responsible AI use required"],
+    },
+    "openrail++": {
+        "name": "OpenRAIL++",
+        "commercial": True,
+        "restrictions": ["Responsible AI use required"],
+    },
+    "bigscience-openrail-m": {
+        "name": "BigScience OpenRAIL-M",
+        "commercial": True,
+        "restrictions": ["Responsible AI use required"],
+    },
+    "bigcode-openrail-m": {
+        "name": "BigCode OpenRAIL-M",
+        "commercial": True,
+        "restrictions": ["Responsible AI use required"],
+    },
+    "creativeml-openrail-m": {
+        "name": "CreativeML OpenRAIL-M",
+        "commercial": True,
+        "restrictions": ["Responsible AI use required"],
+    },
 }
 
 
@@ -210,11 +267,13 @@ class LicenseAnalyzer:
                     # Check for copyleft
                     analyzed = self._classify_license(lic_id)
                     if analyzed.copyleft_risk in ["weak", "strong"]:
-                        copyleft_components.append({
-                            "component": comp_name,
-                            "license": lic_id,
-                            "risk": analyzed.copyleft_risk,
-                        })
+                        copyleft_components.append(
+                            {
+                                "component": comp_name,
+                                "license": lic_id,
+                                "risk": analyzed.copyleft_risk,
+                            }
+                        )
 
         return {
             "total_components": len(components),
@@ -224,9 +283,11 @@ class LicenseAnalyzer:
             "license_distribution": license_counts,
             "copyleft_components": copyleft_components,
             "unknown_license_components": unknown_components,
-            "copyleft_risk": "high" if any(
-                c["risk"] == "strong" for c in copyleft_components
-            ) else "medium" if copyleft_components else "low",
+            "copyleft_risk": (
+                "high"
+                if any(c["risk"] == "strong" for c in copyleft_components)
+                else "medium" if copyleft_components else "low"
+            ),
         }
 
     def get_license_summary(
@@ -293,7 +354,9 @@ class LicenseAnalyzer:
                 risk_level = "medium"
 
         if sbom_analysis["components_without_license"] > 5:
-            issues.append(f"{sbom_analysis['components_without_license']} dependencies have unknown licenses")
+            issues.append(
+                f"{sbom_analysis['components_without_license']} dependencies have unknown licenses"
+            )
             if risk_level == "low":
                 risk_level = "medium"
 
@@ -301,7 +364,6 @@ class LicenseAnalyzer:
             "risk_level": risk_level,
             "issues": issues,
             "commercial_safe": (
-                model_license.commercial_use and
-                sbom_analysis["copyleft_risk"] != "high"
+                model_license.commercial_use and sbom_analysis["copyleft_risk"] != "high"
             ),
         }

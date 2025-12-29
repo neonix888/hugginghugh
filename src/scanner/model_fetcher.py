@@ -3,6 +3,7 @@ Model Fetcher
 
 Downloads model metadata files for SBOM analysis.
 """
+
 import json
 import logging
 import shutil
@@ -152,9 +153,7 @@ class ModelFetcher:
             except json.JSONDecodeError:
                 logger.warning(f"Invalid config.json for {model.model_id}")
 
-        logger.info(
-            f"Fetched {len(downloaded_files)} files for {model.model_id}"
-        )
+        logger.info(f"Fetched {len(downloaded_files)} files for {model.model_id}")
         return result
 
     def _analyze_repo_files(self, files: list[str]) -> dict:

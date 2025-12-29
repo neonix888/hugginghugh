@@ -3,9 +3,10 @@ HuggingFace Hub API Client
 
 Handles all interactions with the HuggingFace Hub API.
 """
+
 import logging
-from typing import Any, Optional
 from pathlib import Path
+from typing import Any, Optional
 
 import httpx
 from huggingface_hub import HfApi, hf_hub_download, list_repo_files
@@ -27,8 +28,7 @@ class HuggingFaceClient:
         self.api = HfApi(token=token)
         self.base_url = "https://huggingface.co/api"
         self._client = httpx.Client(
-            timeout=30.0,
-            headers={"Authorization": f"Bearer {token}"} if token else {}
+            timeout=30.0, headers={"Authorization": f"Bearer {token}"} if token else {}
         )
 
     def get_models(
@@ -165,9 +165,7 @@ class HuggingFaceClient:
             README content as string, or None if not found
         """
         try:
-            response = self._client.get(
-                f"https://huggingface.co/{model_id}/raw/main/README.md"
-            )
+            response = self._client.get(f"https://huggingface.co/{model_id}/raw/main/README.md")
             if response.status_code == 200:
                 return response.text
             return None

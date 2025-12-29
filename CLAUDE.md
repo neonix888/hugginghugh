@@ -2,6 +2,14 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## #1 Rule (ABSOLUTE)
+
+**Add features and fixes WITHOUT breaking existing behavior.**
+
+You are my coding partner. This is non-negotiable.
+
+---
+
 ## Developer Profile
 
 **Experience Level:** 10+ years Full Stack Developer
@@ -11,67 +19,238 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Python, Go, JavaScript/React, Bash
 - Infrastructure as Code, CI/CD pipelines
 
-## Mandatory Development Practices
+---
 
-### DevSecOps Requirements (STRICT)
+## Operating Rules
+
+### Branch Policy
+- **Work ONLY on the `dev` branch**
+- **NEVER commit to main/master**
+
+### Before Starting ANY Work
+Read and align with:
+- `ROADMAP.md` / `ROADMAP_TASKS.md`
+- `CHANGE_LOG.md`
+- ALL markdown files in the project
+
+### Core Principles
+- **No refactoring or restructuring** unless explicitly required by the task
+- **No hardcoding** - paths, secrets, IDs, env-specific values must use config/env/constants
+- **Keep changes minimal** and localized to what's needed for the task
+- **NEVER introduce code that breaks existing functionality**
+- **ALWAYS understand existing code before modifying**
+- **NEVER commit secrets, tokens, or credentials**
+
+---
+
+## Code Structure Rules
+
+### Modularity & Separation of Concerns
+- Write modular code with clear separation of concerns
+- Each module/component should have a **single responsibility**
+- Use **dependency injection**; avoid tight coupling between modules
+- Define clear **interfaces/contracts** between modules (so they can become separate services later)
+
+### Architecture Boundaries
+- Keep business logic **independent of infrastructure** (database, APIs, frameworks)
+- Structure code so modules can be **tested, replaced, or extracted** independently
+- **No cross-module access** to internal implementation details—use public interfaces only
+- If building toward microservices: identify bounded contexts and keep cross-module communication through well-defined APIs/events, not direct imports of internals
+
+### Design Principles
+1. **Separation of Concerns** - Clear module boundaries
+2. **Defensive Coding** - Validate inputs, handle errors gracefully
+3. **Immutable Infrastructure** - Design for containers/K8s
+4. **Security First** - Scan early, scan often
+5. **Test Coverage** - Minimum 80% coverage target
+6. **Documentation** - Code is self-documenting, but complex logic needs comments
+
+---
+
+## Public API / Schema Safety (MUST FOLLOW)
+
+- **Do NOT change public APIs, contracts, schemas, or output formats** unless explicitly approved
+- If a public API/schema change is unavoidable:
+  1. **Call it out clearly**
+  2. **Propose a backward-compatible approach** (versioning, deprecation, feature flag, optional fields)
+  3. **Update docs + changelog**
+  4. **Add migration notes** if needed
+
+---
+
+## Testing Rules
+
+### Before Coding
+- Run (or specify) the relevant existing unit/integration tests to establish a **baseline**
+
+### When Adding Features
+- Add/extend tests and include them in the test suite
+
+### When Fixing Bugs
+- Add a **regression test** that fails before the fix and passes after
+
+### After Every Change
+Run:
+1. The existing test suite
+2. The existing regression test suite
+3. Any new tests you added
+
+**If any test fails, fix it before moving forward.**
+
+```bash
+# Run tests with coverage
+pytest tests/ --cov=src --cov-report=term-missing
+
+# Verify no regressions
+pytest tests/ -v
+```
+
+---
+
+## DevSecOps Requirements (STRICT)
 
 Every code change MUST follow this checklist before commit:
 
-1. **Code Scan** - Run security and static analysis
-   ```bash
-   # Python
-   bandit -r src/
-   safety check
+### 1. Security Scans (SCA, SAST)
+```bash
+# Python SAST
+bandit -r src/
 
-   # JavaScript
-   npm audit
+# Dependency vulnerability scan (SCA)
+safety check
 
-   # General
-   trivy fs .
-   ```
+# General filesystem scan
+trivy fs .
+```
 
-2. **Unit Tests** - All new code must have tests
-   ```bash
-   pytest tests/ --cov=src --cov-report=term-missing
-   npm run test
-   ```
+### 2. SBOM Generation
+```bash
+# Generate SBOM report under reports/ folder
+syft . -o cyclonedx-json > reports/sbom.json
+```
 
-3. **Linting & Formatting**
-   ```bash
-   # Python
-   black . && isort . && pylint src/
-   mypy src/
+### 3. Vulnerability Scanning
+```bash
+# Scan for vulnerabilities
+grype sbom:reports/sbom.json -o json > reports/vulnerabilities.json
+```
 
-   # JavaScript
-   npm run lint && npm run format
-   ```
+### 4. Unit Tests
+```bash
+pytest tests/ --cov=src --cov-report=term-missing --cov-report=html:reports/coverage
+```
 
-4. **Local Git Commit** - All changes tracked locally
-   ```bash
-   git add .
-   git commit -m "descriptive message"
-   ```
+### 5. Linting & Formatting
+```bash
+# Python
+black . && isort . && pylint src/
+mypy src/
+```
 
-### Critical Rules
+### 6. HTML Reports
+All scan results should be output to `reports/` folder in HTML format where possible.
 
-- **NEVER** introduce code that breaks existing functionality
-- **ALWAYS** understand existing code before modifying
-- **ALWAYS** run tests before and after changes
-- **ALWAYS** update ROADMAP.md and TASKS.md after completing work
-- **ALWAYS** scan code for vulnerabilities before commit
-- **NEVER** commit secrets, tokens, or credentials
+---
+
+## Safe-Change Checklist (DO THIS EVERY TIME)
+
+1. **Restate** what you're about to change and why
+2. **Identify** impacted codepaths and risks
+3. **Implement** in small steps
+4. **Verify** behavior with tests (existing + new) and targeted checks
+
+---
+
+## Progress & Documentation
+
+After every feature/fix:
+- [ ] Update project docs/progress notes
+- [ ] Update `CHANGE_LOG.md` with a concise entry
+- [ ] Update `TASKS.md` / task list if applicable
+- [ ] Update `ROADMAP.md` if milestone completed
+
+---
+
+## Branching / Promotion Flow (STOP POINTS REQUIRED)
+
+```
+1. Implement changes on dev
+2. Commit changes and push to dev
+3. Run automated tests + regression tests
+4. ⛔ STOP and wait for approval (manual testing/review)
+5. After approval: push to staging
+6. Run staging regression tests
+7. If all pass: promote to production
+```
+
+**Never skip the approval gate.**
+
+---
+
+## Output Format for Every Response
+
+Use this structure for all responses:
+
+```
+## Plan
+[What you're going to do and why]
+
+## Files to Change
+[List of files that will be modified/created]
+
+## Patch / Code
+[The actual code changes]
+
+## Tests (existing run + new/updated)
+[Test commands and results]
+
+## Commands to Run
+[All commands needed]
+
+## API/Schema Impact Check
+[Any public API or schema changes - if none, state "None"]
+
+## Risk Notes
+[Potential risks or side effects]
+
+## What I Need From You (Approval Gate)
+[What approval is needed before proceeding]
+```
+
+---
+
+## Code Quality Gates
+
+Before ANY commit:
+- [ ] Security scan passes (bandit, safety, trivy)
+- [ ] All tests pass
+- [ ] No regressions in existing functionality
+- [ ] Code formatted and linted
+- [ ] SBOM generated
+- [ ] Vulnerability scan completed
+- [ ] CHANGE_LOG.md updated
+- [ ] ROADMAP.md updated (if milestone)
+- [ ] TASKS.md updated
+
+---
 
 ## Document Tracking (MANDATORY)
 
 ### ROADMAP.md
 - Contains project milestones and high-level progress
 - Update after completing major features
-- Mark completed items with `[x]` and ✅
+- Mark completed items with `[x]`
 
 ### TASKS.md
 - Contains granular task checklist
 - Update as tasks are started/completed
 - Track blockers and dependencies
+
+### CHANGE_LOG.md
+- Concise entry for every change
+- Format: `[date] - [type] - [description]`
+
+---
 
 ## Related SBOM Projects
 
@@ -91,6 +270,8 @@ When working on this project, be aware of:
 - API patterns from `sbomapp/` (FastAPI, async processing)
 - CLI patterns from `ai_sbom/` (Go CLI structure, Syft/Grype integration)
 
+---
+
 ## Kubernetes Context
 
 As a CKA-level administrator, apply these practices:
@@ -102,41 +283,7 @@ As a CKA-level administrator, apply these practices:
 - Consider resource limits and requests
 - Use namespaces for environment separation
 
-## Development Workflow
-
-```bash
-# 1. Create feature branch
-git checkout -b feature/description
-
-# 2. Write code with tests
-# 3. Run security scan
-bandit -r src/ && safety check
-
-# 4. Run tests
-pytest tests/ -v
-
-# 5. Format and lint
-black . && isort . && pylint src/
-
-# 6. Commit locally
-git add . && git commit -m "feat: description"
-
-# 7. Update tracking docs
-# Edit ROADMAP.md and TASKS.md
-
-# 8. Final verification
-pytest tests/ && bandit -r src/
-```
-
-## Code Quality Gates
-
-Before ANY commit:
-- [ ] Security scan passes (bandit, safety, trivy)
-- [ ] All tests pass
-- [ ] No regressions in existing functionality
-- [ ] Code formatted and linted
-- [ ] ROADMAP.md updated (if milestone)
-- [ ] TASKS.md updated
+---
 
 ## Environment Setup
 
@@ -149,20 +296,11 @@ pip install -r requirements.txt
 # Development dependencies
 pip install pytest pytest-cov black isort pylint mypy bandit safety
 
-# Initialize git
-git init
-git add .
-git commit -m "Initial commit"
+# Verify on dev branch
+git checkout dev
 ```
 
-## Architecture Principles
-
-1. **Separation of Concerns** - Clear module boundaries
-2. **Defensive Coding** - Validate inputs, handle errors gracefully
-3. **Immutable Infrastructure** - Design for containers/K8s
-4. **Security First** - Scan early, scan often
-5. **Test Coverage** - Minimum 80% coverage target
-6. **Documentation** - Code is self-documenting, but complex logic needs comments
+---
 
 ## Memory/Context Awareness
 
