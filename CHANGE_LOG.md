@@ -23,6 +23,8 @@ Concise changelog for all project changes. Format: `[date] - [type] - [descripti
 - `docs` - Updated TASKS.md marking Phase 4 Viral Mechanics complete
 - `docs` - Verified Twitter bot complete (TwitterBot, 7 tweet types, CLI script, daily scan integration)
 - `docs` - Updated TASKS.md marking Phase 5 Social Presence complete
+- `docs` - Verified newsletter system complete (FastAPI backend, PostgreSQL storage, frontend form, nginx proxy)
+- `docs` - Updated TASKS.md marking Phase 6 Lead Capture complete
 
 ---
 

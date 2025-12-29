@@ -37,8 +37,10 @@ Granular task checklist for ongoing development. Update this document as tasks p
 ### Phase 5: Social Presence
 - [x] Build Twitter bot for score announcements ✅
 
-### Phase 6: Lead Capture
-- [ ] Add email newsletter signup form
+### Phase 6: Lead Capture ✅
+- [x] Add email newsletter signup form ✅
+- [x] Build FastAPI backend with PostgreSQL storage ✅
+- [x] Configure nginx proxy for newsletter API ✅
 
 ---
 
