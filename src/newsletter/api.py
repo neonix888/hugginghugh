@@ -7,9 +7,10 @@ Can run standalone or be integrated into a larger application.
 
 import logging
 import os
+import secrets
 from typing import Optional
 
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import Depends, FastAPI, Header, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse, JSONResponse
 from pydantic import BaseModel, EmailStr, field_validator
@@ -17,6 +18,41 @@ from pydantic import BaseModel, EmailStr, field_validator
 from .subscriber import SubscriberDB, validate_email
 
 logger = logging.getLogger(__name__)
+
+# Admin API key from environment variable
+ADMIN_API_KEY = os.environ.get("NEWSLETTER_ADMIN_API_KEY", "")
+
+
+async def verify_admin_api_key(
+    x_api_key: str = Header(None, alias="X-API-Key"),  # noqa: B008
+):
+    """
+    Dependency to verify admin API key.
+
+    Requires X-API-Key header matching NEWSLETTER_ADMIN_API_KEY env var.
+    """
+    if not ADMIN_API_KEY:
+        logger.warning("NEWSLETTER_ADMIN_API_KEY not set - admin endpoints disabled")
+        raise HTTPException(
+            status_code=503,
+            detail="Admin API not configured. Set NEWSLETTER_ADMIN_API_KEY environment variable.",
+        )
+
+    if not x_api_key:
+        raise HTTPException(
+            status_code=401,
+            detail="Missing X-API-Key header",
+        )
+
+    # Use secrets.compare_digest to prevent timing attacks
+    if not secrets.compare_digest(x_api_key, ADMIN_API_KEY):
+        logger.warning(f"Invalid admin API key attempt")
+        raise HTTPException(
+            status_code=403,
+            detail="Invalid API key",
+        )
+
+    return True
 
 
 class SubscribeRequest(BaseModel):
@@ -199,12 +235,12 @@ def create_newsletter_app(
             logger.error(f"Unsubscribe error: {e}")
             raise HTTPException(status_code=500, detail="Unsubscribe failed")
 
-    @app.get("/stats")
+    @app.get("/stats", dependencies=[Depends(verify_admin_api_key)])
     async def get_stats():
         """
         Get subscriber statistics.
 
-        For admin use only - should be protected in production.
+        Requires X-API-Key header with valid admin API key.
         """
         try:
             with SubscriberDB() as db:
@@ -213,6 +249,34 @@ def create_newsletter_app(
         except Exception as e:
             logger.error(f"Stats error: {e}")
             raise HTTPException(status_code=500, detail="Failed to get stats")
+
+    @app.get("/subscribers", dependencies=[Depends(verify_admin_api_key)])
+    async def get_subscribers():
+        """
+        Get all active subscribers with details.
+
+        Requires X-API-Key header with valid admin API key.
+        """
+        try:
+            with SubscriberDB() as db:
+                subscribers = db.get_active_subscribers()
+                return {
+                    "total": len(subscribers),
+                    "subscribers": [
+                        {
+                            "email": s.email,
+                            "source": s.source,
+                            "subscribed_at": (
+                                s.subscribed_at.isoformat() if s.subscribed_at else None
+                            ),
+                            "confirmed": s.confirmed,
+                        }
+                        for s in subscribers
+                    ],
+                }
+        except Exception as e:
+            logger.error(f"Subscribers list error: {e}")
+            raise HTTPException(status_code=500, detail="Failed to get subscribers")
 
     return app
 

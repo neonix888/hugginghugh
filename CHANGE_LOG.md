@@ -25,6 +25,8 @@ Concise changelog for all project changes. Format: `[date] - [type] - [descripti
 - `docs` - Updated TASKS.md marking Phase 5 Social Presence complete
 - `docs` - Verified newsletter system complete (FastAPI backend, PostgreSQL storage, frontend form, nginx proxy)
 - `docs` - Updated TASKS.md marking Phase 6 Lead Capture complete
+- `feat` - Added /subscribers endpoint to newsletter API for full subscriber list
+- `sec` - Added API key authentication to /stats and /subscribers endpoints (X-API-Key header)
 
 ---
 

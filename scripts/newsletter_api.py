@@ -26,6 +26,14 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
+# Load environment variables from .env file
+try:
+    from dotenv import load_dotenv
+
+    load_dotenv(PROJECT_ROOT / ".env")
+except ImportError:
+    pass
+
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(name)s: %(message)s")
 logger = logging.getLogger(__name__)
 
@@ -58,7 +66,8 @@ def run_server(host: str, port: int):
     logger.info(f"  POST /subscribe - Subscribe to newsletter")
     logger.info(f"  GET  /confirm/{{token}} - Confirm subscription")
     logger.info(f"  GET  /unsubscribe/{{token}} - Unsubscribe")
-    logger.info(f"  GET  /stats - Subscriber statistics")
+    logger.info(f"  GET  /stats - Subscriber statistics (requires X-API-Key)")
+    logger.info(f"  GET  /subscribers - List subscribers (requires X-API-Key)")
     logger.info(f"  GET  /health - Health check")
 
     uvicorn.run(app, host=host, port=port, log_level="info")
