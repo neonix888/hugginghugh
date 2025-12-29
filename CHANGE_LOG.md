@@ -21,6 +21,8 @@ Concise changelog for all project changes. Format: `[date] - [type] - [descripti
 - `docs` - Updated TASKS.md marking Phase 3 Content Marketing complete
 - `docs` - Verified badge infrastructure complete (BadgeGenerator, 4 SVG styles, shields.io JSON endpoints)
 - `docs` - Updated TASKS.md marking Phase 4 Viral Mechanics complete
+- `docs` - Verified Twitter bot complete (TwitterBot, 7 tweet types, CLI script, daily scan integration)
+- `docs` - Updated TASKS.md marking Phase 5 Social Presence complete
 
 ---
 

@@ -35,7 +35,7 @@ Granular task checklist for ongoing development. Update this document as tasks p
 - [x] Add badge API endpoints ✅
 
 ### Phase 5: Social Presence
-- [ ] Build Twitter bot for score announcements
+- [x] Build Twitter bot for score announcements ✅
 
 ### Phase 6: Lead Capture
 - [ ] Add email newsletter signup form
