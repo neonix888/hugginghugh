@@ -12,6 +12,15 @@ Concise changelog for all project changes. Format: `[date] - [type] - [descripti
 - `config` - Added _find_executable() helper to auto-detect tool paths in cron environments
 - `config` - Updated SYFT_PATH/GRYPE_PATH to check ~/.local/bin, /usr/local/bin, /usr/bin
 - `deploy` - Manual scan deployed 533 models to hugginghugh.com and hugginghugh.etcbin.io
+- `feat` - Added daily AI news digest system (src/news module)
+- `feat` - Created NewsFetcher for RSS aggregation from 13 sources (HN, MIT Tech Review, VentureBeat, arXiv, etc.)
+- `feat` - Created RelevanceScorer with keyword-based AI security topic scoring
+- `feat` - Created DigestGenerator for automatic blog post creation
+- `feat` - Added scripts/run_daily_news.py orchestrator with --dry-run and --deploy options
+- `config` - Added config/news_sources.yaml for RSS feeds and keyword configuration
+- `config` - Updated setup_cron.sh with news digest job at 06:00 UTC
+- `docs` - Added 5 blog posts including today's AI news digest
+- `deps` - Added feedparser>=6.0.0 to requirements.txt
 
 ---
 
