@@ -6,6 +6,15 @@ Concise changelog for all project changes. Format: `[date] - [type] - [descripti
 
 ---
 
+## 2025-12-30
+
+- `fix` - Fixed cron job failing due to syft/grype not in PATH (broken since Dec 26)
+- `config` - Added _find_executable() helper to auto-detect tool paths in cron environments
+- `config` - Updated SYFT_PATH/GRYPE_PATH to check ~/.local/bin, /usr/local/bin, /usr/bin
+- `deploy` - Manual scan deployed 533 models to hugginghugh.com and hugginghugh.etcbin.io
+
+---
+
 ## 2025-12-29
 
 - `docs` - Updated CLAUDE.md with comprehensive operating rules (no hardcoding, approval gates, output format, API safety)
