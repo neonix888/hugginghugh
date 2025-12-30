@@ -1,0 +1,561 @@
+{% extends "base.html" %}
+
+{% block title %}Badges - HuggingHugh{% endblock %}
+{% block description %}Add a HuggingHugh trust score badge to your HuggingFace model README. Show users your model's security posture.{% endblock %}
+
+{% block canonical %}{{ site_url }}/badges.html{% endblock %}
+{% block og_url %}{{ site_url }}/badges.html{% endblock %}
+{% block og_title %}Embed Trust Score Badges - HuggingHugh{% endblock %}
+{% block og_description %}Add a HuggingHugh trust score badge to your HuggingFace model README. Show users your model's security posture.{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <h1>Trust Score Badges</h1>
+        <p class="subtitle">Add a trust score badge to your model's README</p>
+    </div>
+
+    <!-- Badge Previews -->
+    <div class="card" style="margin-bottom: var(--space-xl);">
+        <div class="card-body">
+            <h2 style="margin-bottom: var(--space-lg);">Badge Styles</h2>
+            <p style="margin-bottom: var(--space-lg); color: var(--text-muted);">
+                Show your model's security posture with a shields.io-style badge. Available in multiple styles:
+            </p>
+
+            <div class="badge-examples">
+                <div class="badge-example">
+                    <h3>Full Badge</h3>
+                    <div class="badge-preview">
+                        <img src="{{ base_url }}/badges/example/badge.svg" alt="HuggingHugh A 92" onerror="this.src='https://img.shields.io/badge/HuggingHugh-A%2092-22c55e'">
+                    </div>
+                    <p>Shows label, grade, and score</p>
+                </div>
+
+                <div class="badge-example">
+                    <h3>Grade Only</h3>
+                    <div class="badge-preview">
+                        <img src="{{ base_url }}/badges/example/grade.svg" alt="HuggingHugh A" onerror="this.src='https://img.shields.io/badge/HuggingHugh-A-22c55e'">
+                    </div>
+                    <p>Just the letter grade</p>
+                </div>
+
+                <div class="badge-example">
+                    <h3>Score Only</h3>
+                    <div class="badge-preview">
+                        <img src="{{ base_url }}/badges/example/score.svg" alt="Trust Score 92" onerror="this.src='https://img.shields.io/badge/Trust%20Score-92-22c55e'">
+                    </div>
+                    <p>Numeric score out of 100</p>
+                </div>
+            </div>
+
+            <div class="grade-colors" style="margin-top: var(--space-xl);">
+                <h3 style="margin-bottom: var(--space-md);">Grade Colors</h3>
+                <div class="color-legend">
+                    <span class="color-item"><span class="color-swatch" style="background: #22c55e;"></span> A (90-100)</span>
+                    <span class="color-item"><span class="color-swatch" style="background: #84cc16;"></span> B (80-89)</span>
+                    <span class="color-item"><span class="color-swatch" style="background: #eab308;"></span> C (70-79)</span>
+                    <span class="color-item"><span class="color-swatch" style="background: #f97316;"></span> D (60-69)</span>
+                    <span class="color-item"><span class="color-swatch" style="background: #ef4444;"></span> F (0-59)</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Badge Generator -->
+    <div class="card" style="margin-bottom: var(--space-xl);">
+        <div class="card-body">
+            <h2 style="margin-bottom: var(--space-lg);">Get Your Badge</h2>
+
+            <div class="badge-generator">
+                <div class="form-group">
+                    <label for="model-search">Search for your model:</label>
+                    <input type="text" id="model-search" class="form-input" placeholder="e.g., meta-llama/Llama-2-7b or google/gemma-2b">
+                </div>
+
+                <div id="search-results" class="search-results" style="display: none;">
+                    <!-- Results populated by JS -->
+                </div>
+
+                <div id="badge-output" class="badge-output" style="display: none;">
+                    <h3>Your Badge</h3>
+
+                    <div class="badge-preview-large" id="badge-preview">
+                        <!-- Badge preview -->
+                    </div>
+
+                    <div class="embed-tabs">
+                        <button class="embed-tab active" data-tab="markdown">Markdown</button>
+                        <button class="embed-tab" data-tab="html">HTML</button>
+                        <button class="embed-tab" data-tab="shields">Shields.io</button>
+                    </div>
+
+                    <div class="embed-content">
+                        <div class="embed-panel active" id="panel-markdown">
+                            <label>Copy this to your README.md:</label>
+                            <div class="code-block">
+                                <code id="code-markdown"></code>
+                                <button class="copy-btn" onclick="copyCode('markdown')">Copy</button>
+                            </div>
+                        </div>
+
+                        <div class="embed-panel" id="panel-html">
+                            <label>Copy this HTML:</label>
+                            <div class="code-block">
+                                <code id="code-html"></code>
+                                <button class="copy-btn" onclick="copyCode('html')">Copy</button>
+                            </div>
+                        </div>
+
+                        <div class="embed-panel" id="panel-shields">
+                            <label>Dynamic badge via shields.io (always up-to-date):</label>
+                            <div class="code-block">
+                                <code id="code-shields"></code>
+                                <button class="copy-btn" onclick="copyCode('shields')">Copy</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Manual Instructions -->
+    <div class="card" style="margin-bottom: var(--space-xl);">
+        <div class="card-body">
+            <h2 style="margin-bottom: var(--space-lg);">Manual Badge URLs</h2>
+            <p style="margin-bottom: var(--space-md); color: var(--text-muted);">
+                If you know your model ID, construct the badge URL directly:
+            </p>
+
+            <div class="url-patterns">
+                <div class="url-pattern">
+                    <h4>Static Badge (SVG)</h4>
+                    <code>https://hugginghugh.com/badges/{author}_{model}/badge.svg</code>
+                    <p class="hint">Replace <code>{author}_{model}</code> with your model ID (slashes become underscores)</p>
+                </div>
+
+                <div class="url-pattern">
+                    <h4>Dynamic Badge (Shields.io)</h4>
+                    <code>https://img.shields.io/endpoint?url=https://hugginghugh.com/api/badges/{author}_{model}.json</code>
+                    <p class="hint">Updates automatically when your score changes</p>
+                </div>
+
+                <div class="url-pattern">
+                    <h4>Report Link</h4>
+                    <code>https://hugginghugh.com/reports/{author}_{model}/</code>
+                    <p class="hint">Full security report for your model</p>
+                </div>
+            </div>
+
+            <div class="example-box" style="margin-top: var(--space-lg);">
+                <h4>Example: meta-llama/Llama-2-7b</h4>
+                <ul style="padding-left: var(--space-lg); line-height: 2;">
+                    <li>Badge: <code>https://hugginghugh.com/badges/meta-llama_Llama-2-7b/badge.svg</code></li>
+                    <li>JSON: <code>https://hugginghugh.com/api/badges/meta-llama_Llama-2-7b.json</code></li>
+                    <li>Report: <code>https://hugginghugh.com/reports/meta-llama_Llama-2-7b/</code></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- FAQ -->
+    <div class="card">
+        <div class="card-body">
+            <h2 style="margin-bottom: var(--space-lg);">FAQ</h2>
+
+            <div class="faq-item">
+                <h4>When do badges update?</h4>
+                <p>Static SVG badges update daily during our scan (02:00 UTC). Shields.io dynamic badges update whenever shields.io re-fetches the JSON endpoint (typically within hours).</p>
+            </div>
+
+            <div class="faq-item">
+                <h4>My model isn't found?</h4>
+                <p>We currently scan the top 1000 most downloaded models on HuggingFace. If your model isn't in the top 1000, it won't have a badge yet. We're working on expanding coverage.</p>
+            </div>
+
+            <div class="faq-item">
+                <h4>Can I improve my score?</h4>
+                <p>Yes! The easiest improvements are: use SafeTensors format (not pickle), add clear license info, and keep dependencies updated. See our <a href="{{ base_url }}/blog/understanding-trust-scores.html">Trust Score Guide</a> for details.</p>
+            </div>
+
+            <div class="faq-item">
+                <h4>Is this official?</h4>
+                <p>HuggingHugh is an independent community project. We are not affiliated with HuggingFace. Badges indicate our assessment based on publicly available metadata.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.badge-examples {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--space-lg);
+}
+
+.badge-example {
+    text-align: center;
+    padding: var(--space-lg);
+    background: var(--bg-secondary);
+    border-radius: var(--radius-md);
+}
+
+.badge-example h3 {
+    font-size: 1rem;
+    margin-bottom: var(--space-md);
+}
+
+.badge-example p {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    margin-top: var(--space-sm);
+}
+
+.badge-preview {
+    padding: var(--space-md);
+    background: white;
+    border-radius: var(--radius-sm);
+    display: inline-block;
+}
+
+.badge-preview img {
+    height: 20px;
+}
+
+.color-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-lg);
+}
+
+.color-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    font-size: 0.875rem;
+}
+
+.color-swatch {
+    width: 20px;
+    height: 20px;
+    border-radius: var(--radius-sm);
+}
+
+.badge-generator {
+    max-width: 600px;
+}
+
+.form-group {
+    margin-bottom: var(--space-lg);
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: var(--space-sm);
+    font-weight: 500;
+}
+
+.form-input {
+    width: 100%;
+    padding: var(--space-sm) var(--space-md);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    font-size: 1rem;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.search-results {
+    margin-bottom: var(--space-lg);
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+}
+
+.search-result {
+    padding: var(--space-sm) var(--space-md);
+    cursor: pointer;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.search-result:last-child {
+    border-bottom: none;
+}
+
+.search-result:hover {
+    background: var(--bg-secondary);
+}
+
+.search-result .model-name {
+    font-weight: 500;
+}
+
+.search-result .model-meta {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.badge-output {
+    margin-top: var(--space-xl);
+    padding-top: var(--space-xl);
+    border-top: 1px solid var(--border-color);
+}
+
+.badge-preview-large {
+    padding: var(--space-lg);
+    background: var(--bg-secondary);
+    border-radius: var(--radius-md);
+    text-align: center;
+    margin-bottom: var(--space-lg);
+}
+
+.badge-preview-large img {
+    height: 28px;
+}
+
+.embed-tabs {
+    display: flex;
+    gap: var(--space-xs);
+    margin-bottom: var(--space-md);
+}
+
+.embed-tab {
+    padding: var(--space-sm) var(--space-md);
+    border: none;
+    background: var(--bg-secondary);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-size: 0.875rem;
+}
+
+.embed-tab.active {
+    background: var(--primary);
+    color: white;
+}
+
+.embed-panel {
+    display: none;
+}
+
+.embed-panel.active {
+    display: block;
+}
+
+.embed-panel label {
+    display: block;
+    margin-bottom: var(--space-sm);
+    font-size: 0.875rem;
+    color: var(--text-muted);
+}
+
+.code-block {
+    position: relative;
+    background: var(--bg-secondary);
+    border-radius: var(--radius-sm);
+    padding: var(--space-md);
+    padding-right: 80px;
+}
+
+.code-block code {
+    font-family: monospace;
+    font-size: 0.8rem;
+    word-break: break-all;
+    display: block;
+}
+
+.copy-btn {
+    position: absolute;
+    top: 50%;
+    right: var(--space-sm);
+    transform: translateY(-50%);
+    padding: var(--space-xs) var(--space-sm);
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-size: 0.75rem;
+}
+
+.copy-btn:hover {
+    background: var(--primary-dark);
+}
+
+.url-patterns {
+    display: grid;
+    gap: var(--space-lg);
+}
+
+.url-pattern {
+    padding: var(--space-md);
+    background: var(--bg-secondary);
+    border-radius: var(--radius-sm);
+}
+
+.url-pattern h4 {
+    font-size: 0.875rem;
+    margin-bottom: var(--space-sm);
+}
+
+.url-pattern code {
+    display: block;
+    font-family: monospace;
+    font-size: 0.8rem;
+    padding: var(--space-sm);
+    background: white;
+    border-radius: var(--radius-sm);
+    word-break: break-all;
+}
+
+.url-pattern .hint {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-top: var(--space-sm);
+}
+
+.example-box {
+    padding: var(--space-lg);
+    background: var(--bg-secondary);
+    border-radius: var(--radius-md);
+}
+
+.example-box h4 {
+    margin-bottom: var(--space-md);
+}
+
+.example-box code {
+    font-size: 0.75rem;
+    background: white;
+    padding: 2px 6px;
+    border-radius: 3px;
+}
+
+.faq-item {
+    margin-bottom: var(--space-lg);
+    padding-bottom: var(--space-lg);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.faq-item:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+.faq-item h4 {
+    margin-bottom: var(--space-sm);
+    color: var(--text-primary);
+}
+
+.faq-item p {
+    color: var(--text-muted);
+    line-height: 1.6;
+}
+
+.faq-item a {
+    color: var(--primary);
+}
+</style>
+
+<script>
+// Model data will be loaded from API
+let modelsData = [];
+
+// Load models data
+fetch('{{ base_url }}/api/models.json')
+    .then(r => r.json())
+    .then(data => {
+        modelsData = data.models || [];
+    });
+
+// Search functionality
+const searchInput = document.getElementById('model-search');
+const searchResults = document.getElementById('search-results');
+const badgeOutput = document.getElementById('badge-output');
+
+searchInput.addEventListener('input', function() {
+    const query = this.value.toLowerCase().trim();
+
+    if (query.length < 2) {
+        searchResults.style.display = 'none';
+        return;
+    }
+
+    const matches = modelsData.filter(m =>
+        m.model_id.toLowerCase().includes(query)
+    ).slice(0, 10);
+
+    if (matches.length === 0) {
+        searchResults.innerHTML = '<div class="search-result"><span class="model-name">No models found</span></div>';
+    } else {
+        searchResults.innerHTML = matches.map(m => `
+            <div class="search-result" onclick="selectModel('${m.model_id}', ${m.trust_score}, '${m.trust_grade}')">
+                <span class="model-name">${m.model_id}</span>
+                <span class="model-meta">Grade: ${m.trust_grade} | Score: ${m.trust_score}</span>
+            </div>
+        `).join('');
+    }
+
+    searchResults.style.display = 'block';
+});
+
+function selectModel(modelId, score, grade) {
+    searchResults.style.display = 'none';
+    searchInput.value = modelId;
+
+    const safeId = modelId.replace('/', '_');
+    const siteUrl = '{{ site_url }}';
+
+    // Update preview
+    document.getElementById('badge-preview').innerHTML = `
+        <img src="${siteUrl}/badges/${safeId}/badge.svg" alt="HuggingHugh ${grade} ${score}"
+             onerror="this.src='https://img.shields.io/badge/HuggingHugh-${grade}%20${score}-22c55e'">
+    `;
+
+    // Update embed codes
+    const reportUrl = `${siteUrl}/reports/${safeId}/`;
+    const badgeUrl = `${siteUrl}/badges/${safeId}/badge.svg`;
+    const jsonUrl = `${siteUrl}/api/badges/${safeId}.json`;
+    const shieldsUrl = `https://img.shields.io/endpoint?url=${encodeURIComponent(jsonUrl)}`;
+
+    document.getElementById('code-markdown').textContent =
+        `[![HuggingHugh Trust Score](${badgeUrl})](${reportUrl})`;
+
+    document.getElementById('code-html').textContent =
+        `<a href="${reportUrl}"><img src="${badgeUrl}" alt="HuggingHugh Trust Score"></a>`;
+
+    document.getElementById('code-shields').textContent =
+        `[![HuggingHugh Trust Score](${shieldsUrl})](${reportUrl})`;
+
+    badgeOutput.style.display = 'block';
+}
+
+// Tab switching
+document.querySelectorAll('.embed-tab').forEach(tab => {
+    tab.addEventListener('click', function() {
+        document.querySelectorAll('.embed-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.embed-panel').forEach(p => p.classList.remove('active'));
+
+        this.classList.add('active');
+        document.getElementById('panel-' + this.dataset.tab).classList.add('active');
+    });
+});
+
+// Copy functionality
+function copyCode(type) {
+    const code = document.getElementById('code-' + type).textContent;
+    navigator.clipboard.writeText(code).then(() => {
+        const btn = event.target;
+        const originalText = btn.textContent;
+        btn.textContent = 'Copied!';
+        setTimeout(() => btn.textContent = originalText, 2000);
+    });
+}
+</script>
+{% endblock %}

@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block title %}{{ post.title }} - HuggingHugh Blog{% endblock %}
+
+{% block description %}{{ post.excerpt }}{% endblock %}
+
+{% block canonical %}{{ site_url }}/blog/{{ post.slug }}.html{% endblock %}
+{% block og_type %}article{% endblock %}
+{% block og_url %}{{ site_url }}/blog/{{ post.slug }}.html{% endblock %}
+{% block og_title %}{{ post.title }}{% endblock %}
+{% block og_description %}{{ post.excerpt }}{% endblock %}
+{% block twitter_url %}{{ site_url }}/blog/{{ post.slug }}.html{% endblock %}
+{% block twitter_title %}{{ post.title }}{% endblock %}
+{% block twitter_description %}{{ post.excerpt }}{% endblock %}
+
+{% block structured_data %}
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "{{ post.title }}",
+    "description": "{{ post.excerpt }}",
+    "datePublished": "{{ post.date_iso }}",
+    "dateModified": "{{ post.date_iso }}",
+    "author": {
+        "@type": "Organization",
+        "name": "HuggingHugh"
+    },
+    "publisher": {
+        "@type": "Organization",
+        "name": "HuggingHugh",
+        "url": "{{ site_url }}"
+    },
+    "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "{{ site_url }}/blog/{{ post.slug }}.html"
+    }
+}
+</script>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <a href="{{ base_url }}/blog/" class="back-link">← Back to Blog</a>
+
+    <article class="blog-article">
+        <header class="blog-article-header">
+            <div class="blog-article-meta">
+                <span class="blog-category">{{ post.category }}</span>
+                <span class="blog-date">{{ post.date }}</span>
+                <span class="blog-read-time">{{ post.read_time }} min read</span>
+            </div>
+            <h1 class="blog-article-title">{{ post.title }}</h1>
+            <p class="blog-article-excerpt">{{ post.excerpt }}</p>
+        </header>
+
+        <div class="blog-article-content">
+            {{ post.content | safe }}
+        </div>
+
+        <footer class="blog-article-footer">
+            <div class="blog-share">
+                <span>Share this article:</span>
+                <a href="https://twitter.com/intent/tweet?text={{ post.title | urlencode }}&url={{ site_url }}/blog/{{ post.slug }}.html" target="_blank" class="btn btn-small">
+                    <span class="icon"><svg viewBox="0 0 24 24"><path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"/></svg></span> Tweet
+                </a>
+                <a href="https://www.linkedin.com/shareArticle?mini=true&url={{ site_url }}/blog/{{ post.slug }}.html&title={{ post.title | urlencode }}" target="_blank" class="btn btn-small">
+                    <span class="icon"><svg viewBox="0 0 24 24"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg></span> LinkedIn
+                </a>
+            </div>
+
+            <div class="blog-cta">
+                <h3>Want to check your models?</h3>
+                <p>Search our database of 500+ HuggingFace models with trust scores and security reports.</p>
+                <a href="{{ base_url }}/" class="btn btn-primary">Browse Dashboard →</a>
+            </div>
+        </footer>
+    </article>
+
+    {% if related_posts %}
+    <section class="blog-related">
+        <h2>Related Articles</h2>
+        <div class="blog-grid">
+            {% for related in related_posts[:3] %}
+            <article class="blog-card">
+                <a href="{{ base_url }}/blog/{{ related.slug }}.html" class="blog-card-link">
+                    <div class="blog-card-header">
+                        <span class="blog-category">{{ related.category }}</span>
+                    </div>
+                    <h3 class="blog-card-title">{{ related.title }}</h3>
+                    <p class="blog-card-excerpt">{{ related.excerpt }}</p>
+                </a>
+            </article>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block title %}Blog - HuggingHugh{% endblock %}
+
+{% block description %}Security insights, AI model safety guides, and updates from the HuggingHugh team.{% endblock %}
+
+{% block canonical %}{{ site_url }}/blog/{% endblock %}
+{% block og_url %}{{ site_url }}/blog/{% endblock %}
+{% block og_title %}Blog - HuggingHugh{% endblock %}
+{% block og_description %}Security insights, AI model safety guides, and updates from the HuggingHugh team.{% endblock %}
+
+{% block content %}
+<div class="container">
+    <a href="{{ base_url }}/" class="back-link">← Back to Dashboard</a>
+
+    <div class="page-header">
+        <h1><span class="icon icon-xl"><svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></span> Blog</h1>
+        <p class="subtitle">Security insights, AI model safety guides, and updates.</p>
+    </div>
+
+    <div class="blog-grid">
+        {% for post in posts %}
+        <article class="blog-card">
+            <a href="{{ base_url }}/blog/{{ post.slug }}.html" class="blog-card-link">
+                <div class="blog-card-header">
+                    <span class="blog-category">{{ post.category }}</span>
+                    <span class="blog-date">{{ post.date }}</span>
+                </div>
+                <h2 class="blog-card-title">{{ post.title }}</h2>
+                <p class="blog-card-excerpt">{{ post.excerpt }}</p>
+                <div class="blog-card-footer">
+                    <span class="blog-read-time">{{ post.read_time }} min read</span>
+                    <span class="blog-read-more">Read more →</span>
+                </div>
+            </a>
+        </article>
+        {% endfor %}
+    </div>
+
+    {% if posts|length == 0 %}
+    <div class="card" style="text-align: center; padding: var(--space-2xl);">
+        <p style="color: var(--text-muted);">No blog posts yet. Check back soon!</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,131 @@
+# AI News Sources Configuration
+# RSS feeds for daily AI news aggregation
+
+sources:
+  # Primary AI/ML Sources
+  - name: "Hacker News - AI"
+    url: "https://hnrss.org/newest?q=AI+OR+LLM+OR+machine+learning"
+    priority: 10
+    category: "tech"
+
+  - name: "Hacker News - ML Security"
+    url: "https://hnrss.org/newest?q=ML+security+OR+model+vulnerability+OR+AI+safety"
+    priority: 10
+    category: "security"
+
+  - name: "MIT Technology Review - AI"
+    url: "https://www.technologyreview.com/topic/artificial-intelligence/feed"
+    priority: 9
+    category: "research"
+
+  - name: "VentureBeat AI"
+    url: "https://venturebeat.com/category/ai/feed/"
+    priority: 8
+    category: "industry"
+
+  - name: "The Verge - AI"
+    url: "https://www.theverge.com/rss/ai-artificial-intelligence/index.xml"
+    priority: 8
+    category: "tech"
+
+  - name: "Ars Technica - AI"
+    url: "https://feeds.arstechnica.com/arstechnica/technology-lab"
+    priority: 7
+    category: "tech"
+
+  - name: "TechCrunch - AI"
+    url: "https://techcrunch.com/category/artificial-intelligence/feed/"
+    priority: 7
+    category: "industry"
+
+  - name: "Wired - AI"
+    url: "https://www.wired.com/feed/tag/ai/latest/rss"
+    priority: 7
+    category: "tech"
+
+  # Security-Focused Sources
+  - name: "The Hacker News (Security)"
+    url: "https://feeds.feedburner.com/TheHackersNews"
+    priority: 8
+    category: "security"
+
+  - name: "Krebs on Security"
+    url: "https://krebsonsecurity.com/feed/"
+    priority: 7
+    category: "security"
+
+  # Research & Academic
+  - name: "arXiv - Machine Learning"
+    url: "https://rss.arxiv.org/rss/cs.LG"
+    priority: 6
+    category: "research"
+
+  - name: "arXiv - AI"
+    url: "https://rss.arxiv.org/rss/cs.AI"
+    priority: 6
+    category: "research"
+
+  # HuggingFace Specific
+  - name: "HuggingFace Blog"
+    url: "https://huggingface.co/blog/feed.xml"
+    priority: 10
+    category: "huggingface"
+
+# Keywords for relevance scoring
+keywords:
+  # High priority - AI Security (score +15)
+  high_priority:
+    - "model security"
+    - "AI vulnerability"
+    - "ML attack"
+    - "adversarial"
+    - "model poisoning"
+    - "supply chain attack"
+    - "SBOM"
+    - "safetensors"
+    - "pickle vulnerability"
+    - "model backdoor"
+    - "AI safety"
+    - "LLM security"
+    - "prompt injection"
+    - "jailbreak"
+    - "data poisoning"
+
+  # Medium priority - AI/ML General (score +8)
+  medium_priority:
+    - "huggingface"
+    - "transformer"
+    - "LLM"
+    - "GPT"
+    - "Claude"
+    - "Llama"
+    - "Mistral"
+    - "open source model"
+    - "foundation model"
+    - "fine-tuning"
+    - "RLHF"
+    - "neural network"
+    - "deep learning"
+    - "PyTorch"
+    - "TensorFlow"
+    - "machine learning"
+    - "artificial intelligence"
+
+  # Low priority - Related Tech (score +3)
+  low_priority:
+    - "Python"
+    - "GPU"
+    - "NVIDIA"
+    - "cloud computing"
+    - "API"
+    - "open source"
+    - "developer"
+    - "data science"
+
+# Filtering settings
+settings:
+  max_age_hours: 48          # Only include stories from last 48 hours
+  min_relevance_score: 10    # Minimum score to include
+  max_stories_per_digest: 8  # Maximum stories in daily digest
+  min_stories_for_post: 3    # Minimum stories needed to generate post
+  dedupe_similarity: 0.7     # Title similarity threshold for deduplication

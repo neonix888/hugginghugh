@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 # HuggingHugh Cron Setup
-# Sets up daily scanning at 02:00 UTC
+# Sets up daily scanning at 02:00 UTC and news digest at 06:00 UTC
 #
 
 set -e
@@ -10,12 +10,15 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
 VENV_PYTHON="$PROJECT_DIR/venv/bin/python3"
 SCAN_SCRIPT="$PROJECT_DIR/scripts/run_daily_scan.py"
-LOG_FILE="$PROJECT_DIR/logs/cron.log"
+NEWS_SCRIPT="$PROJECT_DIR/scripts/run_daily_news.py"
+SCAN_LOG="$PROJECT_DIR/logs/cron.log"
+NEWS_LOG="$PROJECT_DIR/logs/news.log"
 
 echo "=== HuggingHugh Cron Setup ==="
 echo "Project directory: $PROJECT_DIR"
 echo "Python path: $VENV_PYTHON"
 echo "Scan script: $SCAN_SCRIPT"
+echo "News script: $NEWS_SCRIPT"
 
 # Check if venv exists
 if [ ! -f "$VENV_PYTHON" ]; then
@@ -27,34 +30,52 @@ fi
 # Create logs directory
 mkdir -p "$PROJECT_DIR/logs"
 
-# Make scan script executable
+# Make scripts executable
 chmod +x "$SCAN_SCRIPT"
+chmod +x "$NEWS_SCRIPT"
 
-# Cron job entry (runs at 02:00 UTC daily)
-# Scans 500 models and deploys to production
-CRON_ENTRY="0 2 * * * $VENV_PYTHON $SCAN_SCRIPT --deploy --limit 500 >> $LOG_FILE 2>&1"
+# Cron job entries
+# 1. Model scan: runs at 02:00 UTC daily (500 models, deploy to production)
+SCAN_CRON="0 2 * * * $VENV_PYTHON $SCAN_SCRIPT --deploy --limit 500 >> $SCAN_LOG 2>&1"
 
-# Check if cron job already exists
-if crontab -l 2>/dev/null | grep -q "hugginghugh"; then
-    echo "Cron job already exists. Updating..."
-    # Remove existing hugginghugh entries
-    crontab -l 2>/dev/null | grep -v "hugginghugh" | crontab -
+# 2. News digest: runs at 06:00 UTC daily (after scan completes)
+NEWS_CRON="0 6 * * * $VENV_PYTHON $NEWS_SCRIPT >> $NEWS_LOG 2>&1"
+
+# Remove existing hugginghugh entries
+if crontab -l 2>/dev/null | grep -q "hugginghugh\|HuggingHugh"; then
+    echo "Removing existing HuggingHugh cron jobs..."
+    crontab -l 2>/dev/null | grep -v -E "hugginghugh|HuggingHugh|run_daily_scan|run_daily_news" | crontab -
 fi
 
-# Add new cron job
-(crontab -l 2>/dev/null || echo "") | { cat; echo "# HuggingHugh daily scan"; echo "$CRON_ENTRY"; } | crontab -
+# Add new cron jobs
+(crontab -l 2>/dev/null || echo "") | {
+    cat
+    echo "# HuggingHugh daily model scan (02:00 UTC)"
+    echo "$SCAN_CRON"
+    echo "# HuggingHugh daily news digest (06:00 UTC)"
+    echo "$NEWS_CRON"
+} | crontab -
 
 echo ""
-echo "Cron job installed:"
-echo "$CRON_ENTRY"
+echo "Cron jobs installed:"
+echo ""
+echo "1. Model Scan (02:00 UTC):"
+echo "   $SCAN_CRON"
+echo ""
+echo "2. News Digest (06:00 UTC):"
+echo "   $NEWS_CRON"
 echo ""
 echo "Current crontab:"
-crontab -l | grep -A1 "hugginghugh" || echo "(no hugginghugh entries)"
+crontab -l | grep -E "HuggingHugh|hugginghugh" -A1 || echo "(no HuggingHugh entries)"
 echo ""
-echo "Logs will be written to: $LOG_FILE"
+echo "Log files:"
+echo "  Scan: $SCAN_LOG"
+echo "  News: $NEWS_LOG"
 echo ""
 echo "To run manually:"
 echo "  $VENV_PYTHON $SCAN_SCRIPT --dry-run"
+echo "  $VENV_PYTHON $NEWS_SCRIPT --dry-run"
 echo ""
-echo "To check cron logs:"
-echo "  tail -f $LOG_FILE"
+echo "To check logs:"
+echo "  tail -f $SCAN_LOG"
+echo "  tail -f $NEWS_LOG"

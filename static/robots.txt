@@ -1,0 +1,11 @@
+# robots.txt for HuggingHugh
+# https://hugginghugh.com
+
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://hugginghugh.com/sitemap.xml
+
+# Crawl-delay suggestion (be nice to the server)
+Crawl-delay: 1
