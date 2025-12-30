@@ -39,6 +39,7 @@ from threading import Lock
 PROJECT_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
+from config.settings import GRYPE_PATH, SYFT_PATH
 from src.database import LeaderboardDB
 from src.generator import LicenseAnalyzer, SBOMGenerator, TrustScorer, VulnerabilityScanner
 from src.reporter import BadgeGenerator, BlogGenerator, DashboardGenerator, HTMLReportGenerator
@@ -307,9 +308,11 @@ PERFORMANCE:
 
     # Initialize components
     logger.info("Initializing components...")
+    logger.info(f"Using syft: {SYFT_PATH}")
+    logger.info(f"Using grype: {GRYPE_PATH}")
     fetcher = ModelFetcher(cache_dir=data_dir / "models", token=hf_token)
-    sbom_gen = SBOMGenerator(output_dir=data_dir / "sboms")
-    vuln_scanner = VulnerabilityScanner(output_dir=data_dir / "sboms")
+    sbom_gen = SBOMGenerator(syft_path=SYFT_PATH, output_dir=data_dir / "sboms")
+    vuln_scanner = VulnerabilityScanner(grype_path=GRYPE_PATH, output_dir=data_dir / "sboms")
     license_analyzer = LicenseAnalyzer()
     trust_scorer = TrustScorer()
     html_gen = HTMLReportGenerator(

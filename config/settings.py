@@ -3,7 +3,35 @@ HuggingHugh Configuration Settings
 """
 
 import os
+import shutil
 from pathlib import Path
+
+
+def _find_executable(name: str) -> str:
+    """Find executable path, checking common locations if not in PATH."""
+    # First check environment variable
+    env_path = os.environ.get(f"{name.upper()}_PATH")
+    if env_path and Path(env_path).exists():
+        return env_path
+
+    # Check if in PATH (works in interactive shells)
+    which_path = shutil.which(name)
+    if which_path:
+        return which_path
+
+    # Check common installation locations (for cron environments)
+    common_paths = [
+        Path.home() / ".local" / "bin" / name,
+        Path("/usr/local/bin") / name,
+        Path("/usr/bin") / name,
+    ]
+    for path in common_paths:
+        if path.exists():
+            return str(path)
+
+    # Fall back to just the command name (will fail if not in PATH)
+    return name
+
 
 # Base paths
 PROJECT_ROOT = Path(__file__).parent.parent
@@ -78,9 +106,9 @@ RESTRICTIVE_LICENSES = ["cc-by-nc-4.0", "cc-by-nc-sa-4.0", "llama2", "llama3", "
 LOG_FILE = LOGS_DIR / "scanner.log"
 LOG_LEVEL = os.environ.get("LOG_LEVEL", "INFO")
 
-# External tools
-SYFT_PATH = os.environ.get("SYFT_PATH", "syft")
-GRYPE_PATH = os.environ.get("GRYPE_PATH", "grype")
+# External tools (auto-detect paths for cron compatibility)
+SYFT_PATH = _find_executable("syft")
+GRYPE_PATH = _find_executable("grype")
 
 # Site settings
 SITE_NAME = "HuggingHugh"
