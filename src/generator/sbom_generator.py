@@ -10,16 +10,74 @@ import json
 import logging
 import subprocess
 import tempfile
+import threading
+import time
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Optional
 
 import requests
 
+from config.settings import CACHE_DIR
+
 logger = logging.getLogger(__name__)
 
-# Cache for PyPI package versions (to avoid repeated API calls)
-_pypi_version_cache = {}
+# Persistent PyPI version cache with 24h TTL
+# Format: {package_name: {"version": str|None, "timestamp": float}}
+_pypi_version_cache: dict[str, dict] = {}
+_pypi_cache_lock = threading.Lock()
+_PYPI_CACHE_FILE = CACHE_DIR / "pypi_versions.json"
+_PYPI_CACHE_TTL = 86400  # 24 hours in seconds
+
+
+def load_pypi_cache() -> int:
+    """Load PyPI version cache from disk. Returns number of entries loaded."""
+    global _pypi_version_cache
+    try:
+        if _PYPI_CACHE_FILE.exists():
+            data = json.loads(_PYPI_CACHE_FILE.read_text())
+            now = time.time()
+            # Only load entries that haven't expired
+            valid = {
+                k: v
+                for k, v in data.items()
+                if isinstance(v, dict) and now - v.get("timestamp", 0) < _PYPI_CACHE_TTL
+            }
+            with _pypi_cache_lock:
+                _pypi_version_cache = valid
+            logger.info(
+                f"PyPI cache: {len(valid)} entries loaded ({len(data) - len(valid)} expired)"
+            )
+            return len(valid)
+    except Exception as e:
+        logger.warning(f"Failed to load PyPI cache: {e}")
+    return 0
+
+
+def save_pypi_cache() -> int:
+    """Save PyPI version cache to disk. Returns number of entries saved."""
+    try:
+        CACHE_DIR.mkdir(parents=True, exist_ok=True)
+        with _pypi_cache_lock:
+            snapshot = dict(_pypi_version_cache)
+        _PYPI_CACHE_FILE.write_text(json.dumps(snapshot, indent=2))
+        logger.info(f"PyPI cache: {len(snapshot)} entries saved to {_PYPI_CACHE_FILE}")
+        return len(snapshot)
+    except Exception as e:
+        logger.warning(f"Failed to save PyPI cache: {e}")
+        return 0
+
+
+def get_pypi_cache_stats() -> dict:
+    """Return cache statistics."""
+    with _pypi_cache_lock:
+        total = len(_pypi_version_cache)
+        now = time.time()
+        fresh = sum(
+            1 for v in _pypi_version_cache.values() if now - v.get("timestamp", 0) < _PYPI_CACHE_TTL
+        )
+    return {"total": total, "fresh": fresh, "expired": total - fresh}
+
 
 # Known minimum safe versions for common ML packages (based on CVE data)
 # Format: package_name -> (min_safe_version, cve_id, severity, description)
@@ -463,29 +521,38 @@ def get_pypi_version(package_name: str) -> Optional[str]:
     """
     Fetch the latest version of a package from PyPI.
 
+    Uses a persistent disk-backed cache with 24h TTL.
+    Thread-safe: lock protects dict access, HTTP calls happen outside the lock.
+
     Args:
         package_name: Name of the PyPI package
 
     Returns:
         Latest version string or None if not found
     """
-    # Check cache first
-    if package_name in _pypi_version_cache:
-        return _pypi_version_cache[package_name]
+    now = time.time()
 
+    # Check cache first (lock only for dict read)
+    with _pypi_cache_lock:
+        entry = _pypi_version_cache.get(package_name)
+        if entry and now - entry.get("timestamp", 0) < _PYPI_CACHE_TTL:
+            return entry.get("version")
+
+    # Cache miss or expired -- fetch from PyPI (outside lock)
+    version = None
     try:
-        # Normalize package name (PyPI uses lowercase with hyphens)
         normalized = package_name.lower().replace("_", "-")
         resp = requests.get(f"https://pypi.org/pypi/{normalized}/json", timeout=10)
         if resp.status_code == 200:
             version = resp.json().get("info", {}).get("version")
-            _pypi_version_cache[package_name] = version
-            return version
     except Exception as e:
         logger.debug(f"Failed to fetch PyPI version for {package_name}: {e}")
 
-    _pypi_version_cache[package_name] = None
-    return None
+    # Store in cache (lock only for dict write)
+    with _pypi_cache_lock:
+        _pypi_version_cache[package_name] = {"version": version, "timestamp": now}
+
+    return version
 
 
 class SBOMGenerator:

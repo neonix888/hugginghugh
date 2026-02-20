@@ -117,5 +117,5 @@ SITE_URL = "https://hugginghugh.etcbin.io"
 BUYMEACOFFEE_URL = "https://buymeacoffee.com/hugginghugh"  # Update with real URL
 
 # Refresh settings
-SCAN_SCHEDULE_HOUR = 2  # 02:00 UTC
+SCAN_SCHEDULE_HOUR = 23  # 23:00 UTC
 SCAN_SCHEDULE_MINUTE = 0

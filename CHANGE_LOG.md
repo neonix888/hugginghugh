@@ -6,6 +6,25 @@ Concise changelog for all project changes. Format: `[date] - [type] - [descripti
 
 ---
 
+## 2026-02-20
+
+- `feat` - Added persistent PyPI version cache (data/cache/pypi_versions.json) with 24h TTL to sbom_generator.py
+- `feat` - Added vulnerability scan dedup cache keyed by requirements hash to vuln_scanner.py
+- `feat` - Added parallel Grype + OSV-Scanner execution via ThreadPoolExecutor on cache miss
+- `fix` - Fixed broken cron: removed systemd-run wrapper (no D-Bus session in cron), added --workers 4
+- `config` - Changed default --workers from 8 to 4 in run_daily_scan.py (prevents OOM on 8GB RAM)
+- `config` - Updated cron schedule from 02:00 UTC to 23:00 UTC in setup_cron.sh
+- `feat` - Added cache lifecycle to run_daily_scan.py (load/save PyPI cache, log dedup stats)
+- `fix` - Updated "Data refreshed daily at 02:00 UTC" to 23:00 UTC in base.html, badges.html, settings.py
+
+---
+
+## 2026-01-10
+
+- `feat` - Added client-side search to leaderboard page (real-time filtering by model name)
+
+---
+
 ## 2025-12-30
 
 - `fix` - Fixed cron job failing due to syft/grype not in PATH (broken since Dec 26)

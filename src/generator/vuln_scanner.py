@@ -6,11 +6,14 @@ OSV-Scanner provides better coverage for Python packages.
 Also includes security recommendations based on known CVEs.
 """
 
+import hashlib
 import json
 import logging
 import subprocess
 import tempfile
+import threading
 from collections import defaultdict
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from typing import Any, Optional
 
@@ -40,6 +43,12 @@ class VulnerabilityScanner:
         self.osv_scanner_path = osv_scanner_path
         self.output_dir = Path(output_dir) if output_dir else Path(".")
         self.output_dir.mkdir(parents=True, exist_ok=True)
+
+        # Dedup cache: keyed by SHA256 of sorted requirements
+        self._scan_cache: dict[str, dict] = {}
+        self._scan_cache_lock = threading.Lock()
+        self._scan_cache_hits = 0
+        self._scan_cache_misses = 0
 
         # Verify tools are available
         self._verify_grype()
@@ -83,6 +92,21 @@ class VulnerabilityScanner:
             logger.warning("OSV-Scanner version check timed out")
             self.osv_scanner_path = None
 
+    @staticmethod
+    def _requirements_cache_key(requirements: list[str]) -> str:
+        """Compute SHA256 hash of sorted requirements for dedup cache key."""
+        normalized = "\n".join(sorted(requirements))
+        return hashlib.sha256(normalized.encode()).hexdigest()
+
+    def get_scan_cache_stats(self) -> dict:
+        """Return scan dedup cache statistics."""
+        with self._scan_cache_lock:
+            return {
+                "unique_sets": len(self._scan_cache),
+                "hits": self._scan_cache_hits,
+                "misses": self._scan_cache_misses,
+            }
+
     def scan_sbom(
         self,
         sbom: dict,
@@ -91,6 +115,10 @@ class VulnerabilityScanner:
     ) -> dict:
         """
         Scan an SBOM for vulnerabilities using both Grype and OSV-Scanner.
+
+        Uses a dedup cache keyed by requirements hash -- models with identical
+        dependencies return cached results instantly.  On cache miss, Grype and
+        OSV-Scanner run in parallel via a small thread pool.
 
         Args:
             sbom: SBOM dictionary
@@ -102,24 +130,44 @@ class VulnerabilityScanner:
         """
         logger.info(f"Scanning for vulnerabilities: {model_id}")
 
-        # Write SBOM to temp file
+        # Write SBOM to temp file (always, for per-model record)
         safe_name = model_id.replace("/", "_")
         sbom_file = self.output_dir / f"{safe_name}_sbom.json"
         sbom_file.write_text(json.dumps(sbom, indent=2))
 
-        # Run Grype scan on SBOM
-        grype_results = self._scan_with_grype(sbom_file)
+        # --- Dedup cache check ---
+        cache_key = None
+        if requirements:
+            cache_key = self._requirements_cache_key(requirements)
+            with self._scan_cache_lock:
+                cached = self._scan_cache.get(cache_key)
+                if cached is not None:
+                    self._scan_cache_hits += 1
+                    logger.info(f"  Scan cache HIT for {model_id} (key {cache_key[:12]}...)")
+                    # Still write per-model vuln file
+                    vuln_file = self.output_dir / f"{safe_name}_vulns.json"
+                    vuln_file.write_text(json.dumps(cached, indent=2))
+                    return cached
 
-        # Run OSV-Scanner on requirements if available
-        osv_results = self._empty_result()
-        if self.osv_scanner_path and requirements:
-            osv_results = self._scan_with_osv(requirements, safe_name)
+        # --- Cache miss: run scanners in parallel ---
+        with self._scan_cache_lock:
+            self._scan_cache_misses += 1
+        logger.info(f"  Scan cache MISS for {model_id} -- running scanners")
+
+        with ThreadPoolExecutor(max_workers=2) as pool:
+            grype_future = pool.submit(self._scan_with_grype, sbom_file)
+
+            osv_future = None
+            if self.osv_scanner_path and requirements:
+                osv_future = pool.submit(self._scan_with_osv, requirements, safe_name)
+
+            grype_results = grype_future.result()
+            osv_results = osv_future.result() if osv_future else self._empty_result()
 
         # Merge results (OSV-Scanner typically finds more Python vulns)
         merged = self._merge_results(grype_results, osv_results)
 
         # Add security recommendations based on known minimum versions
-        # Always include known minimum versions for common packages as guidance
         merged["minimum_safe_versions"] = {
             pkg: {
                 "min_version": min_ver,
@@ -136,7 +184,6 @@ class VulnerabilityScanner:
             recommendations = get_security_recommendations(requirements)
             merged["security_recommendations"] = recommendations
 
-            # Log recommendations
             if recommendations:
                 logger.info(
                     f"  Security recommendations: {len(recommendations)} packages need attention"
@@ -146,7 +193,12 @@ class VulnerabilityScanner:
                         f"    {rec['package']}: upgrade to >= {rec['minimum_safe_version']} ({rec['cve_id']})"
                     )
 
-        # Save results
+        # Store in dedup cache
+        if cache_key:
+            with self._scan_cache_lock:
+                self._scan_cache[cache_key] = merged
+
+        # Save per-model results
         vuln_file = self.output_dir / f"{safe_name}_vulns.json"
         vuln_file.write_text(json.dumps(merged, indent=2))
 

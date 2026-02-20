@@ -42,6 +42,7 @@ sys.path.insert(0, str(PROJECT_ROOT))
 from config.settings import GRYPE_PATH, SYFT_PATH
 from src.database import LeaderboardDB
 from src.generator import LicenseAnalyzer, SBOMGenerator, TrustScorer, VulnerabilityScanner
+from src.generator.sbom_generator import get_pypi_cache_stats, load_pypi_cache, save_pypi_cache
 from src.reporter import BadgeGenerator, BlogGenerator, DashboardGenerator, HTMLReportGenerator
 from src.scanner import HuggingFaceClient, ModelFetcher, get_top_models
 
@@ -210,7 +211,7 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  %(prog)s                      # Scan 1000 models with 8 workers, no deploy
+  %(prog)s                      # Scan 1000 models with 4 workers, no deploy
   %(prog)s --limit 10           # Scan 10 models for testing, no deploy
   %(prog)s --deploy             # Scan 1000 models and deploy to production
   %(prog)s --deploy --force     # Force re-scan all and deploy
@@ -222,7 +223,7 @@ SAFEGUARDS:
   - Use --min-models to override (not recommended)
 
 PERFORMANCE:
-  - Default 8 workers process ~8 models concurrently
+  - Default 4 workers process ~4 models concurrently
   - Increase --workers for faster scans on multi-core systems
   - Decrease --workers if hitting rate limits or memory issues
         """,
@@ -260,7 +261,7 @@ PERFORMANCE:
         help="Show what tweets would be posted without actually posting",
     )
     parser.add_argument(
-        "--workers", "-w", type=int, default=8, help="Number of parallel workers (default: 8)"
+        "--workers", "-w", type=int, default=4, help="Number of parallel workers (default: 4)"
     )
     parser.add_argument(
         "--dev",
@@ -345,6 +346,11 @@ PERFORMANCE:
     except Exception as e:
         logger.warning(f"Could not connect to database for history: {e}")
         history_db = None
+
+    # Load persistent PyPI version cache from disk
+    logger.info("Loading PyPI version cache...")
+    pypi_loaded = load_pypi_cache()
+    logger.info(f"PyPI cache: {pypi_loaded} entries loaded from disk")
 
     stats.record("1. Initialization", phase_timer.stop())
 
@@ -465,6 +471,18 @@ PERFORMANCE:
                 stats.record_model(result["model_id"], result["elapsed"])
 
     stats.record("3. Process All Models", phase_timer.stop())
+
+    # Save PyPI cache to disk and log dedup stats
+    logger.info("Saving PyPI version cache...")
+    save_pypi_cache()
+    pypi_stats = get_pypi_cache_stats()
+    logger.info(f"PyPI cache stats: {pypi_stats['total']} entries ({pypi_stats['fresh']} fresh)")
+
+    scan_stats = vuln_scanner.get_scan_cache_stats()
+    logger.info(
+        f"Scan dedup stats: {scan_stats['unique_sets']} unique dep sets, "
+        f"{scan_stats['hits']} cache hits, {scan_stats['misses']} cache misses"
+    )
 
     # Step 3: Generate dashboard
     phase_timer = Timer("Generate Dashboard", logger).start()

@@ -1,0 +1,290 @@
+{
+  "requests": {
+    "version": "2.32.5",
+    "timestamp": 1771616806.2010908
+  },
+  "accelerate": {
+    "version": "1.12.0",
+    "timestamp": 1771616907.8448074
+  },
+  "huggingface-hub": {
+    "version": "1.4.1",
+    "timestamp": 1771616907.8430028
+  },
+  "filelock": {
+    "version": "3.24.3",
+    "timestamp": 1771616907.9772413
+  },
+  "coremltools": {
+    "version": "9.0",
+    "timestamp": 1771616907.9719694
+  },
+  "numpy": {
+    "version": "2.4.2",
+    "timestamp": 1771616908.0734665
+  },
+  "onnx": {
+    "version": "1.20.1",
+    "timestamp": 1771616908.2577677
+  },
+  "packaging": {
+    "version": "26.0",
+    "timestamp": 1771616908.2803125
+  },
+  "onnxruntime": {
+    "version": "1.24.2",
+    "timestamp": 1771616908.427508
+  },
+  "pillow": {
+    "version": "12.1.1",
+    "timestamp": 1771616908.3698034
+  },
+  "protobuf": {
+    "version": "6.33.5",
+    "timestamp": 1771616908.507642
+  },
+  "pyyaml": {
+    "version": "6.0.3",
+    "timestamp": 1771616908.58518
+  },
+  "openvino": {
+    "version": "2025.4.1",
+    "timestamp": 1771616908.465147
+  },
+  "regex": {
+    "version": "2026.2.19",
+    "timestamp": 1771616908.629748
+  },
+  "optimum-intel": {
+    "version": "1.27.0",
+    "timestamp": 1771616908.6037512
+  },
+  "safetensors": {
+    "version": "0.7.0",
+    "timestamp": 1771616908.8513055
+  },
+  "scikit-learn": {
+    "version": "1.8.0",
+    "timestamp": 1771616908.9891055
+  },
+  "sentencepiece": {
+    "version": "0.2.1",
+    "timestamp": 1771616909.0409644
+  },
+  "scipy": {
+    "version": "1.17.0",
+    "timestamp": 1771616909.08122
+  },
+  "tokenizers": {
+    "version": "0.22.2",
+    "timestamp": 1771616909.1575656
+  },
+  "sentence-transformers": {
+    "version": "5.2.3",
+    "timestamp": 1771616909.2132103
+  },
+  "torch": {
+    "version": "2.10.0",
+    "timestamp": 1771616909.317913
+  },
+  "tqdm": {
+    "version": "4.67.3",
+    "timestamp": 1771616909.326802
+  },
+  "transformers": {
+    "version": "5.2.0",
+    "timestamp": 1771616909.417835
+  },
+  "torchvision": {
+    "version": "0.25.0",
+    "timestamp": 1771616909.3690317
+  },
+  "timm": {
+    "version": "1.0.24",
+    "timestamp": 1771617012.6046324
+  },
+  "pyannote-audio": {
+    "version": "4.0.4",
+    "timestamp": 1771617039.6901097
+  },
+  "torchaudio": {
+    "version": "2.10.0",
+    "timestamp": 1771617054.8447797
+  },
+  "chronos-forecasting": {
+    "version": "2.2.2",
+    "timestamp": 1771617060.9948764
+  },
+  "pandas": {
+    "version": "3.0.1",
+    "timestamp": 1771617061.118025
+  },
+  "librosa": {
+    "version": "0.11.0",
+    "timestamp": 1771617081.1897202
+  },
+  "soundfile": {
+    "version": "0.13.1",
+    "timestamp": 1771617081.325863
+  },
+  "opencv-python": {
+    "version": "4.13.0.92",
+    "timestamp": 1771617083.2539442
+  },
+  "ultralytics": {
+    "version": "8.4.14",
+    "timestamp": 1771617083.3182664
+  },
+  "transformers.js": {
+    "version": null,
+    "timestamp": 1771617094.8025048
+  },
+  "tensorflow": {
+    "version": "2.20.0",
+    "timestamp": 1771617113.6500607
+  },
+  "coqui": {
+    "version": "0.0.10",
+    "timestamp": 1771617141.4409397
+  },
+  "diffusion-single-file": {
+    "version": null,
+    "timestamp": 1771617144.9110668
+  },
+  "whisperkit": {
+    "version": null,
+    "timestamp": 1771617251.667614
+  },
+  "UniDepth": {
+    "version": null,
+    "timestamp": 1771617255.1335642
+  },
+  "speechbrain": {
+    "version": "1.0.3",
+    "timestamp": 1771617293.4729052
+  },
+  "mlx": {
+    "version": "0.30.6",
+    "timestamp": 1771617308.5342226
+  },
+  "seqeval": {
+    "version": "1.2.2",
+    "timestamp": 1771617315.7683246
+  },
+  "open_clip": {
+    "version": null,
+    "timestamp": 1771617338.3799198
+  },
+  "granite-tsfm": {
+    "version": "0.3.3",
+    "timestamp": 1771617354.826553
+  },
+  "sacremoses": {
+    "version": "0.1.1",
+    "timestamp": 1771617356.5608432
+  },
+  "RAGatouille": {
+    "version": "0.0.9.post2",
+    "timestamp": 1771617357.0403337
+  },
+  "diffusers": {
+    "version": "0.36.0",
+    "timestamp": 1771617372.9244702
+  },
+  "trellis": {
+    "version": "0.7a2",
+    "timestamp": 1771617413.852089
+  },
+  "PyTorch": {
+    "version": "1.0.2",
+    "timestamp": 1771617451.7803013
+  },
+  "transformer-engine": {
+    "version": "2.11.0",
+    "timestamp": 1771617486.2802296
+  },
+  "llama-cpp-python": {
+    "version": "0.3.16",
+    "timestamp": 1771617504.212792
+  },
+  "UniK3D": {
+    "version": null,
+    "timestamp": 1771617524.8309991
+  },
+  "peft": {
+    "version": "0.18.1",
+    "timestamp": 1771617548.9956534
+  },
+  "ray": {
+    "version": "2.54.0",
+    "timestamp": 1771617626.5811481
+  },
+  "vllm": {
+    "version": "0.15.1",
+    "timestamp": 1771617626.9323742
+  },
+  "xformers": {
+    "version": "0.0.34",
+    "timestamp": 1771617627.0111084
+  },
+  "autoawq": {
+    "version": "0.2.9",
+    "timestamp": 1771617635.2676919
+  },
+  "birefnet": {
+    "version": null,
+    "timestamp": 1771617691.8311393
+  },
+  "hydra-core": {
+    "version": "1.3.2",
+    "timestamp": 1771617725.7606378
+  },
+  "nemo": {
+    "version": "7.3.7",
+    "timestamp": 1771617725.9730551
+  },
+  "pytorch-lightning": {
+    "version": "2.6.1",
+    "timestamp": 1771617726.1222465
+  },
+  "auto-gptq": {
+    "version": "0.7.1",
+    "timestamp": 1771617773.7996483
+  },
+  "optimum": {
+    "version": "2.1.0",
+    "timestamp": 1771617773.8539784
+  },
+  "pysentimiento": {
+    "version": "0.7.3",
+    "timestamp": 1771617776.2364528
+  },
+  "chatterbox": {
+    "version": "0.0.0",
+    "timestamp": 1771617777.804339
+  },
+  "tiktoken": {
+    "version": "0.12.0",
+    "timestamp": 1771617867.668243
+  },
+  "f5-tts": {
+    "version": "1.1.16",
+    "timestamp": 1771617904.3767028
+  },
+  "PaddleOCR": {
+    "version": "3.4.0",
+    "timestamp": 1771617960.5641346
+  },
+  "flair": {
+    "version": "0.15.1",
+    "timestamp": 1771617962.6129236
+  },
+  "gensim": {
+    "version": "4.4.0",
+    "timestamp": 1771617962.722133
+  },
+  "model2vec": {
+    "version": "0.7.0",
+    "timestamp": 1771617990.0154686
+  }
+}
