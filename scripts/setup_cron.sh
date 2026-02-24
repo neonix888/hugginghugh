@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 # HuggingHugh Cron Setup
-# Sets up daily scanning at 23:00 UTC and news digest at 06:00 UTC
+# Sets up daily scanning at 08:00 UTC (midnight PST) and news digest at 14:00 UTC (06:00 PST)
 #
 
 set -e
@@ -35,13 +35,13 @@ chmod +x "$SCAN_SCRIPT"
 chmod +x "$NEWS_SCRIPT"
 
 # Cron job entries
-# 1. Model scan: runs at 23:00 UTC daily (500 models, 4 workers, deploy to production)
+# 1. Model scan: runs at 08:00 UTC (midnight PST) daily
 #    NOTE: systemd-run --user --scope was removed -- it requires a D-Bus session
 #    which is unavailable in cron.  Memory is managed via --workers 4 instead.
-SCAN_CRON="0 23 * * * $VENV_PYTHON $SCAN_SCRIPT --deploy --limit 500 --workers 4 >> $SCAN_LOG 2>&1"
+SCAN_CRON="0 8 * * * $VENV_PYTHON $SCAN_SCRIPT --deploy --limit 500 --workers 4 >> $SCAN_LOG 2>&1"
 
-# 2. News digest: runs at 06:00 UTC daily (after scan completes)
-NEWS_CRON="0 6 * * * $VENV_PYTHON $NEWS_SCRIPT >> $NEWS_LOG 2>&1"
+# 2. News digest: runs at 14:00 UTC (06:00 PST) daily
+NEWS_CRON="0 14 * * * $VENV_PYTHON $NEWS_SCRIPT >> $NEWS_LOG 2>&1"
 
 # Remove existing hugginghugh entries
 if crontab -l 2>/dev/null | grep -q "hugginghugh\|HuggingHugh"; then
@@ -52,19 +52,19 @@ fi
 # Add new cron jobs
 (crontab -l 2>/dev/null || echo "") | {
     cat
-    echo "# HuggingHugh daily model scan (23:00 UTC)"
+    echo "# HuggingHugh daily model scan (08:00 UTC / midnight PST)"
     echo "$SCAN_CRON"
-    echo "# HuggingHugh daily news digest (06:00 UTC)"
+    echo "# HuggingHugh daily news digest (14:00 UTC / 06:00 PST)"
     echo "$NEWS_CRON"
 } | crontab -
 
 echo ""
 echo "Cron jobs installed:"
 echo ""
-echo "1. Model Scan (23:00 UTC):"
+echo "1. Model Scan (08:00 UTC / midnight PST):"
 echo "   $SCAN_CRON"
 echo ""
-echo "2. News Digest (06:00 UTC):"
+echo "2. News Digest (14:00 UTC / 06:00 PST):"
 echo "   $NEWS_CRON"
 echo ""
 echo "Current crontab:"
