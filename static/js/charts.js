@@ -6,20 +6,20 @@
 
 // Color palette matching CSS variables
 const COLORS = {
-    primary: '#2563eb',
-    primaryLight: 'rgba(37, 99, 235, 0.1)',
-    success: '#10b981',
-    successLight: 'rgba(16, 185, 129, 0.1)',
-    warning: '#f59e0b',
-    warningLight: 'rgba(245, 158, 11, 0.1)',
-    danger: '#ef4444',
-    dangerLight: 'rgba(239, 68, 68, 0.1)',
-    medium: '#f97316',
-    mediumLight: 'rgba(249, 115, 22, 0.1)',
-    text: '#374151',
-    textMuted: '#6b7280',
-    border: '#e5e7eb',
-    background: '#f9fafb',
+    primary: '#00ff41',
+    primaryLight: 'rgba(0, 255, 65, 0.15)',
+    success: '#00ff41',
+    successLight: 'rgba(0, 255, 65, 0.15)',
+    warning: '#ffb000',
+    warningLight: 'rgba(255, 176, 0, 0.15)',
+    danger: '#ff3333',
+    dangerLight: 'rgba(255, 51, 51, 0.15)',
+    medium: '#ff8800',
+    mediumLight: 'rgba(255, 136, 0, 0.15)',
+    text: '#88cc88',
+    textMuted: '#4a6a4a',
+    border: '#1a3a1a',
+    background: '#111111',
 };
 
 // Common chart options
@@ -35,16 +35,15 @@ const commonOptions = {
             display: false,
         },
         tooltip: {
-            backgroundColor: 'rgba(255, 255, 255, 0.95)',
-            titleColor: COLORS.text,
-            bodyColor: COLORS.text,
-            borderColor: COLORS.border,
+            backgroundColor: 'rgba(10, 10, 10, 0.95)',
+            titleColor: '#00ff41',
+            bodyColor: '#88cc88',
+            borderColor: '#1a3a1a',
             borderWidth: 1,
-            cornerRadius: 8,
+            cornerRadius: 0,
             padding: 12,
-            titleFont: {
-                weight: 'bold',
-            },
+            titleFont: { family: "'JetBrains Mono', monospace", weight: 'bold' },
+            bodyFont: { family: "'JetBrains Mono', monospace" },
         },
     },
     scales: {
@@ -54,6 +53,7 @@ const commonOptions = {
             },
             ticks: {
                 color: COLORS.textMuted,
+                font: { family: "'JetBrains Mono', monospace", size: 10 },
                 maxRotation: 0,
                 autoSkip: true,
                 maxTicksLimit: 7,
@@ -66,6 +66,7 @@ const commonOptions = {
             },
             ticks: {
                 color: COLORS.textMuted,
+                font: { family: "'JetBrains Mono', monospace", size: 10 },
             },
         },
     },
@@ -87,8 +88,8 @@ function initScoreChart(canvasId, historyData, timeRange = 30) {
     // Calculate gradient color based on score trend
     const ctx = canvas.getContext('2d');
     const gradient = ctx.createLinearGradient(0, 0, 0, 200);
-    gradient.addColorStop(0, COLORS.primaryLight);
-    gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+    gradient.addColorStop(0, 'rgba(0, 255, 65, 0.2)');
+    gradient.addColorStop(1, 'rgba(0, 255, 65, 0)');
 
     return new Chart(canvas, {
         type: 'line',
@@ -104,7 +105,7 @@ function initScoreChart(canvasId, historyData, timeRange = 30) {
                 pointRadius: 0,
                 pointHoverRadius: 6,
                 pointHoverBackgroundColor: COLORS.primary,
-                pointHoverBorderColor: '#fff',
+                pointHoverBorderColor: '#0a0a0a',
                 pointHoverBorderWidth: 2,
             }],
         },
@@ -224,8 +225,8 @@ function initRankChart(canvasId, historyData, timeRange = 30) {
 
     const ctx = canvas.getContext('2d');
     const gradient = ctx.createLinearGradient(0, 0, 0, 200);
-    gradient.addColorStop(0, COLORS.successLight);
-    gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+    gradient.addColorStop(0, 'rgba(0, 255, 65, 0.2)');
+    gradient.addColorStop(1, 'rgba(0, 255, 65, 0)');
 
     return new Chart(canvas, {
         type: 'line',
@@ -241,7 +242,7 @@ function initRankChart(canvasId, historyData, timeRange = 30) {
                 pointRadius: 0,
                 pointHoverRadius: 6,
                 pointHoverBackgroundColor: COLORS.success,
-                pointHoverBorderColor: '#fff',
+                pointHoverBorderColor: '#0a0a0a',
                 pointHoverBorderWidth: 2,
             }],
         },
