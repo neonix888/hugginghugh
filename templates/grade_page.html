@@ -47,7 +47,7 @@
                     <span class="tag tag-primary">{{ model.pipeline_tag }}</span>
                     {% endif %}
                     {% if model.has_safetensors %}
-                    <span class="tag" style="background: #dcfce7; color: #166534;">✓ SafeTensors</span>
+                    <span class="tag" style="color: var(--score-excellent); border-color: var(--score-excellent);">[safe] SafeTensors</span>
                     {% endif %}
                     {% if model.library_name %}
                     <span class="tag">{{ model.library_name }}</span>
