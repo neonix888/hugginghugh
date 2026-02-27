@@ -6,6 +6,19 @@ Concise changelog for all project changes. Format: `[date] - [type] - [descripti
 
 ---
 
+## 2026-02-27
+
+- `feat` - Complete site redesign: CRT terminal aesthetic with phosphor green (#00ff41) on black
+- `style` - Full CSS rewrite: JetBrains Mono monospace, no gradients/shadows/animations
+- `style` - All SVG icons replaced with ASCII text indicators ([PASS], [FAIL], [WARN])
+- `style` - Nutrition label restyled as terminal panel with inverted header
+- `style` - Leaderboard: removed podium/medals, plain ranked table
+- `style` - Chart.js re-themed: green lines on dark background
+- `style` - Header: prompt-style logo (hugginghugh>_) with bracket navigation
+- `style` - CRT scanline overlay effect
+
+---
+
 ## 2026-02-20
 
 - `feat` - Added persistent PyPI version cache (data/cache/pypi_versions.json) with 24h TTL to sbom_generator.py
