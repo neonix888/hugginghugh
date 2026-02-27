@@ -55,7 +55,9 @@
     </script>
     {% block structured_data %}{% endblock %}
 
-    <link rel="stylesheet" href="{{ base_url }}/static/css/style.css?v=12">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="{{ base_url }}/static/css/style.css?v=13">
     {% block head %}{% endblock %}
 
     <!-- Chart.js (loaded conditionally for pages with charts) -->
@@ -71,18 +73,15 @@
         <div class="container">
             <div class="header-content">
                 <a href="{{ base_url }}/" class="logo">
-                    <span class="logo-icon icon icon-xl"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></span>
-                    <span class="logo-text">HuggingHugh</span>
+                    <span class="logo-text">hugginghugh</span>
                 </a>
                 <nav class="main-nav">
-                    <a href="{{ base_url }}/">Dashboard</a>
-                    <a href="{{ base_url }}/leaderboard.html">Leaderboard</a>
-                    <a href="{{ base_url }}/blog/">Blog</a>
-                    <a href="{{ base_url }}/badges.html">Badges</a>
-                    <a href="{{ base_url }}/about.html">About</a>
-                    <a href="https://buymeacoffee.com/hugginghugh" target="_blank" class="btn btn-coffee">
-                        <span class="icon"><svg viewBox="0 0 24 24"><path d="M17 8h1a4 4 0 1 1 0 8h-1"/><path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V8z"/><line x1="6" y1="2" x2="6" y2="4"/><line x1="10" y1="2" x2="10" y2="4"/><line x1="14" y1="2" x2="14" y2="4"/></svg></span> Buy me a coffee
-                    </a>
+                    <a href="{{ base_url }}/">dashboard</a>
+                    <a href="{{ base_url }}/leaderboard.html">leaderboard</a>
+                    <a href="{{ base_url }}/blog/">blog</a>
+                    <a href="{{ base_url }}/badges.html">badges</a>
+                    <a href="{{ base_url }}/about.html">about</a>
+                    <a href="https://buymeacoffee.com/hugginghugh" target="_blank" class="btn btn-coffee">support</a>
                 </nav>
             </div>
         </div>
@@ -117,7 +116,7 @@
                         Enterprise security audits cost thousands. HuggingHugh is free because AI security should be accessible. No VC funding. No sponsors. Just one developer and cà phê sữa đá.
                     </p>
                     <a href="https://buymeacoffee.com/hugginghugh" target="_blank" class="btn btn-support">
-                        <span class="icon"><svg viewBox="0 0 24 24"><path d="M17 8h1a4 4 0 1 1 0 8h-1"/><path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V8z"/><line x1="6" y1="2" x2="6" y2="4"/><line x1="10" y1="2" x2="10" y2="4"/><line x1="14" y1="2" x2="14" y2="4"/></svg></span> Keep it running
+                        $ support --keep-running
                     </a>
                 </div>
             </div>
@@ -182,8 +181,8 @@
                 <div class="footer-section">
                     <h4>Support</h4>
                     <p>This is a free community resource.</p>
-                    <a href="https://buymeacoffee.com/hugginghugh" target="_blank" class="btn btn-coffee-small">
-                        <span class="icon"><svg viewBox="0 0 24 24"><path d="M17 8h1a4 4 0 1 1 0 8h-1"/><path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V8z"/><line x1="6" y1="2" x2="6" y2="4"/><line x1="10" y1="2" x2="10" y2="4"/><line x1="14" y1="2" x2="14" y2="4"/></svg></span> Support the project
+                    <a href="https://buymeacoffee.com/hugginghugh" target="_blank" class="btn-coffee-small">
+                        [support the project]
                     </a>
                 </div>
             </div>
