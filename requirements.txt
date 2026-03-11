@@ -60,3 +60,15 @@ python-json-logger>=2.0.7
 # Database
 psycopg2-binary>=2.9.9
 python-dotenv>=1.0.0
+
+# Security: pinned minimum versions for transitive dependencies
+urllib3>=2.6.3  # CVE fix: GHSA-2xpw-w6gg-jr37, GHSA-38jv-5279-wg99
+cryptography>=46.0.4
+torch>=2.10.0
+transformers>=5.3.0
+accelerate>=1.13.0
+nltk>=3.9.3  # CVE-2026-0848, CVE-2025-14009 (CVSS 10.0) fixed in 3.9.3
+authlib>=1.6.6
+filelock>=3.20.3
+marshmallow>=4.1.2
+virtualenv>=20.36.1
