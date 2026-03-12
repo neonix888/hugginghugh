@@ -40,6 +40,7 @@ PROJECT_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
 from config.settings import GRYPE_PATH, SYFT_PATH
+from scripts.cleanup import check_disk_space, run_full_cleanup
 from src.database import LeaderboardDB
 from src.generator import LicenseAnalyzer, SBOMGenerator, TrustScorer, VulnerabilityScanner
 from src.generator.sbom_generator import get_pypi_cache_stats, load_pypi_cache, save_pypi_cache
@@ -141,29 +142,36 @@ class TimingStats:
 
 
 def setup_logging(verbose: bool = False):
-    """Configure logging."""
+    """Configure logging.
+
+    When running via cron (stdout redirected to cron.log), skip the per-run
+    file handler to avoid writing duplicate logs that eat disk space.
+    """
     level = logging.DEBUG if verbose else logging.INFO
     log_format = "%(asctime)s [%(levelname)s] %(name)s: %(message)s"
 
-    # Console handler
+    # Console handler (goes to cron.log when running via cron)
     console_handler = logging.StreamHandler()
     console_handler.setLevel(level)
     console_handler.setFormatter(logging.Formatter(log_format))
-
-    # File handler
-    log_dir = PROJECT_ROOT / "logs"
-    log_dir.mkdir(exist_ok=True)
-    file_handler = logging.FileHandler(
-        log_dir / f"scan_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log"
-    )
-    file_handler.setLevel(logging.DEBUG)
-    file_handler.setFormatter(logging.Formatter(log_format))
 
     # Root logger
     root_logger = logging.getLogger()
     root_logger.setLevel(logging.DEBUG)
     root_logger.addHandler(console_handler)
-    root_logger.addHandler(file_handler)
+
+    # Only create a per-run log file when running interactively (not via cron).
+    # Cron already redirects stdout/stderr to logs/cron.log.
+    is_interactive = sys.stdout.isatty()
+    if is_interactive:
+        log_dir = PROJECT_ROOT / "logs"
+        log_dir.mkdir(exist_ok=True)
+        file_handler = logging.FileHandler(
+            log_dir / f"scan_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log"
+        )
+        file_handler.setLevel(logging.DEBUG)
+        file_handler.setFormatter(logging.Formatter(log_format))
+        root_logger.addHandler(file_handler)
 
     return logging.getLogger(__name__)
 
@@ -279,6 +287,18 @@ PERFORMANCE:
     logger.info("=" * 60)
     logger.info("HuggingHugh Daily Scanner Starting")
     logger.info("=" * 60)
+
+    # Pre-flight: disk space check
+    disk = check_disk_space("/")
+    logger.info(f"Disk usage: {disk['percent']}% ({disk['free_gb']} GB free)")
+    if disk["status"] == "critical":
+        logger.error(
+            f"SCAN ABORTED: Disk usage {disk['percent']}% exceeds 90% threshold. "
+            f"Free up space before running. Try: python scripts/cleanup.py --execute"
+        )
+        return 1
+    elif disk["status"] == "warning":
+        logger.warning(f"Disk usage {disk['percent']}% exceeds 85% - cleanup will run after scan")
 
     # Initialize timing
     stats = TimingStats()
@@ -631,6 +651,7 @@ PERFORMANCE:
             logger.warning(f"  Failed to run Twitter bot: {e}")
 
     # Step 6: Deploy to production (only with --deploy flag)
+    deploy_failed = False
     if args.deploy:
         phase_timer = Timer("Deploy to Production", logger).start()
         logger.info("\n" + "=" * 60)
@@ -642,53 +663,82 @@ PERFORMANCE:
             logger.error(f"DEPLOY BLOCKED: Only {successful} models scanned successfully")
             logger.error(f"Minimum required: {args.min_models}")
             logger.error(f"Use --min-models {successful} to override (NOT RECOMMENDED)")
-            return 1
+            deploy_failed = True
 
         # SAFEGUARD 2: Verify output directory has required files
-        if not verify_deployment_ready(output_dir, args.min_models, logger):
+        elif not verify_deployment_ready(output_dir, args.min_models, logger):
             logger.error("DEPLOYMENT ABORTED: Pre-deployment checks failed")
             logger.error("Fix the issues above or use --min-models to override")
-            return 1
+            deploy_failed = True
 
-        if not web_root.exists():
+        elif not web_root.exists():
             logger.error(f"DEPLOYMENT ABORTED: Web root {web_root} does not exist")
-            return 1
+            deploy_failed = True
 
-        logger.info(f"Deploying to {web_root}...")
+        else:
+            logger.info(f"Deploying to {web_root}...")
 
-        # Use sudo for all deployment operations (web root owned by www-data)
-        try:
-            logger.info("Removing old files...")
-            # Use bash -c to properly expand the glob pattern
-            subprocess.run(["sudo", "bash", "-c", f"rm -rf {web_root}/*"], check=True)
+            # Use sudo for all deployment operations (web root owned by www-data)
+            try:
+                logger.info("Removing old files...")
+                subprocess.run(
+                    ["sudo", "-n", "bash", "-c", f"rm -rf {web_root}/*"],
+                    check=True,
+                )
 
-            logger.info("Copying new files...")
-            # Use sudo cp -r to copy files
-            subprocess.run(
-                ["sudo", "cp", "-r"]
-                + [str(p) for p in output_dir.iterdir()]
-                + [str(web_root) + "/"],
-                check=True,
-            )
+                logger.info("Copying new files...")
+                subprocess.run(
+                    ["sudo", "-n", "cp", "-r"]
+                    + [str(p) for p in output_dir.iterdir()]
+                    + [str(web_root) + "/"],
+                    check=True,
+                )
 
-            logger.info("Setting permissions...")
-            subprocess.run(["sudo", "chown", "-R", "www-data:www-data", str(web_root)], check=True)
-            subprocess.run(["sudo", "chmod", "-R", "755", str(web_root)], check=True)
+                logger.info("Setting permissions...")
+                subprocess.run(
+                    ["sudo", "-n", "chown", "-R", "www-data:www-data", str(web_root)],
+                    check=True,
+                )
+                subprocess.run(
+                    ["sudo", "-n", "chmod", "-R", "755", str(web_root)],
+                    check=True,
+                )
 
-            logger.info("DEPLOYMENT COMPLETE!")
-            stats.record("6. Deploy to Production", phase_timer.stop())
+                logger.info("DEPLOYMENT COMPLETE!")
+                stats.record("6. Deploy to Production", phase_timer.stop())
 
-        except subprocess.CalledProcessError as e:
-            logger.error(f"DEPLOYMENT FAILED: Command failed - {e}")
-            logger.error("Check sudo permissions and try again")
-            stats.record("6. Deploy to Production (FAILED)", phase_timer.stop())
-            return 1
+            except subprocess.CalledProcessError as e:
+                logger.error(f"DEPLOYMENT FAILED: {e}")
+                logger.error(
+                    "Check sudoers config. Required: "
+                    "carloacutis ALL=(ALL) NOPASSWD: /usr/bin/rm, /usr/bin/cp, "
+                    "/usr/bin/chown, /usr/bin/chmod"
+                )
+                stats.record("6. Deploy to Production (FAILED)", phase_timer.stop())
+                deploy_failed = True
 
     else:
         logger.info("\n" + "-" * 60)
         logger.info("NO DEPLOYMENT (use --deploy to deploy to production)")
         logger.info(f"Output available at: {output_dir}")
         logger.info("-" * 60)
+
+    # Step 7: Post-scan cleanup
+    phase_timer = Timer("Cleanup", logger).start()
+    logger.info("\nRunning post-scan cleanup...")
+    try:
+        # Build set of current model directory names for pruning
+        current_model_dirs = {
+            r["model_id"].replace("/", "_") for r in all_results if r.get("success")
+        }
+        run_full_cleanup(
+            project_root=PROJECT_ROOT,
+            current_model_dirs=current_model_dirs if current_model_dirs else None,
+            dry_run=False,
+        )
+    except Exception as e:
+        logger.warning(f"Cleanup failed (non-fatal): {e}")
+    stats.record("7. Cleanup", phase_timer.stop())
 
     # Cleanup: Close history database connection
     if history_db:
@@ -703,6 +753,7 @@ PERFORMANCE:
 
     # Summary
     elapsed = datetime.now() - start_time
+    deployed_ok = args.deploy and not deploy_failed
     logger.info("\n" + "=" * 60)
     logger.info("SCAN SUMMARY")
     logger.info("=" * 60)
@@ -712,15 +763,22 @@ PERFORMANCE:
     logger.info(f"Total time: {Timer._format_duration(total_elapsed)}")
     logger.info(f"Output directory: {output_dir}")
     if args.deploy:
-        logger.info(f"Deployed to: {web_root}")
+        if deploy_failed:
+            logger.error(f"Deployment: FAILED (see errors above)")
+        else:
+            logger.info(f"Deployed to: {web_root}")
     else:
         logger.info("Deployment: SKIPPED (use --deploy flag)")
+
+    # Disk status after scan
+    disk_after = check_disk_space("/")
+    logger.info(f"Disk: {disk_after['percent']}% used ({disk_after['free_gb']} GB free)")
     logger.info("=" * 60)
 
     # Print detailed timing report
     stats.report(logger)
 
-    # Save run summary
+    # Always save run summary (even on deploy failure) so monitoring works
     summary_file = PROJECT_ROOT / "data" / "last_run.json"
     summary_file.write_text(
         json.dumps(
@@ -730,12 +788,16 @@ PERFORMANCE:
                 "successful": successful,
                 "failed": failed,
                 "elapsed_seconds": elapsed.total_seconds(),
-                "deployed": args.deploy,
+                "deployed": deployed_ok,
+                "deploy_failed": deploy_failed if args.deploy else None,
+                "disk_percent": disk_after["percent"],
             },
             indent=2,
         )
     )
 
+    if deploy_failed:
+        return 1
     return 0 if failed == 0 else 1
 
 

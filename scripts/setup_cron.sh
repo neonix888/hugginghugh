@@ -14,6 +14,8 @@ NEWS_SCRIPT="$PROJECT_DIR/scripts/run_daily_news.py"
 SCAN_LOG="$PROJECT_DIR/logs/cron.log"
 NEWS_LOG="$PROJECT_DIR/logs/news.log"
 
+SUDOERS_FILE="/etc/sudoers.d/hugginghugh"
+
 echo "=== HuggingHugh Cron Setup ==="
 echo "Project directory: $PROJECT_DIR"
 echo "Python path: $VENV_PYTHON"
@@ -25,6 +27,32 @@ if [ ! -f "$VENV_PYTHON" ]; then
     echo "ERROR: Virtual environment not found at $VENV_PYTHON"
     echo "Please run: python3 -m venv $PROJECT_DIR/venv && source $PROJECT_DIR/venv/bin/activate && pip install -r $PROJECT_DIR/requirements.txt"
     exit 1
+fi
+
+# Setup passwordless sudo for deployment commands (required for cron)
+echo ""
+echo "Setting up sudoers for passwordless deployment..."
+SUDOERS_CONTENT="# HuggingHugh: allow cron to deploy to web root without password
+carloacutis ALL=(ALL) NOPASSWD: /usr/bin/rm -rf /var/www/hugginghugh.com/*, /usr/bin/rm -rf /var/www/hugginghugh.etcbin.io/*
+carloacutis ALL=(ALL) NOPASSWD: /usr/bin/cp -r *
+carloacutis ALL=(ALL) NOPASSWD: /usr/bin/chown -R www-data\:www-data /var/www/hugginghugh.com, /usr/bin/chown -R www-data\:www-data /var/www/hugginghugh.com/*, /usr/bin/chown -R www-data\:www-data /var/www/hugginghugh.etcbin.io, /usr/bin/chown -R www-data\:www-data /var/www/hugginghugh.etcbin.io/*
+carloacutis ALL=(ALL) NOPASSWD: /usr/bin/chmod -R 755 /var/www/hugginghugh.com, /usr/bin/chmod -R 755 /var/www/hugginghugh.com/*, /usr/bin/chmod -R 755 /var/www/hugginghugh.etcbin.io, /usr/bin/chmod -R 755 /var/www/hugginghugh.etcbin.io/*
+carloacutis ALL=(ALL) NOPASSWD: /usr/bin/bash -c rm -rf /var/www/hugginghugh.com/*, /usr/bin/bash -c rm -rf /var/www/hugginghugh.etcbin.io/*"
+
+if [ -f "$SUDOERS_FILE" ]; then
+    echo "Sudoers file already exists: $SUDOERS_FILE"
+else
+    echo "$SUDOERS_CONTENT" | sudo tee "$SUDOERS_FILE" > /dev/null
+    sudo chmod 0440 "$SUDOERS_FILE"
+    # Validate the sudoers file
+    if sudo visudo -cf "$SUDOERS_FILE"; then
+        echo "Sudoers file installed and validated: $SUDOERS_FILE"
+    else
+        echo "ERROR: Invalid sudoers file! Removing..."
+        sudo rm -f "$SUDOERS_FILE"
+        echo "Please fix sudoers manually."
+        exit 1
+    fi
 fi
 
 # Create logs directory

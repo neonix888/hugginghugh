@@ -6,6 +6,20 @@ Concise changelog for all project changes. Format: `[date] - [type] - [descripti
 
 ---
 
+## 2026-03-12
+
+- `fix` - Fixed nightly scan deployment failing since Mar 2 (sudo password prompt in cron)
+- `fix` - Added `sudo -n` (non-interactive) flag to all deployment commands
+- `fix` - `last_run.json` now always saved even on deploy failure (was silently stale for 10 days)
+- `feat` - Added post-scan disk cleanup (scripts/cleanup.py) - log rotation, stale report/SBOM/cache pruning
+- `feat` - Added pre-flight disk space check - scan aborts at 90%, warns at 85%
+- `fix` - Stopped creating per-run log files in cron (was doubling logs: cron.log + scan_*.log)
+- `fix` - Removed tokenizer.json from METADATA_FILES download list (30+ MB each, never used by SBOM generator)
+- `fix` - Cleaned up 1.7 GB of accumulated waste: 121 old logs, 264 tokenizer.json files, 285 stale reports
+- `config` - Added sudoers setup to setup_cron.sh for passwordless deployment commands
+
+---
+
 ## 2026-02-27
 
 - `feat` - Complete site redesign: CRT terminal aesthetic with phosphor green (#00ff41) on black

@@ -15,10 +15,11 @@ from .top_models import ModelInfo
 
 logger = logging.getLogger(__name__)
 
-# Files to download for analysis (metadata only, no weights)
+# Files to download for analysis (metadata only, no weights).
+# NOTE: tokenizer.json excluded - it can be 30+ MB per model and is never
+# read by the SBOM generator (which only needs tokenizer_class from config.json).
 METADATA_FILES = [
     "config.json",
-    "tokenizer.json",
     "tokenizer_config.json",
     "preprocessor_config.json",
     "generation_config.json",
