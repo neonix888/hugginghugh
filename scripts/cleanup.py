@@ -19,6 +19,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).parent.parent
+GRYPE_CACHE_DIR = Path.home() / ".cache" / "grype" / "db"
 
 logger = logging.getLogger(__name__)
 
@@ -233,6 +234,40 @@ def cleanup_stale_model_cache(
     return freed
 
 
+def cleanup_grype_temp_dbs(
+    grype_db_dir: Path = GRYPE_CACHE_DIR,
+    dry_run: bool = True,
+) -> int:
+    """
+    Remove orphaned Grype temporary DB download directories.
+
+    Grype downloads a ~1.4 GB vulnerability DB per scan worker. When workers
+    run in parallel or fail, these temp dirs pile up and can consume 10+ GB.
+    The active DB lives in a numbered subdirectory (e.g., '6/'); everything
+    named 'grype-db-download*' is a temp artifact safe to remove.
+
+    Returns bytes freed.
+    """
+    if not grype_db_dir.exists():
+        return 0
+
+    freed = 0
+    for entry in grype_db_dir.iterdir():
+        if entry.is_dir() and entry.name.startswith("grype-db-download"):
+            size = sum(f.stat().st_size for f in entry.rglob("*") if f.is_file())
+            if dry_run:
+                logger.info(
+                    f"  [DRY RUN] Would delete Grype temp DB: "
+                    f"{entry.name} ({size / (1024*1024):.0f}M)"
+                )
+            else:
+                shutil.rmtree(entry)
+                logger.info(f"  Deleted Grype temp DB: {entry.name} ({size / (1024*1024):.0f}M)")
+            freed += size
+
+    return freed
+
+
 def run_full_cleanup(
     project_root: Path = PROJECT_ROOT,
     current_model_dirs: set = None,
@@ -253,7 +288,13 @@ def run_full_cleanup(
     mode = "DRY RUN" if dry_run else "EXECUTING"
     logger.info(f"=== Cleanup ({mode}) ===")
 
-    stats = {"logs_freed": 0, "reports_freed": 0, "sboms_freed": 0, "cache_freed": 0}
+    stats = {
+        "logs_freed": 0,
+        "reports_freed": 0,
+        "sboms_freed": 0,
+        "cache_freed": 0,
+        "grype_freed": 0,
+    }
 
     logs_dir = project_root / "logs"
     data_dir = project_root / "data"
@@ -281,6 +322,10 @@ def run_full_cleanup(
             data_dir / "models", current_model_dirs, dry_run=dry_run
         )
 
+    # 4. Grype temp DB cleanup (orphaned downloads from parallel workers)
+    logger.info("Cleaning Grype temp databases...")
+    stats["grype_freed"] = cleanup_grype_temp_dbs(dry_run=dry_run)
+
     total = sum(stats.values())
     logger.info(
         f"Cleanup {'would free' if dry_run else 'freed'}: "
@@ -288,7 +333,8 @@ def run_full_cleanup(
         f"(logs: {stats['logs_freed']/(1024*1024):.1f}M, "
         f"reports: {stats['reports_freed']/(1024*1024):.1f}M, "
         f"sboms: {stats['sboms_freed']/(1024*1024):.1f}M, "
-        f"cache: {stats['cache_freed']/(1024*1024):.1f}M)"
+        f"cache: {stats['cache_freed']/(1024*1024):.1f}M, "
+        f"grype: {stats['grype_freed']/(1024*1024):.1f}M)"
     )
 
     return stats

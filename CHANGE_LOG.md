@@ -17,6 +17,7 @@ Concise changelog for all project changes. Format: `[date] - [type] - [descripti
 - `fix` - Removed tokenizer.json from METADATA_FILES download list (30+ MB each, never used by SBOM generator)
 - `fix` - Cleaned up 1.7 GB of accumulated waste: 121 old logs, 264 tokenizer.json files, 285 stale reports
 - `config` - Added sudoers setup to setup_cron.sh for passwordless deployment commands
+- `fix` - Added Grype temp DB cleanup to nightly process (orphaned downloads consumed 10+ GB)
 
 ---
 
