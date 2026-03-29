@@ -94,6 +94,17 @@ Granular task checklist for ongoing development. Update this document as tasks p
 - [x] Create leaderboard podium on front page ✅
 - [x] Create full leaderboard page (/leaderboard.html) ✅
 
+### Phase 7: Nightly Scan Reliability (2026-03-28) ✅
+- [x] Fix self-SBOM: use SYFT_PATH/GRYPE_PATH from config.settings ✅
+- [x] Fix self-SBOM: add 300s subprocess timeout ✅
+- [x] Fix thread-safety: per-thread DB connections (psycopg2 not thread-safe) ✅
+- [x] Fix DB resilience: auto-reconnect on idle timeout via SELECT 1 health check ✅
+- [x] Fix news deploy: add sudo -n to prevent cron hangs ✅
+- [x] Add retry logic: 3 attempts with exponential backoff on model list fetch ✅
+- [x] Fix resource leak: close ModelFetcher HTTP client after scan ✅
+- [x] Fix Grype parallelism: pre-scan grype db update before workers start ✅
+- [ ] Monitor: 7-day stability window (2026-03-29 through 2026-04-04)
+
 ### Low Priority
 
 - [ ] Add unit tests for scanner modules
@@ -294,6 +305,40 @@ Track what was done in each development session:
   - Created static/images/favicon.svg (shield with checkmark)
   - CSS cache buster updated to v=10
 
+### Session: 2026-03-28 (Nightly Scan Reliability Fixes)
+- **Problem:** Nightly scan showing "last updated 3/26" despite running daily. User reports
+  it "usually fails after one day."
+- **Investigation:** Deep-dive into logs, code, and cron output. Found the scan itself succeeds
+  (500/500 models daily) but multiple subsystems are silently broken or degraded.
+- **Root Causes Found (7):**
+  1. `generate_self_sbom.py` calls bare `syft`/`grype` — not in cron PATH since Dec 2025 fix
+     only patched the main scan script, not the self-SBOM script
+  2. `LeaderboardDB` shares a single psycopg2 connection across 4 worker threads — psycopg2
+     is NOT thread-safe. Causes intermittent InterfaceError/OperationalError
+  3. Same DB connection has no reconnect logic — dies after PostgreSQL idle timeout during
+     25-minute scans
+  4. `run_daily_news.py` deploy uses `sudo` without `-n` — hangs in cron when sudo cache expires
+     (same bug fixed in main scan on Mar 12, but news script was missed)
+  5. `hf_client.get_models()` has zero retry logic — single transient failure kills the entire
+     scan (all-or-nothing fetch of 1000 models)
+  6. `ModelFetcher` HTTP client never closed — connections leak across 500 model scans
+  7. Worker threads each trigger independent Grype DB downloads (~1.4GB each) — can exhaust disk
+     mid-scan
+- **Fixes Applied:**
+  1. `generate_self_sbom.py`: Import SYFT_PATH/GRYPE_PATH from config.settings, add 300s timeout
+  2. `leaderboard.py`: Replace shared connection with threading.local() per-thread connections
+  3. `leaderboard.py`: Add `_get_conn()` with SELECT 1 health check + auto-reconnect
+  4. `run_daily_news.py`: Add `-n` flag to all sudo calls
+  5. `hf_client.py`: Add 3-retry loop with 2^attempt second exponential backoff
+  6. `run_daily_scan.py`: Add `fetcher.close()` in cleanup section
+  7. `run_daily_scan.py`: Add `grype db update` before worker threads start
+- **Verification:**
+  - All 119 existing tests pass (0 failures)
+  - All 16 pre-commit hooks pass (black, isort, bandit, flake8, safety, secrets)
+  - Manual test run: `--limit 5` → 5/5 successful, self-SBOM generated (182 components, 23 vulns)
+  - Commit: `3c16756`, pushed to `origin/dev`
+- **Monitoring:** 7-day stability window: 2026-03-29 through 2026-04-04
+
 ---
 
 ## Code Changes Registry
@@ -301,7 +346,12 @@ Track what was done in each development session:
 Track significant code changes to maintain awareness:
 
 | Date | File(s) | Change Description | Tests Added |
-|------|---------|-------------------|-------------|
+|------|---------|-------------------|------------|
+| 2026-03-28 | scripts/generate_self_sbom.py | Use config SYFT_PATH/GRYPE_PATH + 300s timeout | No (infra) |
+| 2026-03-28 | src/database/leaderboard.py | Per-thread connections + auto-reconnect | No (infra) |
+| 2026-03-28 | scripts/run_daily_news.py | sudo -n on deploy commands | No (infra) |
+| 2026-03-28 | src/scanner/hf_client.py | 3-retry exponential backoff on get_models() | No (infra) |
+| 2026-03-28 | scripts/run_daily_scan.py | Close fetcher, pre-scan grype db update | No (infra) |
 | 2024-12-10 | CLAUDE.md | Initial creation with DevSecOps practices | N/A |
 | 2024-12-10 | ROADMAP.md | Initial creation with milestones | N/A |
 | 2024-12-10 | TASKS.md | Initial creation with checklist | N/A |

@@ -4,9 +4,9 @@ Project roadmap and milestone tracking. Update this document after completing ma
 
 ## Project Status
 
-**Current Phase:** Deployed & Live
-**Last Updated:** 2025-12-11
-**Overall Progress:** ▓▓▓▓▓▓▓▓▓▓ 95%
+**Current Phase:** Deployed & Live (Reliability Hardening)
+**Last Updated:** 2026-03-28
+**Overall Progress:** ▓▓▓▓▓▓▓▓▓▓ 97%
 
 ---
 
@@ -126,6 +126,8 @@ Project roadmap and milestone tracking. Update this document after completing ma
 | 2025-12-13 | Updated Hero section with new messaging (security-first, free, no paywall) | 2.2 |
 | 2025-12-13 | Added hero badges (Security-First, Free SBOM, Updated Daily) | 2.2 |
 | 2025-12-13 | Expanded model scanning from 100 to 1,000 models | 2.2 |
+| 2026-03-12 | Fixed nightly scan deploy (sudo -n), added disk cleanup, pre-flight checks | 3.2 |
+| 2026-03-28 | Fixed 7 root causes of nightly scan inconsistency (thread-safety, PATH, retries, resource leaks) | 3.2 |
 
 ---
 
