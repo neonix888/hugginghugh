@@ -15,13 +15,20 @@ from datetime import datetime
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).parent.parent
+sys.path.insert(0, str(PROJECT_ROOT))
+
+from config.settings import GRYPE_PATH, SYFT_PATH
+
 OUTPUT_DIR = PROJECT_ROOT / "output"
 DATA_DIR = PROJECT_ROOT / "data"
 
+# Timeout for external tool invocations (seconds)
+TOOL_TIMEOUT = 300
 
-def run_command(cmd: list[str]) -> tuple[int, str, str]:
+
+def run_command(cmd: list[str], timeout: int = TOOL_TIMEOUT) -> tuple[int, str, str]:
     """Run a command and return exit code, stdout, stderr."""
-    result = subprocess.run(cmd, capture_output=True, text=True)
+    result = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout)
     return result.returncode, result.stdout, result.stderr
 
 
@@ -64,7 +71,7 @@ def generate_sbom() -> dict:
     print("Generating SBOM with Syft...")
     sbom_file = DATA_DIR / "self_sbom.json"
 
-    code, stdout, stderr = run_command(["syft", str(PROJECT_ROOT), "-o", "cyclonedx-json"])
+    code, stdout, stderr = run_command([SYFT_PATH, str(PROJECT_ROOT), "-o", "cyclonedx-json"])
 
     if code != 0:
         print(f"Error generating SBOM: {stderr}")
@@ -87,7 +94,7 @@ def scan_vulnerabilities(sbom_file: Path) -> dict:
     print("Scanning for vulnerabilities with Grype...")
     vulns_file = DATA_DIR / "self_vulns.json"
 
-    code, stdout, stderr = run_command(["grype", f"sbom:{sbom_file}", "-o", "json"])
+    code, stdout, stderr = run_command([GRYPE_PATH, f"sbom:{sbom_file}", "-o", "json"])
 
     if code != 0 and "no vulnerabilities found" not in stderr.lower():
         print(f"Warning: Grype returned non-zero: {stderr}")

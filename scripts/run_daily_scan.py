@@ -331,7 +331,7 @@ PERFORMANCE:
     logger.info("Initializing components...")
     logger.info(f"Using syft: {SYFT_PATH}")
     logger.info(f"Using grype: {GRYPE_PATH}")
-    fetcher = ModelFetcher(cache_dir=data_dir / "models", token=hf_token)
+    fetcher = ModelFetcher(cache_dir=data_dir / "models", token=hf_token)  # closed in finally block
     sbom_gen = SBOMGenerator(syft_path=SYFT_PATH, output_dir=data_dir / "sboms")
     vuln_scanner = VulnerabilityScanner(grype_path=GRYPE_PATH, output_dir=data_dir / "sboms")
     license_analyzer = LicenseAnalyzer()
@@ -366,6 +366,21 @@ PERFORMANCE:
     except Exception as e:
         logger.warning(f"Could not connect to database for history: {e}")
         history_db = None
+
+    # Pre-fetch Grype vulnerability DB so worker threads don't trigger parallel downloads
+    logger.info("Updating Grype vulnerability database...")
+    try:
+        subprocess.run(
+            [GRYPE_PATH, "db", "update"],
+            capture_output=True,
+            text=True,
+            timeout=300,
+        )
+        logger.info("Grype DB updated successfully")
+    except subprocess.TimeoutExpired:
+        logger.warning("Grype DB update timed out (will use existing DB)")
+    except Exception as e:
+        logger.warning(f"Grype DB update failed (will use existing DB): {e}")
 
     # Load persistent PyPI version cache from disk
     logger.info("Loading PyPI version cache...")
@@ -740,7 +755,13 @@ PERFORMANCE:
         logger.warning(f"Cleanup failed (non-fatal): {e}")
     stats.record("7. Cleanup", phase_timer.stop())
 
-    # Cleanup: Close history database connection
+    # Cleanup: Close resources
+    try:
+        fetcher.close()
+        logger.debug("Closed ModelFetcher HTTP client")
+    except Exception:
+        pass
+
     if history_db:
         try:
             history_db.close()

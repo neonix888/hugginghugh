@@ -49,11 +49,11 @@ def deploy_blog(output_dir: Path) -> bool:
 
         for domain in domains:
             subprocess.run(
-                ["sudo", "cp", "-r"] + list(map(str, output_dir.glob("*"))) + [domain],
+                ["sudo", "-n", "cp", "-r"] + list(map(str, output_dir.glob("*"))) + [domain],
                 check=True,
             )
             subprocess.run(
-                ["sudo", "chown", "-R", "www-data:www-data", domain],
+                ["sudo", "-n", "chown", "-R", "www-data:www-data", domain],
                 check=True,
             )
 

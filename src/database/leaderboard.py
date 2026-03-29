@@ -10,6 +10,7 @@ Handles all PostgreSQL operations for the HuggingHugh leaderboard:
 
 import logging
 import os
+import threading
 from datetime import date, datetime, timedelta
 from typing import Any, Optional
 
@@ -30,7 +31,11 @@ TIE_BREAKER_GRACE_DAYS = 5
 
 
 class LeaderboardDB:
-    """Database operations for the leaderboard."""
+    """Thread-safe database operations for the leaderboard.
+
+    Uses per-thread connections so concurrent worker threads never share
+    a single psycopg2 connection (which is not thread-safe).
+    """
 
     def __init__(self, database_url: Optional[str] = None):
         """
@@ -43,18 +48,52 @@ class LeaderboardDB:
         if not self.database_url:
             raise ValueError("DATABASE_URL environment variable not set")
 
-        self._conn = None
+        self._local = threading.local()
+
+    def _get_conn(self):
+        """Get or create a connection for the current thread.
+
+        Also validates the connection is alive; reconnects if the server
+        dropped it (e.g. idle timeout during a long scan).
+        """
+        conn = getattr(self._local, "conn", None)
+
+        if conn is not None and not conn.closed:
+            try:
+                # Lightweight server-side health check
+                with conn.cursor() as cur:
+                    cur.execute("SELECT 1")
+                return conn
+            except (psycopg2.OperationalError, psycopg2.InterfaceError):
+                logger.warning("Database connection dropped, reconnecting...")
+                try:
+                    conn.close()
+                except Exception:
+                    pass
+                conn = None
+
+        conn = psycopg2.connect(self.database_url)
+        self._local.conn = conn
+        return conn
 
     def connect(self):
-        """Establish database connection."""
-        if self._conn is None or self._conn.closed:
-            self._conn = psycopg2.connect(self.database_url)
-        return self._conn
+        """Establish database connection for the current thread."""
+        return self._get_conn()
 
     def close(self):
-        """Close database connection."""
-        if self._conn and not self._conn.closed:
-            self._conn.close()
+        """Close the current thread's database connection."""
+        conn = getattr(self._local, "conn", None)
+        if conn and not conn.closed:
+            conn.close()
+        self._local.conn = None
+
+    def close_all(self):
+        """Close the current thread's connection (alias for close).
+
+        Note: Per-thread connections in other threads are cleaned up when
+        those threads exit or when close() is called from them.
+        """
+        self.close()
 
     def __enter__(self):
         self.connect()
@@ -74,7 +113,7 @@ class LeaderboardDB:
         Returns:
             Number of records inserted
         """
-        conn = self.connect()
+        conn = self._get_conn()
         cursor = conn.cursor()
 
         inserted = 0
@@ -139,7 +178,7 @@ class LeaderboardDB:
         Returns:
             List of ranked models
         """
-        conn = self.connect()
+        conn = self._get_conn()
         cursor = conn.cursor(cursor_factory=RealDictCursor)
 
         # Get today's eligible models sorted by score (desc), then downloads (desc)
@@ -276,7 +315,7 @@ class LeaderboardDB:
 
     def _update_current_rankings(self, rankings: list[dict]):
         """Update the current_rankings table with new rankings."""
-        conn = self.connect()
+        conn = self._get_conn()
         cursor = conn.cursor()
 
         # Clear existing rankings
@@ -318,7 +357,7 @@ class LeaderboardDB:
         Returns:
             List of top N ranked models
         """
-        conn = self.connect()
+        conn = self._get_conn()
         cursor = conn.cursor(cursor_factory=RealDictCursor)
 
         cursor.execute(
@@ -356,7 +395,7 @@ class LeaderboardDB:
         Returns:
             List of daily scores with all tracked fields
         """
-        conn = self.connect()
+        conn = self._get_conn()
         cursor = conn.cursor(cursor_factory=RealDictCursor)
 
         cursor.execute(
@@ -393,7 +432,7 @@ class LeaderboardDB:
         Returns:
             List of daily ranks (empty if model not eligible)
         """
-        conn = self.connect()
+        conn = self._get_conn()
         cursor = conn.cursor(cursor_factory=RealDictCursor)
 
         # Get all scan dates in range
@@ -442,7 +481,7 @@ class LeaderboardDB:
         Returns:
             Dictionary with first scan, best score, current streak, etc.
         """
-        conn = self.connect()
+        conn = self._get_conn()
         cursor = conn.cursor(cursor_factory=RealDictCursor)
 
         cursor.execute(
@@ -518,7 +557,7 @@ class LeaderboardDB:
         Returns:
             List of models with their improvement delta
         """
-        conn = self.connect()
+        conn = self._get_conn()
         cursor = conn.cursor(cursor_factory=RealDictCursor)
 
         compare_date = date.today() - timedelta(days=days)
@@ -562,7 +601,7 @@ class LeaderboardDB:
         details: Optional[dict] = None,
     ):
         """Record a hall of fame achievement."""
-        conn = self.connect()
+        conn = self._get_conn()
         cursor = conn.cursor()
 
         cursor.execute(
@@ -579,7 +618,7 @@ class LeaderboardDB:
 
     def get_eligible_count(self, scan_date: date) -> int:
         """Get count of eligible models (1M+ downloads) for a scan date."""
-        conn = self.connect()
+        conn = self._get_conn()
         cursor = conn.cursor()
 
         cursor.execute(

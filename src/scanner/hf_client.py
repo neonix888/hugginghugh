@@ -5,6 +5,7 @@ Handles all interactions with the HuggingFace Hub API.
 """
 
 import logging
+import time
 from pathlib import Path
 from typing import Any, Optional
 
@@ -62,15 +63,25 @@ class HuggingFaceClient:
         if filter_task:
             params["filter"] = filter_task
 
-        try:
-            response = self._client.get(f"{self.base_url}/models", params=params)
-            response.raise_for_status()
-            models = response.json()
-            logger.info(f"Successfully fetched {len(models)} models")
-            return models
-        except httpx.HTTPError as e:
-            logger.error(f"Failed to fetch models: {e}")
-            raise
+        max_retries = 3
+        for attempt in range(1, max_retries + 1):
+            try:
+                response = self._client.get(f"{self.base_url}/models", params=params)
+                response.raise_for_status()
+                models = response.json()
+                logger.info(f"Successfully fetched {len(models)} models")
+                return models
+            except (httpx.HTTPError, httpx.TimeoutException) as e:
+                if attempt < max_retries:
+                    wait = 2**attempt
+                    logger.warning(
+                        f"Failed to fetch models (attempt {attempt}/{max_retries}): {e}. "
+                        f"Retrying in {wait}s..."
+                    )
+                    time.sleep(wait)
+                else:
+                    logger.error(f"Failed to fetch models after {max_retries} attempts: {e}")
+                    raise
 
     def get_model_info(self, model_id: str) -> dict[str, Any]:
         """

@@ -6,6 +6,19 @@ Concise changelog for all project changes. Format: `[date] - [type] - [descripti
 
 ---
 
+## 2026-03-28
+
+- `fix` - Fixed self-SBOM generation failing daily since Mar 12 (bare `syft`/`grype` not in cron PATH)
+- `fix` - Self-SBOM now uses `SYFT_PATH`/`GRYPE_PATH` from config.settings with 300s subprocess timeout
+- `fix` - Fixed thread-unsafe shared psycopg2 connection across 4 worker threads (race condition)
+- `fix` - LeaderboardDB now uses per-thread connections with auto-reconnect on idle timeout
+- `fix` - Added `sudo -n` to news digest deploy commands (matched main scan fix from Mar 12)
+- `fix` - Added retry logic (3 attempts, exponential backoff) to HuggingFace model list fetch
+- `fix` - Fixed HTTP connection leak: ModelFetcher now properly closed after scan completes
+- `fix` - Added pre-scan `grype db update` to prevent 4 parallel 1.4GB DB downloads from worker threads
+
+---
+
 ## 2026-03-12
 
 - `fix` - Fixed nightly scan deployment failing since Mar 2 (sudo password prompt in cron)
